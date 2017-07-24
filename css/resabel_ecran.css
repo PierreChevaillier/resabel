@@ -1,0 +1,77 @@
+/*
+ ================================================================================
+ description : feuille de style pour l'affichage
+ utilisation :
+ teste avec  : Mac OS 10.11 - Firefox, Safari
+ contexte    : resable - aux couleurs du club
+ Copyright (c) 2017 AMP
+ --------------------------------------------------------------------------------
+ creation: 22-juil-2017 pchevaillier@gmail.com
+ ================================================================================
+*/
+
+
+@media screen and (max-width: 480px) {
+  /* proprietes pour mobile */
+  .not_mobile { display: none; }
+}
+
+body {
+  padding: 0 0 0 0;
+  margin-top:0;
+  margin-bottom:0;
+  background-color:white;
+  font-family:Avantgarde,CenturyGothic,Arial,Helvetica;
+  font-size:medium;
+}
+
+
+fieldset.identification {
+  padding: 10px 0px 10px 0px;
+  width: 300px;
+  /* text-align:left; */
+  /* font-size:100%; */
+}
+
+footer {
+  background-color:#C0C0C0;
+  color:black;
+  text-align: right;
+  font-size: small;
+}
+
+h1, h2, h3, h4 {
+  color: rgb(63,177,208);
+}
+
+h1 {
+  background-color: rgb(242,203,0);
+  text-align:center;
+}
+
+label {
+  color: rgb(183, 30, 44);
+}
+
+input.form-control {
+  background-color: #c5dafc;
+}
+
+p.lead {
+  color: rgb(221,52,47);
+}
+
+
+/* --- Elements identifies --------------------------------------------------- */
+
+#menu_nav li a:hover {
+  color: white;
+}
+
+#menu_nav a:hover {
+  background-color: rgb(63,177,208);
+}
+
+#mentions-legales {
+  color: black;
+}
