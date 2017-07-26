@@ -1,0 +1,27 @@
+# description: redirige les requetes http:// vers https://
+#              tous les acces se font donc en mode securise
+# creation: 24-juil-2017 pchevaillier@gmail.com 
+# commentaires : 
+# - solution trouvee sur https://stackoverflow.com/questions/4398951/force-ssl-https-using-htaccess-and-mod-rewrite
+# attention :
+# - pas teste avec des adresses comprenant des 'query strings'
+# =============================================================================
+#  - informations utiles sur http://www.askapache.com/htaccess/
+RewriteEngine On
+# This will enable the Rewrite capabilities
+
+#RewriteOptions InheritDownBefore
+# This prevents the rule from being overrided by .htaccess files in subdirectories.
+# Attention : ca ne marche pas
+# message : The server encountered an internal error or misconfiguration and was unable to complete your request.
+
+RewriteCond %{HTTPS} !=on
+# This checks to make sure the connection is not already HTTPS
+
+RewriteRule ^ https://%{SERVER_NAME}%{REQUEST_URI} [QSA,R,L]
+# This rule will redirect users from their original location, to the same location but using HTTPS.
+# i.e.  http://www.example.com/foo/ to https://www.example.com/foo/
+
+# autre solution qui semble marcher
+#RewriteRule ^.*([#?].*)? https://%{SERVER_NAME}%{REQUEST_URI}$1 [R,L]
+# trouvee sur https://stackoverflow.com/posts/37260796/revisions
