@@ -10,6 +10,7 @@
   // --------------------------------------------------------------------------
   // creation: 04-jun-2017 pchevaillier@gmail.com
   // revision: 17-jun-2018 pchevaillier@gmail.com adaptation resabel V2
+  // revision: 20-aug-2018 pchevaillier@gmail.com ajout feuilles de style
   // --------------------------------------------------------------------------
   // commentaires :
   // -
@@ -33,33 +34,38 @@
     private $elements_entete = array();
     public function ajoute_element_entete($element) {
       $this->elements_entete[] = $element;
-      $element = $this;
+      $element->page = $this;
     }
 
     // --- Elements en debut du <body>
     private $elements_haut = array();
     public function ajoute_element_haut($element) {
       $this->elements_haut[] = $element;
-      $element = $this;
+      $element->page = $this;
     }
 
     
     private $contenus = array();
     public function ajoute_contenu($element) {
       $this->contenus[] = $element;
-      $element = $this;
+      $element->page = $this;
     }
 
     // --- Elements avant la fin du body
     private $elements_bas = array();
     public function ajoute_element_bas($element) {
       $this->elements_bas[] = $element;
-      $element = $this;
+      $element->page = $this;
     }
  
-
-    public function __construct($nom_site, $nom_page) {
+    public function definir_feuilles_style() {
+      foreach ($this->feuilles_style as $f)
+        echo "     <link rel=\"stylesheet\" href=\"" . get_include_path() . $f . "\" media=\"screen\" />\n";
+    }
+    
+    public function __construct($nom_site, $nom_page, $feuilles_style) {
       $this->def_titre($nom_site . " - " . $nom_page);
+      $this->feuilles_style = $feuilles_style;
     }
 	
   public function initialiser() {
