@@ -30,7 +30,7 @@
 
       // ----------------------------------------------------------------------
       // --- Creation dynamique de la page
-      $page = new Page_Connexion("AMP - Resabel", "connexion");
+      $page = new Page_Connexion("AMP - Resabel", "connexion", "css/resabel_ecran.css");
       
       $info = new Element_Code();
       $code_html = "<div class=\"alert alert-info\" role=\"alert\">Vous devez vous identifez pour accéder à ce service</div>";

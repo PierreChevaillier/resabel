@@ -22,7 +22,8 @@
 
   // --- Classes utilisees
   require_once 'element.php';
-
+  require_once 'pied_page.php'
+  
   // --------------------------------------------------------------------------
   // --- Definition de la classe Page
 
@@ -44,6 +45,7 @@
       $element->page = $this;
     }
 
+    protected $feuilles_style = array();
     
     private $contenus = array();
     public function ajoute_contenu($element) {
@@ -63,9 +65,9 @@
         echo "     <link rel=\"stylesheet\" href=\"" . get_include_path() . $f . "\" media=\"screen\" />\n";
     }
     
-    public function __construct($nom_site, $nom_page, $feuilles_style) {
+    public function __construct($nom_site, $nom_page, $liste_feuilles_style) {
       $this->def_titre($nom_site . " - " . $nom_page);
-      $this->feuilles_style = $feuilles_style;
+      $this->feuilles_style = $liste_feuilles_style;
     }
 	
   public function initialiser() {
@@ -100,8 +102,9 @@
     // Bootstrap CSS
     echo "      <link href=\"https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css\" rel=\"stylesheet\" integrity=\"sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB\" crossorigin=\"anonymous\" />\n";
     
-    // Feuille de style locale
-   // echo "     <link rel=\"stylesheet\" href=\"" . get_include_path() . "amp_france2018.css\" media=\"screen\" />\n";
+    // Feuille de style locale (screen)
+    foreach ($this->feuilles_style as $css)
+      echo "     <link rel=\"stylesheet\" href=\"" . get_include_path() . "/" . $css . "\" media=\"screen\" />\n";
     
     // Jquery
     echo "      <script src=\"https://code.jquery.com/jquery-3.3.1.js\" integrity=\"sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=\" crossorigin=\"anonymous\"></script>\n";
@@ -125,15 +128,19 @@
   abstract protected function definir_elements();
 
 }
-  
-  class Page_Simple extends Page {
-    protected function inclure_meta_donnees_open_graph() {
-        //de base : aucune
-    }
-    
-    protected function definir_elements() {
-      //de base : rien
-    }
+
+class Page_Simple extends Page {
+  public function __construct($nom_site, $nom_page, $liste_feuilles_style) {
+    $this->elements_bas[] = new Pied_Page();
   }
+    
+  protected function inclure_meta_donnees_open_graph() {
+        //de base : aucune
+  }
+    
+  protected function definir_elements() {
+    //de base : rien
+  }
+}
   
 // ========================================================================

@@ -30,7 +30,9 @@
 
       // ----------------------------------------------------------------------
       // --- Creation dynamique de la page
-      $page = new Page_Simple("AMP - Resabel", "page vide");
+      $feuilles_style = array();
+      $feuilles_style[] = "css/resabel_ecran.css";
+      $page = new Page_Simple("AMP - Resabel", "page vide", $feuilles_style);
       
       $code_html = "<h1> Page vide</h1>\n<p>Cette page est vide.</p>";
       $corps_page = new Element_Code();

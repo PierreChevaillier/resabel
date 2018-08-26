@@ -47,7 +47,7 @@ class Pied_Page extends Element_Page {
   }
   
   private function afficher_copyright() {
-    echo '<p>Copyright &copy; 2014 - ' . date('Y') . ' ' . Site_web::copyright() . '</p>';
+    echo '<p>Resabel Copyright &copy; 2014 - ' . date('Y') . ' ' . Site_web::copyright() . '</p>';
   }
   
 
