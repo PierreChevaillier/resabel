@@ -44,11 +44,14 @@
     
     public function definir_elements() {
       $element = new Entete_Connexion();
-      $element->def_titre("AMP");
+      $element->def_titre("AMP <br /> Accès à Resabel");
       $this->ajoute_element_haut($element);
       foreach ($this->informations_temporaires as $info) {
         $this->ajoute_contenu($info);
       }
+      
+      $messages_erreur = new Element_Code();
+      $page->ajoute_contenu($messages_erreur);
       
       // infos temporaires
       // formulaire connexion

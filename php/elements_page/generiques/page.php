@@ -21,8 +21,8 @@
   // ==========================================================================
 
   // --- Classes utilisees
-  require_once 'element.php';
-  require_once 'pied_page.php'
+  require_once 'php/elements_page/generiques/element.php';
+  require_once 'php/elements_page/generiques/pied_page.php';
   
   // --------------------------------------------------------------------------
   // --- Definition de la classe Page
@@ -65,9 +65,10 @@
         echo "     <link rel=\"stylesheet\" href=\"" . get_include_path() . $f . "\" media=\"screen\" />\n";
     }
     
-    public function __construct($nom_site, $nom_page, $liste_feuilles_style) {
+    public function __construct($nom_site, $nom_page, $liste_feuilles_style = null) {
       $this->def_titre($nom_site . " - " . $nom_page);
-      $this->feuilles_style = $liste_feuilles_style;
+      if ($liste_feuilles_style != null)
+        $this->feuilles_style = $liste_feuilles_style;
     }
 	
   public function initialiser() {
@@ -130,8 +131,11 @@
 }
 
 class Page_Simple extends Page {
-  public function __construct($nom_site, $nom_page, $liste_feuilles_style) {
-    $this->elements_bas[] = new Pied_Page();
+  public function __construct($nom_site, $nom_page, $liste_feuilles_style = null) {
+    parent::__construct($nom_site, $nom_page, $liste_feuilles_style);
+    $pp = new Pied_Page();
+    $pp->def_titre("Resabel - V2");
+    $this->elements_bas[] = $pp;
   }
     
   protected function inclure_meta_donnees_open_graph() {

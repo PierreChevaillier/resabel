@@ -17,7 +17,7 @@
 // ------------------------------------------------------------------------
 
 // --- Classes utilisees
-require_once 'element_page.php';
+require_once 'php/elements_page/generiques/element.php';
   
 // ------------------------------------------------------------------------
 // --- Definition de la classe Pied_Page
@@ -25,7 +25,7 @@ require_once 'element_page.php';
 /**
  * @author Pierre Chevaillier
  */
-class Pied_Page extends Element_Page {
+class Pied_Page extends Element {
 
   public function initialiser() {
     // rien a faire de particulier
@@ -47,7 +47,7 @@ class Pied_Page extends Element_Page {
   }
   
   private function afficher_copyright() {
-    echo '<p>Resabel Copyright &copy; 2014 - ' . date('Y') . ' ' . Site_web::copyright() . '</p>';
+    echo '<p>' . $this->titre() . ' Copyright &copy; 2014 - ' . date('Y') . ' ' . Site_web::copyright() . '</p>';
   }
   
 

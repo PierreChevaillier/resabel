@@ -1,7 +1,8 @@
 <?php
   // ========================================================================
-  // description : definition des classes Element et Conteneur_Elements
-  // utilisation : classe racine des elements de pages web, pages comprises
+  // description : definition de la classe Element et des classes derivees
+  //               correspondant aux elements generiques
+  // utilisation : classes racines des elements de pages web, pages comprises
   // teste avec  : PHP 5.5.3 sur Mac OS 10.11
   // contexte    : Elements generique d'un site web
   // Copyright (c) 2017-208 AMP. Tous droits reserves.
@@ -19,7 +20,11 @@
 
   // --------------------------------------------------------------------------
   abstract class Element {
+    
     protected $page = null;
+    public function def_page($page_web) {
+      $this->page = $page_web;
+    }
     
     private $titre = "";
     public function titre() { return $this->titre; }
