@@ -22,10 +22,12 @@
 
   // --- Classes utilisees
   require_once 'php/elements_page/generiques/page.php';
-  require_once 'php/elements_page/specifiques/entete_connexion.php';
   
-  // -------------------------------------------------------------------------
-  class Page_Connexion extends Page {
+  require_once 'php/elements_page/specifiques/entete_connexion.php';
+  require_once 'php/elements_page/specifiques/formulaire_connexion.php';
+  
+  // --------------------------------------------------------------------------
+  class Page_Connexion extends Page_Simple {
     
     private $informations_temporaires = array();
     public function ajoute_information($element) {
@@ -33,8 +35,8 @@
       $element = $this;
     }
 
-    public function __construct($nom_site, $nom_page) {
-      parent::__construct($nom_site, $nom_page);
+    public function __construct($nom_site, $nom_page, $feuilles_style = null) {
+      parent::__construct($nom_site, $nom_page, $feuilles_style);
       $this->javascripts[] = "scripts/controle_identification.js";
       $this->javascripts[] = "scripts/md5.js";
     }
@@ -46,16 +48,19 @@
       $element = new Entete_Connexion();
       $element->def_titre("AMP <br /> Accès à Resabel");
       $this->ajoute_element_haut($element);
+      
       foreach ($this->informations_temporaires as $info) {
         $this->ajoute_contenu($info);
       }
       
       $messages_erreur = new Element_Code();
-      $page->ajoute_contenu($messages_erreur);
+      $this->ajoute_contenu($messages_erreur);
       
       // infos temporaires
-      // formulaire connexion
       
+      // formulaire connexion
+      $formulaire = new Formulaire_Connexion($this->nom_page);
+      $this->ajoute_contenu($formulaire);
     }
   }
   

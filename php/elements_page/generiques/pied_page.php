@@ -47,7 +47,8 @@ class Pied_Page extends Element {
   }
   
   private function afficher_copyright() {
-    echo '<p>' . $this->titre() . ' Copyright &copy; 2014 - ' . date('Y') . ' ' . Site_web::copyright() . '</p>';
+    //echo '<p>' . $this->titre() . ' Copyright &copy; 2014 - ' . date('Y') . ' ' . Site_web::copyright() . '</p>';
+    echo '<p>' . $this->titre() . ' Copyright &copy; 2014 - ' . date('Y') . '</p>';
   }
   
 

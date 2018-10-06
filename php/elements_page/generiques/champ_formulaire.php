@@ -20,7 +20,7 @@
   // --- Classes utilisees
   require_once 'php/elements_page/generiques/element.php';
   
-  // ------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   // --- Definition de la classe
 
   abstract class Champ_Formulaire extends Element {
@@ -72,11 +72,11 @@
     
     protected function afficher_debut() {
       $marque = ($this->obligatoire())? "*": "";
-      echo '<div class="form-group"><label class="control-label col-sm-2" for="' . $this->id() . '">' . $this->titre() . ' ' . $marque . '</label><div class="col-sm-10">';
+      echo "\n" . '<div class="form-group"><label class="control-label col-sm-2" for="' . $this->id() . '">' . $this->titre() . ' ' . $marque . '</label><div class="col-sm-10">';
     }
  
     protected function afficher_ouverture_commune() {
-      echo '<' .  $this->balise . ' class="form-control" ';
+      echo "\n<" .  $this->balise . ' class="form-control" ';
       echo ' id="' . $this->id() . '" name="' . $this->id() . '" ';
       if ($this->obligatoire()) echo 'required ';
     }
@@ -87,9 +87,10 @@
     
   }
   
-  // ---------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   // Champs de type ou role particulier
-  
+
+  // --------------------------------------------------------------------------
   class Champ_Selection extends Champ_Formulaire {
     
     public $valeurs_multiples = False;
@@ -112,6 +113,7 @@
     }
   }
     
+  // --------------------------------------------------------------------------
   class Champ_Civilite extends Champ_Selection {
     
     public function initialiser() {
@@ -120,6 +122,7 @@
     }
   }
 
+  // --------------------------------------------------------------------------
   class Champ_Telephone extends Champ_Formulaire {
     protected function afficher_corps () {
       $this->afficher_ouverture_commune();
@@ -131,6 +134,7 @@
     }
   }
  
+  // --------------------------------------------------------------------------
   class Champ_Courriel extends Champ_Formulaire {
     protected function afficher_corps () {
       $this->afficher_ouverture_commune();
@@ -142,6 +146,7 @@
     }
   }
   
+  // --------------------------------------------------------------------------
   class Champ_Nom extends Champ_Formulaire {
     protected function afficher_corps () {
       $this->afficher_ouverture_commune();
@@ -153,6 +158,48 @@
     }
   }
 
+  // --------------------------------------------------------------------------
+  class Champ_Identifiant extends Champ_Formulaire {
+    public function __construct($id, $script = "", $fonction = "") {
+      parent::__construct($id, $script, $fonction);
+      $this->def_titre("Identifiant");
+      $this->def_obligatoire();
+    }
+    
+    protected function afficher_corps () {
+      $this->afficher_ouverture_commune();
+      echo 'type="text" maxlength="30" ';
+      $affiche = ($this->valeur_definie())? 'value="' . $this->valeur() . '" ' : '';
+      echo $affiche . ' />';
+      if (isset($_GET['err']) && ($_GET['err'] == 'id'))
+        echo "<p class=\"text-danger\">Erreur : identifiant inconnu</p>";
+      if (isset($_GET['err']) && ($_GET['err'] == 'cnx'))
+        echo "<p class=\"text-danger\">Erreur : connexion impossible avec cet identifiant</p>";
+      if (isset($_GET['err']) && ($_GET['err'] == 'act'))
+        echo "<p class=\"text-danger\">Connexion impossible : votre compte a été désactivé</p>";
+    }
+  }
+  
+  // --------------------------------------------------------------------------
+  class Champ_Mot_Passe extends Champ_formulaire {
+    public function __construct($id, $script = "", $fonction = "") {
+      parent::__construct($id, $script, $fonction);
+      $this->def_titre("Mot de passe");
+      $this->def_obligatoire();
+    }
+    
+    protected function afficher_corps () {
+      $this->afficher_ouverture_commune();
+      echo 'type="password" ';
+      $affiche = ($this->valeur_definie())? 'value="' . $this->valeur() . '" ' : '';
+      echo $affiche . ' />';
+      if (isset($_GET['err']) && ($_GET['err'] == 'mdp'))
+        echo "<p class=\"text-danger\">Erreur : mot de passe incorrect</p>";
+      echo '<input type="hidden" id="' . $this->id() . '_crypte" name="' . $this->id() . '_crypte" >';
+    }
+  }
+  
+  // --------------------------------------------------------------------------
   class Champ_Texte extends Champ_Formulaire {
     public $longueur_max = 50;
     
@@ -166,6 +213,7 @@
     }
   }
 
+  // --------------------------------------------------------------------------
   class Champ_Date extends Champ_Formulaire {
     protected function afficher_corps () {
       $this->afficher_ouverture_commune();
@@ -177,6 +225,7 @@
     }
   }
   
+  // --------------------------------------------------------------------------
   class Champ_Zone_Texte extends Champ_Formulaire {
     public $longueur_max = 50;
     public $nombre_lignes = 2;
@@ -191,6 +240,7 @@
     }
   }
   
+  // --------------------------------------------------------------------------
   class Champ_Montant extends Champ_Formulaire {
     public $valeur_min = 0;
     public $valeur_max = 1000;
@@ -203,6 +253,7 @@
     }
   }
   
+  // --------------------------------------------------------------------------
   class Champ_Binaire extends Champ_Formulaire {
     public $texte = "";
     protected function afficher_corps () {

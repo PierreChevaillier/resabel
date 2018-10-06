@@ -75,3 +75,8 @@ p.lead {
 #mentions-legales {
   color: black;
 }
+
+/* --- Resabel V2 */
+#form_cnx form {
+  text-align:center;
+}

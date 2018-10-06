@@ -105,7 +105,7 @@
     
     // Feuille de style locale (screen)
     foreach ($this->feuilles_style as $css)
-      echo "     <link rel=\"stylesheet\" href=\"" . get_include_path() . "/" . $css . "\" media=\"screen\" />\n";
+      echo "      <link rel=\"stylesheet\" href=\"" . get_include_path() . "/" . $css . "\" media=\"screen\" />\n";
     
     // Jquery
     echo "      <script src=\"https://code.jquery.com/jquery-3.3.1.js\" integrity=\"sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=\" crossorigin=\"anonymous\"></script>\n";
@@ -135,15 +135,16 @@ class Page_Simple extends Page {
     parent::__construct($nom_site, $nom_page, $liste_feuilles_style);
     $pp = new Pied_Page();
     $pp->def_titre("Resabel - V2");
-    $this->elements_bas[] = $pp;
+    $this->ajoute_element_bas($pp);
   }
     
   protected function inclure_meta_donnees_open_graph() {
-        //de base : aucune
+    // de base : aucune
   }
     
   protected function definir_elements() {
-    //de base : rien
+    // de base : rien
+ 
   }
 }
   

@@ -4,9 +4,9 @@
   // description : Fichier vide : modele entete
   // copyright (c) 2018 AMP. Tous droits reserves.
   // --------------------------------------------------------------------------
-  // utilisation : php - require_once <nom_-fichier.php>
-  // dependances :
-  // teste avec : PHP 7.1 sur Mac OS 10.11s43 ;
+  // utilisation : php - require_once <chemin_vers_ce_fichier.php>
+  // dependances : 
+  // teste avec : PHP 7.1 sur Mac OS 10.14 ;
   //              PHP 7.0 sur hebergeur web
   // --------------------------------------------------------------------------
   // creation : 17-jun-2018 pchevaillier@gmail.com

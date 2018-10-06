@@ -69,7 +69,7 @@
       </form>
       </center>
       <?php
-        require_once 'php/pied_page.php';
+        require_once 'php/elements_page/generiques/pied_page.php';
         $pp = new Pied_Page();
         $pp->initialiser();
         $pp->afficher();

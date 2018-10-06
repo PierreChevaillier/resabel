@@ -27,13 +27,15 @@
   require_once 'php/elements_page/generiques/champ_formulaire.php';
   
   // ------------------------------------------------------------------------
-  // --- Definition de la classe Formulaire
 
-  class Formulaire extends Element_Page {
+  class Formulaire extends Element {
 
     //protected $page_web = ""; // necessaire pour ajouter les scripts de controle des champs
+    public $message_bouton_validation = "Envoyer ma demande";
     protected $script_traitement = "";
     protected $action = 'a'; // a => ajout (nouvelle saisie) m => modification (MaJ saisie)
+    public $conformation_requise = False;
+    
     protected $id_objet;
     public function def_id_objet($valeur) { $this->id_objet = $valeur; }
     
@@ -88,7 +90,8 @@
     protected function afficher_corps() {
       foreach ($this->champs as $champ)
         $champ->afficher();
-      $this->afficher_acquitement_saisie();
+      if ($this->conformation_requise)
+        $this->afficher_acquitement_saisie();
       $this->afficher_bouton_validation();
     }
   
@@ -126,17 +129,18 @@
     
     protected function afficher_acquitement_saisie() {
       echo '<div class="form-group"><div class="col-sm-offset-2 col-sm-10"><div class="checkbox"><label><input type="checkbox" name="remember" required>';
-      echo "J'ai vérifié les informations saisies dans ce formulaire, elles sont complètes.";
+      echo " J'ai vérifié les informations saisies dans ce formulaire, elles sont complètes.";
       echo '</label></div></div></div>';
     }
     
     protected function afficher_bouton_validation() {
       echo '<div class="form-group"><div class="col-sm-offset-2 col-sm-10">';
-      echo '<input class="btn btn-large btn-primary" type="submit" id="valid" value="Envoyer ma demande">&nbsp;&nbsp;<input class="btn btn-large btn-default" type="reset" id="reset" value="Ré-initialiser la saisie"></div></div>';
+      echo '<input class="btn btn-large btn-primary" type="submit" id="valid" value="'
+        . $this->message_bouton_validation . '">&nbsp;&nbsp;<input class="btn btn-large btn-default" type="reset" id="reset" value="Ré-initialiser la saisie"></div></div>';
       
     }
     protected function afficher_fin() {
-      echo '</form>';
+      echo "\n</form>\n";
     }
   
   }
