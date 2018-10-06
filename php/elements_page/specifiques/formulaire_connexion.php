@@ -9,15 +9,15 @@
   // teste avec : PHP 7.1 sur Mac OS 10.14 ;
   //              PHP 7.0 sur hebergeur web
   // --------------------------------------------------------------------------
-  // creation : 17-jun-2018 pchevaillier@gmail.com
+  // creation : 06-oct-2018  pchevaillier@gmail.com
   // revision :
   // --------------------------------------------------------------------------
   // commentaires :
   // -
   // attention :
-  // -
+  // - 
   // a faire :
-  // -
+  // - script controle saisie : cryptage du mot de passe
   // ==========================================================================
 
   // --- Classes utilisees
@@ -30,7 +30,7 @@
     public function __construct($page) {
       $this->def_titre("Connexion");
       $this->message_bouton_validation = "Connexion";
-      $script_traitement = "";
+      $script_traitement = "php/scripts/identification_verif.php";
       $action = 'a';
       $id = 'form_cnx';
       parent::__construct($page, $script_traitement, $action, $id);
@@ -46,9 +46,9 @@
         $this->ajouter_champ($item);
         
         parent::initialiser();
-    } catch(Exception $e) {
-      die('Exception dans la methode initialiser de la classe Formulaire_Connexion : ' . $e->getMessage());
-    }
+      } catch(Exception $e) {
+        die('Exception dans la methode initialiser de la classe Formulaire_Connexion : ' . $e->getMessage());
+      }
     }
   }
   // ==========================================================================

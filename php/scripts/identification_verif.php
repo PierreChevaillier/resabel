@@ -1,10 +1,9 @@
 <?php
   // ===========================================================================
-  // description: verifie que la informations saisies correspondent bien
-  //              a un membre du club reference dans la base
-  //              si l'utilisateur est bien identifier, affichage page inscription
+  // description: verifie des informations de connexion
+  //              - identification de l'utilisarteur pour la session
   // contexte   : resabel
-  // Copyright (c) 2014-2017 AMP. All rights reserved
+  // copyright (c) 2014-2018 AMP. All rights reserved
   // ---------------------------------------------------------------------------
   // creation: 01-oct-2014 pchevaillier@gmail.com
   // revision: 12-oct-2014 pchevaillier@gmail.com affichage menu
@@ -18,23 +17,16 @@
   // revision: 21-mai-2015 pchevaillier@gmail.com termine si $_POST pas definie
   // revision: 02-jun-2015 pchevaillier@gmail.com restriction membres actifs
   // revision: 25-jul-2017 pchevaillier@gmail.com version 2 - utilisation PDO
+  // revision: 06-oct-2018 pchevaillier@gmail.com reorganisation + nveau formulaire
   // ---------------------------------------------------------------------------
   // commentaires :
-  // - en chantier V2
+  // - en chantier V2 - pas completement teste
   // - les informations de connexion sont stockees dans $_SESSION
   // attention :
   // a faire :
+  // remplacer connexion.php par index.php
   // ===========================================================================
   session_start(); // doit etre la premiere instruction
-
-  // --- classes utilisees
-  
-  //require_once 'php/jour.php';
-  require_once 'php/personne.php';
-//  require_once 'php/permanence.php';
-
-  // --- connection a la base de donnees
-  include 'php/connexion_bdd.php';
 
   unset($_SESSION['login']);
   unset($_SESSION['cdb']);
@@ -44,22 +36,38 @@
   unset($_SESSION['actif']);
   
   // --- recuperation des informations saisies dans le formulaire
-  if (!isset($_POST['identifiant_saisi']) || !isset($_POST['motdepasse_crypte']))
-    exit();
-	
-  $identifiant = mysql_escape_string(stripslashes(trim(utf8_decode($_POST['identifiant_saisi']))));
+  if (!isset($_POST['id']) || !isset($_POST['mdp_crypte']))
+  exit();
+
+  $identifiant = stripslashes(trim(utf8_decode($_POST['id'])));
   $identifiant = strip_tags(strtolower($identifiant));
-  $motdepasse = stripslashes(trim($_POST['motdepasse_crypte']));
+  $motdepasse = stripslashes(trim($_POST['mdp_crypte']));
 
   $erreur_identification = (strlen($identifiant) === 0);
   if ($erreur_identification) {
-    header("location: index.php?err=id");
+    header("location: ../../connexion.php?err=id");
     exit();
   }
   $erreur_mot_passe = false;
+
+  // --------------------------------------------------------------------------
+  // --- classes utilisees
+  set_include_path('./../../');
   
-  // --- verification de l'identite : l'utilisateur doit etre un membre du
-  //     club reference dans la base de donnees, connection en tant que 'club'
+  //require_once 'php/jour.php';
+  require_once 'php/metier/personne.php';
+  //  require_once 'php/permanence.php';
+  
+  // --------------------------------------------------------------------------
+  // --- connection a la base de donnees
+  include 'php/bdd/base_donnees.php';
+  
+  $bdd = Base_donnees::accede();
+
+  // ==========================================================================
+  // --- verification de l'identite :
+  // l'utilisateur doit etre un membre du club reference,
+  // ou connection en tant que 'club'
   
   // Test si connection de type 'club'
   $req_club = "SELECT identifiant, mot_passe, nom FROM club WHERE identifiant = '". $identifiant ."'";
@@ -82,7 +90,7 @@
   }
   
   if ($erreur_mot_passe) {
-    header("location: index.php?err=mp");
+    header("location: ../../connexion.php?err=mdp");
     exit();
   }
   
@@ -93,8 +101,8 @@
   }
 
   // ---------------------------------------------------------------------------
-  // l'identifiant de connextion n'est pas celui du club :
-  // recherche l'identifiant saisi correspond a un membre reference
+  // l'identifiant de connexion n'est pas celui du club :
+  // donc recherche si l'identifiant correspond a un membre reference (et actif)
   
   $requete = "SELECT code, actif, identifiant, connexion, mot_passe, prenom, nom, cdb FROM membres WHERE identifiant = '". $identifiant . "'";
   //echo $requete;
@@ -106,7 +114,7 @@
       if ($donnee->mot_passe != $motdepasse)
         $erreur_mot_passe = true;
       elseif ($donnee->connexion == 0) { // compte non loggable (visiteur)
-        header("location: index.php?err=cnx");
+        header("location: ../../index.php?err=cnx");
         exit();
       } else {
         $utilisateur = utf8_encode($donnee->prenom) . " " . utf8_encode($donnee->nom);
@@ -152,9 +160,9 @@
   // --- Affichage contextuel en fonction du resultat de l'identification
   //     cas d'une identification personnelle (cas du club traite plus haut)
   if ($erreur_identification)
-    header("location: index.php?err=id");
+    header("location: ../../connexion.php?err=id");
   elseif ($erreur_mot_passe)
-    header("location: index.php?err=mp");
+    header("location: ../../connexion.php?err=mdp");
   elseif (!$_SESSION['actif'])
     header("location: page_tableau_journalier_sorties.php?ta=os&d=" . Jour::aujourdhui()->jour);
   elseif ($permanence) {

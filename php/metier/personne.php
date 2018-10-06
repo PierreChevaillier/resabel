@@ -1,24 +1,26 @@
 <?php
-  // ------------------------------------------------------------------------
+  // ==========================================================================
+  // contexte : Resabel - systeme de REServation de Bateaux En Ligne
   // description: definition de la classe Personne
-  // utilisation : php - fichier inclu
+  // utilisation : php - require_once
   // teste avec : PHP 5.5.3 sur Mac OS 10.11, PHP 7.0 sur serveur OVH
-  // contexte   : resabel
-  // Copyright (c) 2014-2017 AMP
+  // Copyright (c) 2014-2018 AMP. Tous droits reserves.
   // ------------------------------------------------------------------------
   // creation: 28-fev-2015 pchevaillier@gmail.com
   // revision: 29-avr-2015 pchevaillier@gmail.com, recherche information
   // revision: 17-aug-2016 pchevaillier@gmail.com, nouvel structure table membre
   // revision: 19-nov-2016 pchevaillier@gmail.com, ajout recherche_membres
   // revision: 30-nov-2016 pchevaillier@gmail.com, test si de permanance
+  // revision: 05-oct-2018 pchevaillier@gmail.com  chemin vers utilitaires
   // ------------------------------------------------------------------------
   // commentaires :
   // attention :
   // a faire :
-  // lever une erreur si donnee manquante (chef de bord)
+  // - revoir les requetes a la base de donnees
+  // - lever une erreur si donnee manquante (chef de bord)
   // -----------------------------------------------------------------------
 
-  include_once 'php/format_donnees.php';
+  require_once 'php/utilitaires/format_donnees.php';
 
   class Personne {
     public $code = "";

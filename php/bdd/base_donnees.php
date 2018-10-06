@@ -52,7 +52,7 @@
     
     private function initialise($base_locale) {
       $this->driver = 'mysql';
-      include 'informations_connexion.php'
+      include 'informations_connexion.php';
     }
     
      private function connecte() {
