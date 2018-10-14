@@ -28,7 +28,7 @@
   class Formulaire_Connexion extends Formulaire {
     
     public function __construct($page) {
-      $this->def_titre("Connexion");
+      //$this->def_titre("Connexion");
       $this->message_bouton_validation = "Connexion";
       $script_traitement = "php/scripts/identification_verif.php";
       $action = 'a';
@@ -42,7 +42,7 @@
         $item = new Champ_Identifiant("id");
         $this->ajouter_champ($item);
         
-        $item = new Champ_Mot_Passe("mdp");
+        $item = new Champ_Mot_Passe("mdp", "js/controle_identification.js");
         $this->ajouter_champ($item);
         
         parent::initialiser();

@@ -19,7 +19,7 @@
   // attention :
   // -
   // a faire :
-  // generer le code du script de controle : appel de tous les scripts de controle des champs
+  // - verifier interet de echo '<input type="hidden" name="id" value="' . $this->id_objet . '" />';
   // ------------------------------------------------------------------------
 
   // --- Classes utilisees
@@ -35,9 +35,6 @@
     protected $script_traitement = "";
     protected $action = 'a'; // a => ajout (nouvelle saisie) m => modification (MaJ saisie)
     public $conformation_requise = False;
-    
-    protected $id_objet;
-    public function def_id_objet($valeur) { $this->id_objet = $valeur; }
     
     private $champs = array();
     public function champs() { return $this->champs;}
@@ -56,11 +53,11 @@
       $this->champs[$champ->id()] = $champ;
     }
   
-    public function __construct($page, $script_traitement, $action = 'a', $id_object="") {
+    public function __construct($page, $script_traitement, $action, $id_objet) {
       $this->def_page($page);
       $this->script_traitement = $script_traitement;
       $this->action = $action;
-      $this->id_objet = $id_objet;
+      $this->def_id($id_objet);
     }
   
     public function definir_valeur_champs($valeurs) {
@@ -76,15 +73,15 @@
       }
       // ajout du script de verification de la saisie a l'entete de la page web
       $code = $this->generer_script_validation();
-      $this->page_web->elements_entete[] = $code;
+      $this->page->ajoute_element_entete($code);
     }
   
     protected function afficher_debut() {
       if ($this->a_un_titre())
         echo '<div class="well well-sm"><p class="lead">' . $this->titre() . '</p></div>';
-      echo '<form class="form-horizontal" role="form"  name="formulaire" onsubmit="return verification_formulaire(this)"  method="post" action="' . $this->script_traitement . '">';
+      echo '<form class="form-horizontal" role="form" id="' . $this->id() . '" name="' . $this->id() . '" onsubmit="return verification_formulaire(this)"  method="post" action="' . $this->script_traitement . '">';
       echo '<input type="hidden" name="a" value="' . $this->action . '" />';
-      echo '<input type="hidden" name="id" value="' . $this->id_objet . '" />';
+      //echo '<input type="hidden" name="id" value="' . $this->id_objet . '" />';
     }
   
     protected function afficher_corps() {
@@ -134,9 +131,11 @@
     }
     
     protected function afficher_bouton_validation() {
-      echo '<div class="form-group"><div class="col-sm-offset-2 col-sm-10">';
+      echo '<div class="form-group" id="btn_form">'; //<div class="col-sm-offset-2 col-sm-10">';
       echo '<input class="btn btn-large btn-primary" type="submit" id="valid" value="'
-        . $this->message_bouton_validation . '">&nbsp;&nbsp;<input class="btn btn-large btn-default" type="reset" id="reset" value="Ré-initialiser la saisie"></div></div>';
+      . $this->message_bouton_validation . '"></div>';
+      echo '<div class="form-group" id="btn_form">'; //<div class="col-sm-offset-2 col-
+      echo '<input class="btn btn-large btn-default" type="reset" id="reset" value="Ré-initialiser la saisie"></div>'; // '</div>';
       
     }
     protected function afficher_fin() {

@@ -31,6 +31,11 @@
     public function def_titre($titre) { $this->titre = $titre; }
     public function a_un_titre() { return strlen($this->titre) > 0; }
   
+    protected $id_objet = '';
+    public function def_id_objet($valeur) { $this->id_objet = $valeur; }
+    public function def_id($valeur) { $this->id_objet = $valeur; }
+    public function id() { return $this->id_objet; }
+    
     public abstract function initialiser();
 
     final public function afficher() {

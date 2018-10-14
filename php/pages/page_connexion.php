@@ -37,8 +37,8 @@
 
     public function __construct($nom_site, $nom_page, $feuilles_style = null) {
       parent::__construct($nom_site, $nom_page, $feuilles_style);
-      $this->javascripts[] = "scripts/controle_identification.js";
-      $this->javascripts[] = "scripts/md5.js";
+      //$this->javascripts[] = "js/controle_identification.js";
+      $this->javascripts[] = "js/md5.js";
     }
     
     protected function inclure_meta_donnees_open_graph() {

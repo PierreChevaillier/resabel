@@ -31,18 +31,18 @@
   
     public $javascripts = array();
 
-    // --- Elements dans la section <head> de la page
+    // --- Elements (code_html) dans la section <head> de la page
     private $elements_entete = array();
-    public function ajoute_element_entete($element) {
-      $this->elements_entete[] = $element;
-      $element->page = $this;
+    public function ajoute_element_entete($code_html) {
+      $this->elements_entete[] = $code_html;
+     // $element->def_page($this);
     }
 
     // --- Elements en debut du <body>
     private $elements_haut = array();
     public function ajoute_element_haut($element) {
       $this->elements_haut[] = $element;
-      $element->page = $this;
+      $element->def_page($this);
     }
 
     protected $feuilles_style = array();

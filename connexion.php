@@ -3,7 +3,7 @@
     <?php
       // ======================================================================
       // contexte : Resabel - systeme de REServation de Bateaux En Ligne
-      // description : page pour la connexion au system : identification
+      // description : page pour la connexion au systeme : identification
       // ----------------------------------------------------------------------
       // utilisation : navigateur web
       // dependances :

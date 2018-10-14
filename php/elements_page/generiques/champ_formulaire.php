@@ -1,9 +1,13 @@
 <?php
-  // ========================================================================
+  // ==========================================================================
+  // contexte : Resabel - systeme de REServAtion de Bateaux En Ligne
   // description : definition des classes de champs de formulaire (classiques)
-  // utilisation : elements d'un formulaire simple
-  // teste avec  : PHP 5.5.3 sur Mac OS 10.11
-  // contexte    : classe Formulaire
+  //               = elements d'un formulaire simple (classe Formulaire)
+  // utilisation : php - require_once <nom_-fichier.php'
+  // dependances : classe Formulaire, scripts javascripts
+  // teste avec : PHP 5.5.3 sur Mac OS 10.11 ;
+  //              PHP 7.1 sur Mac OS 10.14  (depuis 14-oct-2018)
+  //              PHP 7.0 sur hebergeur web
   // Copyright (c) 2017-2018 AMP. Tous droits reserves.
   // ------------------------------------------------------------------------
   // creation : 21-oct-2017 pchevaillier@gmail.com
@@ -11,6 +15,8 @@
   // revision : 10-fev-2018 pchevaillier@gmail.com autres champs
   // revision : 11-fev-2018 pchevaillier@gmail.com valeur, obligatoire
   // revision : 26-aug-2018 pchevaillier@gmail.com Resabel V2 element -> page (web)
+  // revision : 14-oct-2018 pchevaillier@gmail.com class Champ_Mot_Passe
+  //            id dans Element ; suppression utlisation grille bootstrap
   // ------------------------------------------------------------------------
   // commentaires :
   // attention :
@@ -41,14 +47,6 @@
       return True;
     }
     
-    // --- Id et nom
-    protected $identifiant = "";
-    public function id() {
-      return $this->identifiant;
-    }
-    
-    //protected $nom_variable = "";
-    
     // --- Proprietes relative au controle de la saisie du champ
     private $obligatoire = False;
     public function obligatoire() { return $this->obligatoire; }
@@ -59,12 +57,12 @@
     
     //  --- Constructeurs
     public function __construct($id, $script = "", $fonction = "") {
-      $this->identifiant = $id;
+      $this->def_id($id);
       $this->script_controle = $script;
       $this->fonction_controle_saisie = $fonction;
     }
     
-    // --- Defintion des operations abstraites de la super-classe
+    // --- Definition des operations abstraites de la super-classe
     public function initialiser() {
       if ((strlen($this->script_controle) > 0) && ($this->page))
         $this->page->javascripts[] = $this->script_controle;
@@ -72,7 +70,8 @@
     
     protected function afficher_debut() {
       $marque = ($this->obligatoire())? "*": "";
-      echo "\n" . '<div class="form-group"><label class="control-label col-sm-2" for="' . $this->id() . '">' . $this->titre() . ' ' . $marque . '</label><div class="col-sm-10">';
+      //echo "\n" . '<div class="form-group"><label class="control-label col-sm-2" for="' . $this->id() . '">' . $this->titre() . ' ' . $marque . '</label><div class="col-sm-10">';
+      echo "\n" . '<div class="form-group"><label class="control-label" for="' . $this->id() . '">' . $this->titre() . ' ' . $marque . '</label><div>';
     }
  
     protected function afficher_ouverture_commune() {
@@ -182,7 +181,7 @@
   
   // --------------------------------------------------------------------------
   class Champ_Mot_Passe extends Champ_formulaire {
-    public function __construct($id, $script = "", $fonction = "") {
+    public function __construct($id, $script, $fonction = 'crypte_mdp') {
       parent::__construct($id, $script, $fonction);
       $this->def_titre("Mot de passe");
       $this->def_obligatoire();
@@ -191,6 +190,8 @@
     protected function afficher_corps () {
       $this->afficher_ouverture_commune();
       echo 'type="password" ';
+      $params = '(this, ' . $this->id() . ', ' . $this->id() . '_crypte)"';
+      //echo 'onchange="' . $this->fonction_controle_saisie . $params . ' ';
       $affiche = ($this->valeur_definie())? 'value="' . $this->valeur() . '" ' : '';
       echo $affiche . ' />';
       if (isset($_GET['err']) && ($_GET['err'] == 'mdp'))

@@ -25,14 +25,6 @@ body {
   font-size:medium;
 }
 
-
-fieldset.identification {
-  padding: 10px 0px 10px 0px;
-  width: 300px;
-  /* text-align:left; */
-  /* font-size:100%; */
-}
-
 footer {
   background-color:#C0C0C0;
   color:black;
@@ -40,6 +32,7 @@ footer {
   font-size: small;
 }
 
+/*
 h1, h2, h3, h4 {
   color: rgb(63,177,208);
 }
@@ -60,7 +53,11 @@ input.form-control {
 p.lead {
   color: rgb(221,52,47);
 }
+*/
 
+.form-group {
+   text-align: left;
+}
 
 /* --- Elements identifies --------------------------------------------------- */
 
@@ -77,6 +74,15 @@ p.lead {
 }
 
 /* --- Resabel V2 */
-#form_cnx form {
-  text-align:center;
+/* formulaire identification/ connexion */
+
+#form_cnx {
+  margin: auto;
+  width: 50%;
+  text-align: center;
 }
+
+#btn_form {
+  text-align: center;
+}
+

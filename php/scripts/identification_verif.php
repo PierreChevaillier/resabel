@@ -143,7 +143,6 @@
           unset($_SESSION['admin']);
       }
     } else {
-      echo 'pas trouve ' . $identifiant;
       $erreur_identification = true;
     }
   } catch (PDOException  $e) {
