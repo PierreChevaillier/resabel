@@ -26,8 +26,14 @@
   // ==========================================================================
   class Menu_Application extends Menu_Navigation {
     
+    public function initialiser() {}
+    
     protected function afficher_menu_un() {
-      echo '<li id="videos"><a href="tests/page_vide.php">VIde 1</a></li>';
+      echo '<li id="un"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Menu un<span class="caret"></span></a>';
+      echo '<ul class="dropdown-menu">';
+      echo '<li id="un"><a href="tests/vide.php">Vide 1</a></li>';
+      echo '<li id="un"><a href="tests/vide.php">Vide 2</a></li>';
+      echo '</ul></li>';
     }
     
     protected function afficher_corps() {

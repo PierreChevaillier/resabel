@@ -24,7 +24,6 @@
   // - les informations de connexion sont stockees dans $_SESSION
   // attention :
   // a faire :
-  // remplacer connexion.php par index.php
   // ===========================================================================
   session_start(); // doit etre la premiere instruction
 
@@ -45,7 +44,7 @@
 
   $erreur_identification = (strlen($identifiant) === 0);
   if ($erreur_identification) {
-    header("location: ../../connexion.php?err=id");
+    header("location: ../../index.php?err=id");
     exit();
   }
   $erreur_mot_passe = false;
@@ -90,7 +89,7 @@
   }
   
   if ($erreur_mot_passe) {
-    header("location: ../../connexion.php?err=mdp");
+    header("location: ../../index.php?err=mdp");
     exit();
   }
   
@@ -159,9 +158,9 @@
   // --- Affichage contextuel en fonction du resultat de l'identification
   //     cas d'une identification personnelle (cas du club traite plus haut)
   if ($erreur_identification)
-    header("location: ../../connexion.php?err=id");
+    header("location: ../../index.php?err=id");
   elseif ($erreur_mot_passe)
-    header("location: ../../connexion.php?err=mdp");
+    header("location: ../../index.php?err=mdp");
   elseif (!$_SESSION['actif'])
     header("location: page_tableau_journalier_sorties.php?ta=os&d=" . Jour::aujourdhui()->jour);
   elseif ($permanence) {
@@ -170,7 +169,8 @@
     $jperm = mktime(0, 0, 0, date("m"), date("d") + $j - $j0, date("Y"));
     header("location: page_tableau_journalier_sorties.php?ta=os&d=" . $jperm);
   } else {
-    header("location: page_inscription_individuelle.php");
+//    header("location: ../../page_inscription_individuelle.php");
+    header("location: ../../page_temporaire.php");
   }
   exit();
 ?>
