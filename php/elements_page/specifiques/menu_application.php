@@ -5,11 +5,11 @@
   // copyright (c) 2018 AMP. Tous droits reserves.
   // --------------------------------------------------------------------------
   // utilisation : php - require_once <nom_-fichier.php>
-  // dependances :
+  // dependances : bootstrap 4.x
   // teste avec : PHP 7.1 sur Mac OS 10.14 ;
   //              PHP 7.0 sur hebergeur web
   // --------------------------------------------------------------------------
-  // creation : 14-oct-2018  pchevaillier@gmail.com
+  // creation : 14-oct-2018 pchevaillier@gmail.com
   // revision :
   // --------------------------------------------------------------------------
   // commentaires :
@@ -17,7 +17,9 @@
   // attention :
   // - 
   // a faire :
-  // - script controle saisie : cryptage du mot de passe
+  // - variables pour acornyme club et lien home-page
+  // - affichage nom user (? ou dans barre au dessus, comme dans France2018)
+  // - ajouter logique acces aux items du menu
   // ==========================================================================
 
   // --- Classes utilisees
@@ -28,20 +30,38 @@
     
     public function initialiser() {}
     
-    protected function afficher_menu_un() {
-      echo '<li id="un"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Menu un<span class="caret"></span></a>';
-      echo '<ul class="dropdown-menu">';
-      echo '<li id="un"><a href="tests/vide.php">Vide 1</a></li>';
-      echo '<li id="un"><a href="tests/vide.php">Vide 2</a></li>';
-      echo '</ul></li>';
+    private function afficher_menu_inscription() {
+      echo ' <li class="nav-item dropdown">';
+      echo '<a class="nav-link dropdown-toggle" href="#" id="mnu_inscr" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Inscriptions</a>';
+      echo ' <div class="dropdown-menu" aria-labelledby="mnu-inscr">';
+      echo '<a class="dropdown-item" href="tests/vide.php">Individuelle</a>';
+      echo '<a class="dropdown-item" href="tests/vide.php">Equipage</a>';
+      echo '</div></li>';
+    }
+    
+    private function afficher_menu_administration() {
+      echo ' <li class="nav-item dropdown">';
+      echo '<a class="nav-link dropdown-toggle" href="#" id="mnu_admin" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Administration</a>';
+      echo ' <div class="dropdown-menu" aria-labelledby="mnu-admin">';
+      echo '<a class="dropdown-item" href="tests/vide.php">Equipe permanences</a>';
+      echo '<a class="dropdown-item" href="tests/vide.php">Visiteurs</a>';
+      echo '</div></li>';
     }
     
     protected function afficher_corps() {
-      echo '<li id="index"><a href="index.php">Accueil</a></li>';
-      $this->afficher_menu_un();
-      
-      echo '<li id="contacts"><a href="tests/page_vide.php">Contacts</a></li>';
-      //echo "<li><a href=\"partenaires.php\">Partenaires</a></li>";
+      echo '<li class="nav-item"><a class="nav-link" href="#">Accueil</a></li>';
+
+      $this->afficher_menu_inscription();
+
+      echo '<li class="nav-item"><a class="nav-link" href="#">Sorties</a></li>';
+      echo '<li class="nav-item"><a class="nav-link" href="#">Permanences</a></li>';
+      echo '<li class="nav-item"><a class="nav-link" href="#">Indisponibilités</a></li>';
+      echo '<li class="nav-item"><a class="nav-link" href="#">Membres</a></li>';
+      echo '<li class="nav-item"><a class="nav-link" href="#">Bateaux</a></li>';
+
+      $this->afficher_menu_administration();
+
+      echo '<li class="nav-item" id="contacts"><a class="nav-link"  href="index.php">Déconnexion</a></li>';
     }
     
   }

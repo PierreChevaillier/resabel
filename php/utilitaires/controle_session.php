@@ -20,6 +20,7 @@
   // -
   // a faire :
   // - remplacer utilisateur par login ?
+  // - creer un objet profil (singleton ?)
   // ==========================================================================
   session_start();
   if (!isset($_SESSION['utilisateur']) && !isset($_SESSION['club'])) {

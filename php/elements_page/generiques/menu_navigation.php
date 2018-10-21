@@ -5,7 +5,7 @@
   // copyright (c) 2018 AMP. Tous droits reserves.
   // --------------------------------------------------------------------------
   // utilisation : php - require_once <chemin_vers_ce_fichier.php>
-  // dependances : bootstrap
+  // dependances : bootstrap 4.1
   // teste avec : PHP 7.1 sur Mac OS 10.14 ;
   //              PHP 7.0 sur hebergeur web (pas encore)
   // --------------------------------------------------------------------------
@@ -30,26 +30,27 @@
       $this->def_page($page);
     }
     
+    
     protected function afficher_debut() {
-      echo "        <nav class=\"navbar navbar-default\" role=\"navigation\">\n          <div class=\"container-fluid\">\n";
-      
-      // le bouton du menu sur smartphone
-      echo "            <div class=\"navbar-header\">\n<button type=\"button\" class=\"navbar-toggle collapsed\" data-toggle=\"collapse\"   data-target=\"#menu_nav\" aria-expanded=\"false\">";
-      echo "<span class=\"glyphicon glyphicon-menu-hamburger\" aria-hidden=\"true\"></span><span class=\"sr-only\">Menu</span></button>\n";
-      /* echo "Menu</button>"; */
+      echo "        <nav class=\"navbar navbar-expand-lg navbar-light\" role=\"navigation\">\n";
+    
+      // Lien vers le site web du club
       echo "\n<a class=\"navbar-brand\" href=\"http://avironplougonvelin.fr\" target=\"_new\">AMP</a>\n";
       
-      // texte modifiable par script
-      //echo " <p class=\"navbar-text\" id=\"menuDynamiqueInfo\"></p>";
-      echo "\n</div>\n";
+      // toggler
+      echo ' <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">';
+      echo '<span class="navbar-toggler-icon"></span>';
+      echo '</button>';
+      
+      echo '<div class="collapse navbar-collapse" id="menu_nav">';
+      //echo "\n</div>\n";
       
       // la barre de menu
-      echo "<div class=\"collapse navbar-collapse\" id=\"menu_nav\">\n";
-      echo "<ul class=\"nav navbar-nav\" id=\"menu_items\">\n";
+      echo "\n" . '<ul class="navbar-nav mr-auto">';
     }
     
     protected function afficher_fin() {
-      echo "\n</ul>\n</div>\n</div>\n</nav>\n";
+      echo "\n</ul>\n</div>\n</nav>\n";
     }
     
   }
