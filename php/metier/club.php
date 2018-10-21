@@ -23,9 +23,11 @@
     private $code = '';
     public function sigle() { return $this->code; }
     
-    private $nom = "";
+    private $nom = ""; // utf8
     public function nom() { return $this->nom; }
     public function def_nom($valeur) { $this->code = $valeur; }
+    
+    private $mot_passe = '';
     
     public $site_principal_activite = null; // Site_Activite
     public $site_web_principal = null; // Site_Web
