@@ -49,14 +49,14 @@
     }
     
     protected function afficher_corps() {
-      echo '<li class="nav-item"><a class="nav-link" href="#">Accueil</a></li>';
+      echo '<li class="nav-item"><a class="nav-link" href="page_temporaire.php">Accueil</a></li>';
 
       $this->afficher_menu_inscription();
 
       echo '<li class="nav-item"><a class="nav-link" href="#">Sorties</a></li>';
       echo '<li class="nav-item"><a class="nav-link" href="#">Permanences</a></li>';
       echo '<li class="nav-item"><a class="nav-link" href="#">Indisponibilités</a></li>';
-      echo '<li class="nav-item"><a class="nav-link" href="#">Membres</a></li>';
+      echo '<li class="nav-item"><a class="nav-link" href="membre.php">Membres</a></li>';
       echo '<li class="nav-item"><a class="nav-link" href="#">Bateaux</a></li>';
 
       $this->afficher_menu_administration();

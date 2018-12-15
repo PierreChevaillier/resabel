@@ -69,10 +69,11 @@
       $this->def_titre($nom_site . " - " . $nom_page);
       if ($liste_feuilles_style != null)
         $this->feuilles_style = $liste_feuilles_style;
+      $this->definir_elements();
     }
 	
   public function initialiser() {
-    $this->definir_elements();
+    //$this->definir_elements();
     foreach ($this->elements_haut as $e) $e->initialiser();
     foreach ($this->elements_bas as $e) $e->initialiser();
     foreach ($this->contenus as $e) $e->initialiser();

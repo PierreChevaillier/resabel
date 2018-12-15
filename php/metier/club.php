@@ -10,7 +10,7 @@
   //              PHP 7.0 sur hebergeur web
   // --------------------------------------------------------------------------
   // creation : 19-oct-2018 pchevaillier@gmail.com
-  // revision :
+  // revision : 08-dec-2018 pchevaillier@gmail.com
   // --------------------------------------------------------------------------
   // commentaires :
   // attention :
@@ -20,8 +20,11 @@
   // ==========================================================================
 
   class Club {
-    private $code = '';
-    public function sigle() { return $this->code; }
+    private $code = 0;
+    public function def_code($valeur) { $this->code = $valeur;}
+    
+    public $identifiant = "";
+    public function sigle() { return $this->identifiant; }
     
     private $nom = ""; // utf8
     public function nom() { return $this->nom; }

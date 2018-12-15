@@ -59,7 +59,7 @@
       // infos temporaires
       
       // formulaire connexion
-      $formulaire = new Formulaire_Connexion($this->nom_page);
+      $formulaire = new Formulaire_Connexion($this);
       $this->ajoute_contenu($formulaire);
     }
   }

@@ -29,7 +29,7 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `rsbl_club` (
-  `identifiant` varchar(10) COLLATE utf8_unicode_ci NOT NULL,
+  `code` varchar(10) COLLATE utf8_unicode_ci NOT NULL,
   `mot_passe` varchar(100) NOT NULL,
   `nom` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
   `code_commune` int(5) NOT NULL,
@@ -46,7 +46,7 @@ CREATE TABLE `rsbl_club` (
 -- Index pour la table `rsbl_club`
 --
 ALTER TABLE `rsbl_club`
-  ADD PRIMARY KEY (`identifiant`);
+  ADD PRIMARY KEY (`code`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
