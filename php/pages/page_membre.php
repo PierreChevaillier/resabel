@@ -7,7 +7,7 @@
   // --------------------------------------------------------------------------
   // utilisation : php - require_once <nom_-fichier.php'
   // dependances :
-  // teste avec : PHP 7.1sur Mac OS 10.14 ; PHP 7.0 sur hebergeur web
+  // teste avec : PHP 7.1 sur Mac OS 10.14 ; PHP 7.0 sur hebergeur web
   // --------------------------------------------------------------------------
   // creation : 06-dec-2018 pchevaillier@gmail.com
   // revision :
@@ -29,7 +29,7 @@
   
   // --------------------------------------------------------------------------
   // --- connection a la base de donnees
-  include 'php/bdd/base_donnees.php';
+  //include 'php/bdd/base_donnees.php';
   
   require_once 'php/bdd/enregistrement_personne.php';
   
@@ -58,8 +58,7 @@
       if (isset($_GET['usr']))
         $code_membre = $_GET['usr'];
       else
-        $code_membre = $_SESSION['login'];
-      echo $code_membre . "\n";
+        $code_membre = $_SESSION['usr'];
       
       $membre = new Personne($code_membre);
       

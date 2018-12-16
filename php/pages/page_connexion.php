@@ -6,11 +6,10 @@
   // --------------------------------------------------------------------------
   // utilisation : php - require_once <nom_-fichier.php'
   // dependances :
-  // teste avec : PHP 5.5.3 sur Mac OS 10.11 ;
-  //              PHP 7.0 sur hebergeur web
+  // teste avec : PHP 7.1 sur Mac OS 10.14 ; PHP 7.0 sur hebergeur web
   // --------------------------------------------------------------------------
   // creation : 17-jun-2018 pchevaillier@gmail.com
-  // revision :
+  // revision : 15-dec-2018 pchevaillier@gmail.com club parametrable
   // --------------------------------------------------------------------------
   // commentaires :
   // -
@@ -46,7 +45,9 @@
     
     public function definir_elements() {
       $element = new Entete_Connexion();
-      $element->def_titre("AMP <br /> Accès à Resabel");
+      //$nom_club = isset($_GET['n_clb'])? $_GET['n_clb']: "AMP";
+      $titre = Site_Web::accede()->sigle();
+      $element->def_titre($titre. " <br /> Accès à Resabel");
       $this->ajoute_element_haut($element);
       
       foreach ($this->informations_temporaires as $info) {
@@ -56,7 +57,7 @@
       $messages_erreur = new Element_Code();
       $this->ajoute_contenu($messages_erreur);
       
-      // infos temporaires
+      // infos temporaires pour le club
       
       // formulaire connexion
       $formulaire = new Formulaire_Connexion($this);

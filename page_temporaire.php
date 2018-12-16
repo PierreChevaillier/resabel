@@ -24,17 +24,28 @@
       
       set_include_path('./');
       
+      // --- connection a la base de donnees
+      include 'php/bdd/base_donnees.php';
+      
+      // --- Information sur le site Web
+      require_once 'php/bdd/enregistrement_site_web.php';
+      
+      if (isset($_SESSION['swb']))
+        new Enregistrement_site_web($_SESSION['swb']);
+
+      
       // --- Classe definissant la page a afficher
       require_once 'php/elements_page/specifiques/page_menu.php';
 
       // --- Classes des elements de la page
       require_once 'php/elements_page/generiques/element.php';
-
+      
       // ----------------------------------------------------------------------
       // --- Creation dynamique de la page
       $feuilles_style = array();
       $feuilles_style[] = "css/resabel_ecran.css";
-      $page = new Page_Menu("AMP - Resabel", "temporaire", $feuilles_style);
+      $nom_site = Site_Web::accede()->sigle() . " Resabel";
+      $page = new Page_Menu($nom_site, "temporaire", $feuilles_style);
       
       $info = new Element_Code();
       $code_html = "<div class=\"alert alert-info\" role=\"alert\">Page temporaire</div>";

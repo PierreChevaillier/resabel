@@ -14,7 +14,7 @@
   // --------------------------------------------------------------------------
   // commentaires :
   // - en chantier : pas fonctionnel
-  // - lire, ajouter, modifier, supprimer, existe, nombre, collecter, verfier_xxx
+  // - lire, ajouter, modifier, supprimer, tester_exist, compter, collecter, verfier_xxx
   // attention :
   // - 
   // a faire :

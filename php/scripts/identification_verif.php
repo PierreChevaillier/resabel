@@ -18,6 +18,7 @@
   // revision: 02-jun-2015 pchevaillier@gmail.com restriction membres actifs
   // revision: 25-jul-2017 pchevaillier@gmail.com version 2 - utilisation PDO
   // revision: 06-oct-2018 pchevaillier@gmail.com reorganisation + nveau formulaire
+  // revision: 06-oct-2018 pchevaillier@gmail.com reorganisation + nveau formulaire
   // ---------------------------------------------------------------------------
   // commentaires :
   // - en chantier V2 - pas completement teste
@@ -27,12 +28,29 @@
   // ===========================================================================
   session_start(); // doit etre la premiere instruction
 
-  unset($_SESSION['login']);
-  unset($_SESSION['cdb']);
-  unset($_SESSION['club']);
-  unset($_SESSION['perm']);
-  unset($_SESSION['admin']);
-  unset($_SESSION['actif']);
+  // Les variables suivantes sont utilisees a partir d'ici
+  // Variables toujours definies
+  unset($_SESSION['clb']); // identifiant du club
+  unset($_SESSION['n_clb']); // nom du club p.ex. AMP
+  
+  unset($_SESSION['prs']); // set (=true) si session 'perso' unset : session 'club'
+  
+  // les variables suivantes ne sont definies que si session 'perso'
+  unset($_SESSION['usr']); // si session perso: code membre personne connectee
+  unset($_SESSION['n_usr']); // si session perso: code usage membre personne connectee
+ 
+  unset($_SESSION['act']); // personne connectee active (cf. classe Personne)
+  unset($_SESSION['cdb']); // personne connectee est chef de bord
+  unset($_SESSION['prm']); // personne connectee est de permanence
+  unset($_SESSION['adm']); // personne connectee est administatrice de resabel
+  
+  if (isset($_GET['c']))
+    $_SESSION['clb'] = $_GET['c'];
+  if (isset($_GET['n_clb']))
+    $_SESSION['n_clb'] = $_GET['n_clb'];
+  
+  if (isset($_GET['s']))
+    $_SESSION['swb'] = $_GET['s'];
   
   // --- recuperation des informations saisies dans le formulaire
   if (!isset($_POST['id']) || !isset($_POST['mdp_crypte']))
@@ -72,7 +90,7 @@
   // l'utilisateur doit etre un membre du club reference,
   // ou connection en tant que 'club'
   
-  // Test si connection de type 'club'
+  // Test si connection de type 'club' avec bon identifiant et mot de passe du club
   $club = new Club(0);
   $club->identifiant = $identifiant;
   $enreg_club = new Enregistrement_Club();
@@ -81,7 +99,7 @@
   try {
     $session_club = $enreg_club->verifier_identite($motdepasse);
   } catch (Erreur_Mot_Passe_Club $e) {
-    // l'identifaint est bien celui du club, mais ce n'est le bon mot de passe
+    // l'identifiant est bien celui du club, mais ce n'est le bon mot de passe
     header("location: ../../index.php?err=mdp");
     exit();
   } catch (Erreur_Club_Introuvable $e) {
@@ -89,8 +107,10 @@
   }
   
   if ($session_club) {
-    $_SESSION['utilisateur'] = utf8_encode($club->nom());
-    $_SESSION['club'] = $club->identifiant;
+    if (!isset($_GET['clb'])) {
+      $_SESSION['clb'] = $club->code();
+      $_SESSION['n_clb'] = utf8_encode($club->nom());
+    }
     header("location: page_tableau_journalier_sorties.php?ta=os");
     exit();
   }
@@ -117,6 +137,7 @@
   }
   
   if ($session_personne) {
+    $_SESSION['prs'] = true;
     if (!$personne->est_autorisee_connecter()) {
       // Personne non autorisee a se connecter
       header("location: ../../index.php?err=cnx");
@@ -124,10 +145,10 @@
     }
     // utilisateur reference et autorise a se connecter
     $utilisateur = $personne->prenom . " " . $personne->nom;
-    $_SESSION['login'] = $personne->code();
-    $_SESSION['utilisateur'] = $utilisateur;
+    $_SESSION['usr'] = $personne->code();
+    $_SESSION['n_usr'] = $utilisateur;
     $_SESSION['cdb'] = $personne->est_chef_de_bord();
-    $_SESSION['active'] = $personne->est_active(); // active = possibilite de s'inscrire
+    $_SESSION['act'] = $personne->est_active(); // active = possibilite de s'inscrire
   
     $enreg_personne->modifier_date_derniere_connexion();
     
@@ -138,17 +159,13 @@
      $permanence = $perm->a_comme_responsable($p);
      */
      if ($permanence)
-      $_SESSION['perm'] = true;
-     else
-     unset($_SESSION['perm']);
+      $_SESSION['prm'] = true;
   
     // Teste si l'utilisateur est administrateur du systeme d'information
     $admin = $enreg_personne->recherche_si_admin();
     if ($admin)
-      $_SESSION['admin'] = true;
-    else
-      unset($_SESSION['admin']);
-    echo "Admin: " . $admin;
+      $_SESSION['adm'] = true;
+    //echo "Admin: " . $admin;
   }
   
   // --------------------------------------------------------------------------
@@ -158,7 +175,7 @@
     header("location: ../../index.php?err=cnx");
   elseif ($erreur_mot_passe)
     header("location: ../../index.php?err=mdp");
-  elseif (!$_SESSION['active'])
+  elseif (!$_SESSION['act'])
     header("location: page_tableau_journalier_sorties.php?ta=os&d=" . Jour::aujourdhui()->jour);
   elseif ($permanence) {
     $j0 = date("N");

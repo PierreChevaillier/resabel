@@ -25,8 +25,8 @@
   class Personne {
     private $code = "";
     public $identifiant = "";
-    private $active = true; // actif = possibilite de pratiquer une activite
-    private $autorisee_connecter = true;
+    private $est_active = true; // actif = possibilite de pratiquer une activite
+    private $est_autorisee_connecter = true;
     public $niveau = 0;
     public $genre = "F";
     public $mot_passe = "";
@@ -38,7 +38,7 @@
     public $telephone = "";
     public $telephone2 = "";
     public $courriel = "";
-    private $chef_de_bord = false;
+    private $est_chef_de_bord = false;
     public $date_derniere_connexion = "0000-00-00 00:00:00";
     public $num_licence = "";
 	
@@ -49,18 +49,18 @@
     public function def_code($valeur) { $this->code = $valeur; }
     public function code() { return $this->code; }
 	
-    public function def_chef_de_bord($valeur) {
-      $this->chef_de_bord = ($valeur == 1);
+    public function def_chef_de_bord($valeur) {  // pas un 'setter' classique
+      $this->est_chef_de_bord = ($valeur == 1);
     }
-    public function est_chef_de_bord() { return $this->chef_de_bord; }
+    public function est_chef_de_bord() { return $this->est_chef_de_bord; }
     
-    public function def_active($valeur) {
-      $this->active = ($valeur == 1);
+    public function def_active($valeur) { // pas un 'setter' classique
+      $this->est_active = ($valeur == 1);
     }
-    public function est_active() { return $this->active;}
+    public function est_active() { return $this->est_active;}
     
-    public function est_autorisee_connecter() { return $this->autorisee_connecter; }
-    public function def_autorisee_connecter($valeur) {
+    public function est_autorisee_connecter() { return $this->est_autorisee_connecter; }
+    public function def_autorisee_connecter($valeur) {  // pas un 'setter' classique
       $this->autorisee_connecter = ($valeur == 1);
     }
 /*
@@ -195,9 +195,9 @@
     }
 	
     public function initialiser_visiteur() {
-      $this->def_active(true);
-      $this->def_autorisee_connecter(false);
-      $this->def_chef_de_bord(false);
+      $this->def_active(1);
+      $this->def_autorisee_connecter(0);
+      $this->def_chef_de_bord(0);
       $this->niveau = 0;
       $this->prenom = "z";
       $this->code_commune = "29190"; // Plougonvelin

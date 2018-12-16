@@ -10,18 +10,20 @@
   //              PHP 7.0 sur hebergeur web (pas encore)
   // --------------------------------------------------------------------------
   // creation : 14-oct-2018 pchevaillier@gmail.com reprise de France 2018
-  // revision :
+  // revision : 16-dec-2018 pchevaillier@gmail.com sigle site web et home page
   // --------------------------------------------------------------------------
   // commentaires :
   // -
   // attention :
-  // - parametrage sigle club et home page
+  // -
   // a faire :
   // -
   // ==========================================================================
 
   // --- Classes utilisees
   require_once 'php/elements_page/generiques/element.php';
+  
+  require_once 'php/metier/site_web.php';
   
   // ==========================================================================
   abstract class Menu_Navigation extends Element {
@@ -30,12 +32,11 @@
       $this->def_page($page);
     }
     
-    
     protected function afficher_debut() {
       echo "        <nav class=\"navbar navbar-expand-lg navbar-light\" role=\"navigation\">\n";
     
       // Lien vers le site web du club
-      echo "\n<a class=\"navbar-brand\" href=\"http://avironplougonvelin.fr\" target=\"_new\">AMP</a>\n";
+      echo "\n<a class=\"navbar-brand\" href=\"" . Site_Web::accede()->adresse_racine() . "\" target=\"_new\">" . Site_Web::accede()->sigle() . "</a>\n";
       
       // toggler
       echo ' <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">';

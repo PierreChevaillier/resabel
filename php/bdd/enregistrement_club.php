@@ -10,11 +10,11 @@
   //              PHP 7.0 sur hebergeur web
   // --------------------------------------------------------------------------
   // creation : 19-oct-2018 pchevaillier@gmail.com
-  // revision : 09-dec-2018  pchevaillier@gmail.com
+  // revision : 09-dec-2018 pchevaillier@gmail.com
   // --------------------------------------------------------------------------
   // commentaires :
   // - en chantier : pas fonctionnel
-  // - lire, ajouter, modifier, supprimer, existe, nombre, collecter, verfier_xxx
+  // - lire, ajouter, modifier, supprimer, tester_exist, compter, collecter, verfier_xxx
   // attention :
   // - 
   // a faire :

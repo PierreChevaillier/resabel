@@ -30,7 +30,7 @@
     public function __construct($page) {
       //$this->def_titre("Connexion");
       $this->message_bouton_validation = "Connexion";
-      $script_traitement = "php/scripts/identification_verif.php";
+      $script_traitement = "php/scripts/identification_verif.php?c=" . $_GET['c'] . "&s=" . $_GET['s'];
       $action = 'a';
       $id = 'form_cnx';
       parent::__construct($page, $script_traitement, $action, $id);

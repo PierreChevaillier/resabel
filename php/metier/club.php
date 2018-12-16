@@ -21,6 +21,7 @@
 
   class Club {
     private $code = 0;
+    public function code() { return $this->code; }
     public function def_code($valeur) { $this->code = $valeur;}
     
     public $identifiant = "";
@@ -32,7 +33,7 @@
     
     private $mot_passe = '';
     
-    public $site_principal_activite = null; // Site_Activite
+    public $lieu_principal_activite = null; // Site_Activite
     public $site_web_principal = null; // Site_Web
     
     public function __construct($code) {
