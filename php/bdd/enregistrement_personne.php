@@ -10,7 +10,7 @@
   //              PHP 7.0 sur hebergeur web
   // --------------------------------------------------------------------------
   // creation : 08-dec-2018 pchevaillier@gmail.com
-  // revision :
+  // revision : 23-dec-2018  pchevaillier@gmail.com, requetes preparees
   // --------------------------------------------------------------------------
   // commentaires :
   // - en chantier : pas fonctionnel
@@ -36,19 +36,14 @@
     public function personne() { return $this->personne; }
     public function def_personne($personne) { $this->personne = $personne; }
     
-    private function critere_recherche() {
-      $bdd = Base_Donnees::accede();
-      return "code = " . $bdd->quote($this->personne->code()) ;
-    }
-    
     public function verifier_identite($mot_passe) {
       $identification_ok = false;
       $bdd = Base_Donnees::accede();
-      $requete= "SELECT code, actif, identifiant, connexion, mot_passe, prenom, nom, cdb FROM " . self::source() . " WHERE identifiant = " . $bdd->quote($this->personne->identifiant);
+      $requete= $bdd->prepare("SELECT code, actif, identifiant, connexion, mot_passe, prenom, nom, cdb FROM " . self::source() . " WHERE identifiant = :identifiant LIMIT 1");
+      $requete->bindParam(':identifiant', $this->personne->identifiant, PDO::PARAM_STR);
       try {
-        $resultat = $bdd->query($requete);
-        if ($resultat->rowCount() > 0) {
-          $personne = $resultat->fetch(PDO::FETCH_OBJ);
+        $requete->execute();
+        if ($personne = $requete->fetch(PDO::FETCH_OBJ)) {//($resultat->rowCount() > 0) {
           if ($personne->mot_passe != $mot_passe) {
             throw new Erreur_Mot_Passe_Personne();
             return $identification_ok;
@@ -60,42 +55,38 @@
             $this->personne->def_chef_de_bord($personne->cdb);
             $this->personne->def_active($personne->actif);
             $identification_ok = true;
-            //$_SESSION['utilisateur'] = $utilisateur;
-            //$_SESSION['club'] = $club->identifiant;
           }
         } else {
           throw new Erreur_Personne_Introuvable();
           return $identification_ok;
         }
-      } catch (PDOException  $e) {
-        echo "Erreur requete sur la table " . self::source() . " : ligne " . $e->getLine() . " :<br /> ". $e->getMessage();
-        exit();
+      } catch (PDOException $e) {
+       Base_Donnees::sortir_sur_exception(self::source(), $e);
       }
-      $resultat->closeCursor();
+      //$resultat->closeCursor();
       return $identification_ok;
     }
     
     /*
-     * recherche des informations dans la base de donnees
+     * recherche les informations dans la base de donnees
      */
-    
     public function lire() {
       $trouve = false;
-      $critere = $this->critere_recherche();
-      
-      $requete = "SELECT * FROM " . self::source() . " WHERE " . $critere;
       try {
         $bdd = Base_Donnees::accede();
-        $resultat = $bdd->query($requete);
-        if ($resultat->rowCount() > 0) {
-          $personne = $resultat->fetch(PDO::FETCH_OBJ);
+        $requete= $bdd->prepare("SELECT * FROM " . self::source() . " WHERE code = :code_pers LIMIT 1");
+        $requete->bindParam(':code_pers', $this->personne->code(), PDO::PARAM_INT);
+        $requete->execute();
+        if ($personne = $requete->fetch(PDO::FETCH_OBJ)) {
           $this->initialiser_depuis_table($personne);
           $trouve = true;
+        } else {
+          throw new Erreur_Personne_Introuvable();
+          return $trouve;
         }
       } catch (PDOexception $e) {
-        die("Erreur recherche dans " . self::source() . " avec " . $critere . " : ligne " . $e->getLine() . " :<br /> ". $e->getMessage());
+        Base_Donnees::sortir_sur_exception(self::source(), $e);
       }
-      $resultat->closeCursor();
       return $trouve;
     }
     
@@ -105,7 +96,6 @@
       $this->personne->def_autorisee_connecter($donnee->connexion);
       $this->personne->niveau = $donnee->niveau;
       $this->personne->genre = $donnee->genre;
-      $this->personne->mot_passe = $donnee->mot_passe;
       $this->personne->prenom = utf8_encode($donnee->prenom);
       $this->personne->nom = utf8_encode($donnee->nom);
       $this->personne->date_naissance = $donnee->date_naissance;
@@ -119,36 +109,34 @@
       $this->personne->num_licence = $donnee->num_licence;
     }
     
-     public function recherche_si_admin() {
-       $est_admin = false;
-       // teste si la personne a le role admin dans le composante 'resabel'
-       
-       $source = Base_Donnees::$prefix_table . 'roles_membres';
-       $bdd = Base_Donnees::accede();
-       $critere_recherche = "code_membre = " . $bdd->quote($this->personne->code())
-       . " AND code_role = 'admin' AND code_composante = 'resabel'";
-       $requete = "SELECT COUNT(*) as n FROM " . $source . " WHERE " . $critere_recherche;
-       try {
-         $resultat = $bdd->query($requete);
-         $donnee = $resultat->fetch(PDO::FETCH_OBJ);
-         $est_admin = ($donnee->n > 0);
+    public function recherche_si_admin() {
+      $est_admin = false;
+      // teste si la personne a le role admin dans le composante 'resabel'
+      $source = Base_Donnees::$prefix_table . 'roles_membres';
+      $bdd = Base_Donnees::accede();
+      try {
+        $requete= $bdd->prepare("SELECT COUNT(*) as n FROM " . $source . " WHERE code_membre = :code_membre AND code_role = 'admin' AND code_composante = 'resabel'");
+        $requete->bindParam(':code_membre', $this->personne->code(), PDO::PARAM_INT);
+        $requete->execute();
+        if ($resultat = $requete->fetch(PDO::FETCH_OBJ)) {
+         $est_admin = ($resultat->n == 1);
+        }
        } catch (PDOexception $e) {
-         die("Erreur recherche dans " . source() . " avec " . $critere_recherche . " : ligne " . $e->getLine() . " :<br /> ". $e->getMessage());
+          Base_Donnees::sortir_sur_exception(self::source(), $e);
        }
-       $resultat->closeCursor();
        return $est_admin;
      }
     
     public function modifier_date_derniere_connexion() {
-      $requete = "UPDATE " . self::source()
-        . " SET derniere_connexion = CURRENT_TIMESTAMP() WHERE " . $this->critere_recherche();
+      $bdd = Base_Donnees::accede();
       try {
-        $bdd = Base_Donnees::accede();
-        $resultat = $bdd->query($requete);
+        $requete= $bdd->prepare("UPDATE " . self::source()
+                              . " SET derniere_connexion = CURRENT_TIMESTAMP() WHERE code = :code_membre");
+        $requete->bindParam(':code_membre', $this->personne->code(), PDO::PARAM_INT);
+        $requete->execute();
       } catch (PDOexception $e) {
         die("Erreur Mise a jour " . self::source() . " date derniere connexion pour " . $this->critere_recherche() . " : ligne " . $e->getLine() . " :<br /> ". $e->getMessage());
       }
-      $resultat->closeCursor();
     }
     
     

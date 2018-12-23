@@ -18,7 +18,8 @@
   // attention :
   // - 
   // a faire :
-  // -
+  // - utiliser des requetes preparees
+  // http://php.net/manual/fr/pdostatement.bindparam.php
   // ==========================================================================
 
   require_once 'php/metier/club.php';
@@ -49,11 +50,13 @@
     public function verifier_identite($mot_passe) {
       $identification_ok = false;
       $bdd = Base_Donnees::accede();
-      $requete= "SELECT code, mot_passe, nom FROM " . self::source() . " WHERE identifiant = " . $bdd->quote($this->club->identifiant);
+      $requete= $bdd->prepare("SELECT code, mot_passe, nom FROM " . self::source() . " WHERE identifiant = :identifiant LIMIT 1");
+      $requete->bindParam(':identifiant', $this->club->identifiant, PDO::PARAM_STR);
       try {
-        $resultat = $bdd->query($requete);
-        if ($resultat->rowCount() > 0) {
-          $club = $resultat->fetch(PDO::FETCH_OBJ);
+//        $resultat = $bdd->query($requete);
+        $requete->execute();
+        if ($club = $requete->fetch(PDO::FETCH_OBJ)) {//($resultat->rowCount() > 0) {
+          
           if ($club->mot_passe != $mot_passe) {
             throw new Erreur_Mot_Passe_Club();
             return $identification_ok;
@@ -66,11 +69,10 @@
           throw new Erreur_Club_introuvable();
           return $identification_ok;
         }
-        $resultat->closeCursor();
+          //$resultat->closeCursor();
         return $identification_ok;
       } catch (PDOException  $e) {
-        echo "Erreur requete sur la table " . self::source() . " : ligne " . $e->getLine() . " :<br /> " . $e->getMessage();
-        exit();
+        Base_Donnees::sortir_sur_exception(self::source(), $e);
       }
     }
     

@@ -28,11 +28,13 @@
       // --- Information sur le site Web
       require_once 'php/bdd/enregistrement_site_web.php';
       
-      if (isset($_GET['s']))
+      if (!isset($_GET['s']))
+        die("erreur : valeur non definie");
+      if (preg_match('/[0-9]/', $_GET['s']))
         new Enregistrement_site_web($_GET['s']);
       else
-        die("cnx site web non defini");
-      
+        die("erreur : valeur invalide");
+    
       // --- Classe definissant la page a afficher
       require_once 'php/pages/page_connexion.php';
 

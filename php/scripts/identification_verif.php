@@ -44,17 +44,28 @@
   unset($_SESSION['prm']); // personne connectee est de permanence
   unset($_SESSION['adm']); // personne connectee est administatrice de resabel
   
-  if (isset($_GET['c']))
-    $_SESSION['clb'] = $_GET['c'];
+  if (isset($_GET['c'])) {
+    $code_club =  $_GET['c'];
+    $_SESSION['clb'] = $code_club;
+  } else {
+    header("location: ../../index.php");
+    exit();
+  }
+  
   if (isset($_GET['n_clb']))
     $_SESSION['n_clb'] = $_GET['n_clb'];
   
-  if (isset($_GET['s']))
-    $_SESSION['swb'] = $_GET['s'];
+  if (isset($_GET['s'])) {
+    $code_site = $_GET['s'];
+    $_SESSION['swb'] = $code_site;
+  } else {
+    header("location: ../../index.php");
+    exit();
+  }
   
   // --- recuperation des informations saisies dans le formulaire
   if (!isset($_POST['id']) || !isset($_POST['mdp_crypte']))
-  exit();
+    exit();
 
   $identifiant = stripslashes(trim(utf8_decode($_POST['id'])));
   //$identifiant = strip_tags(strtolower($identifiant));
@@ -62,15 +73,20 @@
   
   $erreur_identification = (strlen($identifiant) === 0);
   if ($erreur_identification) {
-    header("location: ../../index.php?err=id");
+    header("location: ../../connexion.php?err=id&c=" . $code_club . "&s=" . $code_site);
     exit();
   }
   $erreur_mot_passe = false;
-
   // --------------------------------------------------------------------------
   // --- classes utilisees
   set_include_path('./../../');
   
+  // --------------------------------------------------------------------------
+  // --- connection a la base de donnees
+  include 'php/bdd/base_donnees.php';
+  
+  $bdd = Base_donnees::accede();
+
   require_once 'php/metier/club.php';
   require_once 'php/bdd/enregistrement_club.php';
   
@@ -79,12 +95,6 @@
   require_once 'php/metier/personne.php';
   //  require_once 'php/permanence.php';
   
-  // --------------------------------------------------------------------------
-  // --- connection a la base de donnees
-  include 'php/bdd/base_donnees.php';
-  
-  $bdd = Base_donnees::accede();
-
   // ==========================================================================
   // --- verification de l'identite :
   // l'utilisateur doit etre un membre du club reference,
@@ -96,14 +106,16 @@
   $enreg_club = new Enregistrement_Club();
   $enreg_club->def_club($club);
   $session_club = false;
+  
   try {
     $session_club = $enreg_club->verifier_identite($motdepasse);
   } catch (Erreur_Mot_Passe_Club $e) {
     // l'identifiant est bien celui du club, mais ce n'est le bon mot de passe
-    header("location: ../../index.php?err=mdp");
+    header("location: ../../connexion.php?err=mdp&c=" . $code_club . "&s=" . $code_site);
     exit();
   } catch (Erreur_Club_Introuvable $e) {
     $session_club = false;
+    // pas d'erreur a ce stade : l'ientifiant est peut-etre celui d'une personne
   }
   
   if ($session_club) {
@@ -111,7 +123,7 @@
       $_SESSION['clb'] = $club->code();
       $_SESSION['n_clb'] = utf8_encode($club->nom());
     }
-    header("location: page_tableau_journalier_sorties.php?ta=os");
+    header("location: ../../page_tableau_journalier_sorties.php?ta=os");
     exit();
   }
   
@@ -120,7 +132,7 @@
   // donc recherche si l'identifiant correspond
   // une personne referencee et autorisee a se connecter
   
-  $personne = new Personne("");
+  $personne = new Personne(0);
   $personne->identifiant = $identifiant;
 
   $enreg_personne = new Enregistrement_Personne();
@@ -129,10 +141,10 @@
   try {
     $session_personne = $enreg_personne->verifier_identite($motdepasse);
   } catch (Erreur_Mot_Passe_Personne $e) {
-    header("location: ../../index.php?err=mdp");
+    header("location: ../../connexion.php?err=mdp&c=" . $code_club . "&s=" . $code_site);
     exit();
   } catch (Erreur_Personne_Introuvable $e) {
-    header("location: ../../index.php?err=cnx");
+    header("location: ../../connexion.php?err=cnx&c=" . $code_club . "&s=" . $code_site);
     exit();
   }
   
@@ -140,7 +152,7 @@
     $_SESSION['prs'] = true;
     if (!$personne->est_autorisee_connecter()) {
       // Personne non autorisee a se connecter
-      header("location: ../../index.php?err=cnx");
+      header("location: ../../connexion.php?err=cnx&c=" . $code_club . "&s=" . $code_site);
       exit();
     }
     // utilisateur reference et autorise a se connecter
@@ -172,16 +184,16 @@
   // --- Affichage contextuel en fonction du resultat de l'identification
   //     cas d'une identification personnelle (cas du club traite plus haut)
   if ($erreur_identification)
-    header("location: ../../index.php?err=cnx");
+    header("location: ../../connexion.php?err=cnx&c=" . $code_club . "&s=" . $code_site);
   elseif ($erreur_mot_passe)
-    header("location: ../../index.php?err=mdp");
+    header("location: ../../connexion.php?err=mdp&c=" . $code_club . "&s=" . $code_site);
   elseif (!$_SESSION['act'])
-    header("location: page_tableau_journalier_sorties.php?ta=os&d=" . Jour::aujourdhui()->jour);
+    header("location: ../../page_tableau_journalier_sorties.php?ta=os&d=" . Jour::aujourdhui()->jour);
   elseif ($permanence) {
     $j0 = date("N");
     $j = max(6, $j0);
     $jperm = mktime(0, 0, 0, date("m"), date("d") + $j - $j0, date("Y"));
-    header("location: page_tableau_journalier_sorties.php?ta=os&d=" . $jperm);
+    header("location: ../../page_tableau_journalier_sorties.php?ta=os&d=" . $jperm);
   } else {
 //    header("location: ../../page_inscription_individuelle.php");
     header("location: ../../page_temporaire.php");
