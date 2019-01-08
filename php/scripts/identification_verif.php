@@ -91,8 +91,8 @@
   require_once 'php/bdd/enregistrement_club.php';
   
   //require_once 'php/jour.php';
-  require_once 'php/bdd/enregistrement_personne.php';
-  require_once 'php/metier/personne.php';
+  require_once 'php/bdd/enregistrement_membre.php';
+  require_once 'php/metier/membre.php';
   //  require_once 'php/permanence.php';
   
   // ==========================================================================
@@ -129,40 +129,40 @@
   
   // ---------------------------------------------------------------------------
   // l'identifiant de connexion n'est pas celui du club :
-  // donc recherche si l'identifiant correspond
-  // une personne referencee et autorisee a se connecter
+  // donc recherche si l'identifiant correspond a un membre du club
+  // autorise a se connecter
   
-  $personne = new Personne(0);
-  $personne->identifiant = $identifiant;
+  $membre = new Membre(0);
+  $membre->identifiant = $identifiant;
 
-  $enreg_personne = new Enregistrement_Personne();
-  $enreg_personne->def_personne($personne);
+  $enreg_membre = new Enregistrement_Membre();
+  $enreg_membre->def_membre($membre);
   $session_personne = false;
   try {
-    $session_personne = $enreg_personne->verifier_identite($motdepasse);
-  } catch (Erreur_Mot_Passe_Personne $e) {
+    $session_personne = $enreg_membre->verifier_identite($motdepasse);
+  } catch (Erreur_Mot_Passe_Membre $e) {
     header("location: ../../connexion.php?err=mdp&c=" . $code_club . "&s=" . $code_site);
     exit();
-  } catch (Erreur_Personne_Introuvable $e) {
+  } catch (Erreur_Membre_Introuvable $e) {
     header("location: ../../connexion.php?err=cnx&c=" . $code_club . "&s=" . $code_site);
     exit();
   }
   
   if ($session_personne) {
     $_SESSION['prs'] = true;
-    if (!$personne->est_autorisee_connecter()) {
+    if (!$membre->est_autorise_connecter()) {
       // Personne non autorisee a se connecter
       header("location: ../../connexion.php?err=cnx&c=" . $code_club . "&s=" . $code_site);
       exit();
     }
     // utilisateur reference et autorise a se connecter
-    $utilisateur = $personne->prenom . " " . $personne->nom;
-    $_SESSION['usr'] = $personne->code();
+    $utilisateur = $membre->prenom . " " . $membre->nom;
+    $_SESSION['usr'] = $membre->code();
     $_SESSION['n_usr'] = $utilisateur;
-    $_SESSION['cdb'] = $personne->est_chef_de_bord();
-    $_SESSION['act'] = $personne->est_active(); // active = possibilite de s'inscrire
+    $_SESSION['cdb'] = $membre->est_chef_de_bord();
+    $_SESSION['act'] = $membre->est_actif(); // active = possibilite de s'inscrire
   
-    $enreg_personne->modifier_date_derniere_connexion();
+    $enreg_membre->modifier_date_derniere_connexion();
     
     // Teste si l'utilisateur est de permanence ou pas
     $permanence = false;
@@ -174,7 +174,7 @@
       $_SESSION['prm'] = true;
   
     // Teste si l'utilisateur est administrateur du systeme d'information
-    $admin = $enreg_personne->recherche_si_admin();
+    $admin = $enreg_membre->recherche_si_admin();
     if ($admin)
       $_SESSION['adm'] = true;
     //echo "Admin: " . $admin;

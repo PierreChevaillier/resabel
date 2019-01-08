@@ -76,6 +76,21 @@
       }
     }
     
+    static public function tester_existe($identifiant) {
+      $existe = false;
+      try {
+        $bdd = Base_Donnees::accede();
+        $requete= $bdd->prepare("SELECT COUNT(*) AS n FROM " . self::source() . " WHERE identifiant = :identifiant");
+        $requete->bindParam(':identifiant', $identifiant, PDO::PARAM_STR);
+        $requete->execute();
+        if ($resultat = $requete->fetch(PDO::FETCH_OBJ))
+          $existe = ($resultat->n == 1);
+      } catch (PDOException  $e) {
+        Base_Donnees::sortir_sur_exception(self::source(), $e);
+      }
+      return $existe;
+    }
+    
     public function lire() {
       $critere = $this->critere_recherche();
       // TODO : completer avec tous les champs

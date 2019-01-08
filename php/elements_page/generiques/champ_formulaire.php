@@ -17,6 +17,7 @@
   // revision : 26-aug-2018 pchevaillier@gmail.com Resabel V2 element -> page (web)
   // revision : 14-oct-2018 pchevaillier@gmail.com class Champ_Mot_Passe
   //            id dans Element ; suppression utlisation grille bootstrap
+  // revision : 29-dec-2018 pchevaillier@gmail.com gestion erreurs Champ_Nom
   // ------------------------------------------------------------------------
   // commentaires :
   // attention :
@@ -152,8 +153,20 @@
       echo 'type="text" ';
       if (strlen($this->fonction_controle_saisie) > 0)
         echo 'onchange="' . $this->fonction_controle_saisie . '(this)" ';
+      if (isset($_GET['i']) && ($_GET['i'] == $this->id()) && isset($_GET['v']))
+          $this->def_valeur($_GET['v']);
       $affiche = ($this->valeur_definie())? 'value="' . $this->valeur() . '" ' : '';
       echo $affiche . ' />';
+      if (isset($_GET['r']) && isset($_GET['i']) && ($_GET['i'] == $this->id())) {
+        $msg = "<p id=\"" . $this->id() . "_msg\" class=\"text-danger\">Erreur : ";
+        if ($_GET['r'] == 1)
+          $msg = $msg . "ce " . $this->titre() . " est trop court";
+        elseif ($_GET['r'] == 2)
+          $msg = $msg . "ce " . $this->titre() . " contient des caractères non autorisés";
+        else
+          $msg = $msg . "saisie incorrecte";
+        echo $msg . "</p>";
+      }
     }
   }
 
@@ -167,7 +180,7 @@
     
     protected function afficher_corps () {
       $this->afficher_ouverture_commune();
-      echo 'type="text" maxlength="30" ';
+      echo 'type="text" maxlength="50" ';
       $affiche = ($this->valeur_definie())? 'value="' . $this->valeur() . '" ' : '';
       echo $affiche . ' />';
       if (isset($_GET['err']) && ($_GET['err'] == 'id'))

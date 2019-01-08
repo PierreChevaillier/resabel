@@ -189,10 +189,42 @@
       return new Instant(mktime($heures, $minutes, $secondes, date("n", $j), date("j", $j), date("Y", $j)));
     }
 
-
-
-
-  }
+    public function formatter_date_sql($jour) {
+      // AAAA-MM-JJ
+      $j = $jour->date();
+      return date("Y", $j) . "-" . date("m", $j) . "-" . date("d", $j);
+    }
   
+    public function def_depuis_date_sql($date_sql) {
+      // $date : AAAA-MM-JJ
+      if (strlen($date_sql) === 10) {
+        $annee = substr($date_sql, -10, 4);
+        $mois = substr($date_sql, -5, 2);
+        $jour_mois = substr($date_sql, -2, 2);
+        return self::jour($jour_mois, $mois, $annee);
+      } else {
+        throw new InvalidArgumentException('Erreur Calendrier::def_depuis_date_sql - format date invalide: ' . $date_sql);
+        return null;
+      }
+    }
+      
+    public function def_depuis_timestamp_sql($timestamp_sql) {
+      // timestamp = AAAA-MM-JJ HH:MM:SS
+      if (strlen($timestamp_sql) === 19) {
+        $annee = substr($timestamp_sql, -19, 4);
+        $mois = substr($timestamp_sql, -14, 2);
+        $jour_mois = substr($timestamp_sql, -11, 2);
+        $heures = substr($timestamp_sql, -8, 2);
+        $minutes = substr($timestamp_sql, -5, 2);
+        $secondes = substr($timestamp_sql, -2, 2);
+        return new Instant(mktime($heures, $minutes, $secondes, $mois, $jour_mois, $annee));
+      } else {
+        throw new InvalidArgumentException('Erreur Calendrier::def_depuis_timestamp_sql - format date invalide: ' . $timestamp_sql);
+        return null;
+      }
+    }
+    
+  }
+    
   // ===========================================================================
 ?>

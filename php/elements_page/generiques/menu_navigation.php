@@ -36,7 +36,7 @@
       echo "        <nav class=\"navbar navbar-expand-lg navbar-light\" role=\"navigation\">\n";
     
       // Lien vers le site web du club
-      echo "\n<a class=\"navbar-brand\" href=\"" . Site_Web::accede()->adresse_racine() . "\" target=\"_new\">" . Site_Web::accede()->sigle() . "</a>\n";
+      echo "\n<a class=\"navbar-brand\" href=\"" . htmlspecialchars(Site_Web::accede()->adresse_racine()) . "\" target=\"_new\">" . htmlspecialchars(Site_Web::accede()->sigle()) . "</a>\n";
       
       // toggler
       echo ' <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">';

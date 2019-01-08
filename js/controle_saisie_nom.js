@@ -2,12 +2,13 @@
 // description : controle de la validite de la saisie d'un nom
 //               prenom, nom de famille, nom de ville...
 // utilisation : javascript - controleur formulaire web
-// teste avec  : firefox, safari sur Mac OS 10.11
-// contexte    : Site web du championnat de France 2018
-// Copyright (c) 2017 AMP. Tous droits reserves
+// teste avec  : firefox, safari sur Mac OS 10.14
+// contexte    : Site web du championnat de France 2018, resabel V2 (depuis dec-2018)
+// Copyright (c) 2017-2019 AMP. Tous droits reserves
 // ----------------------------------------------------------------------------
 // creation : 23-oct-2017 pchevaillier@gmail.com
-// revision :
+// revision : 29-dec-2018 pchevaillier@gmail.com autorisation ñì
+// revision : 06-jan-2019 pchevaillier@gmail.com suppression message erreur
 // ----------------------------------------------------------------------------
 // commentaires :
 // -
@@ -16,13 +17,29 @@
 // a faire :
 // ----------------------------------------------------------------------------
 
+function supprimer_message_erreur(element) {
+  var parent = element.parentNode;
+  var children = parent.childNodes;
+  var msgNodeId = element.name + '_msg';
+  for (var i = 0; i < children.length; i++) {
+    if (children[i].id == msgNodeId) {
+      parent.removeChild(children[i]);
+      break;
+    }
+  }
+  return;
+}
+
 function verif_nom(element) {
+  // en cas de nouvelle saisie : il faut supprimer l'eventuel message d'erreur
+  supprimer_message_erreur(element);
+  
   var est_correct = false;
   var x = element.value;
   if (x == null || x == "") {
     est_correct = true;
   } else {
-    var regExpr = /^[a-zA-Zéèëç\ '-]+$/;
+    var regExpr = /^[a-zA-Zéèëçñì\ '-]+$/;
     if (!regExpr.test(x)) {
       element.style.color = "red";
       element.focus(); // marche pas...
@@ -35,5 +52,4 @@ function verif_nom(element) {
   }
   return est_correct;
 }
-
 // ============================================================================

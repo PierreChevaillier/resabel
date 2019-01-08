@@ -34,7 +34,7 @@
     public $message_bouton_validation = "Envoyer ma demande";
     protected $script_traitement = "";
     protected $action = 'a'; // a => ajout (nouvelle saisie) m => modification (MaJ saisie)
-    public $conformation_requise = False;
+    public $confirmation_requise = False;
     
     private $champs = array();
     public function champs() { return $this->champs;}
@@ -87,7 +87,7 @@
     protected function afficher_corps() {
       foreach ($this->champs as $champ)
         $champ->afficher();
-      if ($this->conformation_requise)
+      if ($this->confirmation_requise)
         $this->afficher_acquitement_saisie();
       $this->afficher_bouton_validation();
     }

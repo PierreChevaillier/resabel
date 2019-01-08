@@ -10,14 +10,14 @@
   //              PHP 7.0 sur hebergeur web
   // --------------------------------------------------------------------------
   // creation : 14-oct-2018 pchevaillier@gmail.com
-  // revision :
+  // revision : 29-dec-2018 pchevaillier@gmail.com deconnexion
   // --------------------------------------------------------------------------
   // commentaires :
   // -
   // attention :
   // - 
   // a faire :
-  // - variables pour acornyme club et lien home-page
+  // - variables pour acronyme club et lien home-page
   // - affichage nom user (? ou dans barre au dessus, comme dans France2018)
   // - ajouter logique acces aux items du menu
   // ==========================================================================
@@ -65,10 +65,10 @@
       if (isset($_SESSION['adm']) && $_SESSION['adm'])
           $this->afficher_menu_administration();
 
-      if (isset($_SESSION['n_usr']))
-          echo '<li class="nav-item"><a class="nav-link" href="membre.php">' .  $_SESSION['n_usr'] . '</a></li>';
+      if ($_SESSION['prs'])
+          echo '<li class="nav-item"><a class="nav-link" href="membre.php?mbr=' . $_SESSION['usr'] . '">' .  htmlspecialchars($_SESSION['n_usr']) . '</a></li>';
 
-      echo '<li class="nav-item"><a class="nav-link"  href="index.php">Déconnexion</a></li>';
+      echo '<li class="nav-item"><a class="nav-link"  href="php/scripts/deconnexion.php">Déconnexion</a></li>';
     }
     
   }
