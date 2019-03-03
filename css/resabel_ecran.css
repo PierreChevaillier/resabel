@@ -2,11 +2,15 @@
  ================================================================================
  description : feuille de style pour l'affichage
  utilisation :
- teste avec  : Mac OS 10.11 - Firefox, Safari
- contexte    : resable - aux couleurs du club
+ teste avec  : Mac OS 10.14 - Firefox, Safari
+ contexte    : resabel - aux couleurs du club
  Copyright (c) 2017 AMP
- --------------------------------------------------------------------------------
- creation: 22-juil-2017 pchevaillier@gmail.com
+ -------------------------------------------------------------------------------
+ creation : 22-jul-2017 pchevaillier@gmail.com
+ revision : 02-mar-2019 pchevaillier@gmail.com
+ -------------------------------------------------------------------------------
+ commentaires
+ nom de couleurs : https://html-color-codes.info/color-names/
  ================================================================================
 */
 
@@ -25,8 +29,16 @@ body {
   font-size:medium;
 }
 
+.entete_sect {
+  background-color:Gold;
+}
+
+.entete_sect > h2 {
+  color:Blue;
+}
+
 footer {
-  background-color:#C0C0C0;
+  background-color:#C0C0C0; /* silver */
   color:black;
   text-align: right;
   font-size: small;

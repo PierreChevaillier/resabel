@@ -27,7 +27,7 @@ SET time_zone = "+00:00";
 --
 -- Structure de la table `rsbl_heures_marees`
 --
-
+DROP TABLE IF EXISTS `rsbl_heures_marees`;
 CREATE TABLE `rsbl_heures_marees` (
   `code_lieu` varchar(1) COLLATE utf8_unicode_ci NOT NULL DEFAULT '1',
   `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'en clair (juste pout info)',

@@ -13,6 +13,9 @@
   // revision :
   // --------------------------------------------------------------------------
   // commentaires :
+  // source de donnees :
+  // https://public.opendatasoft.com/explore/dataset/correspondance-code-insee-code-postal/table/?refine.nom_dept=FINISTERE
+  // il peut y avoir plusieurs codes INSEE pour le meme code postal.
   // attention :
   // - 
   // a faire :

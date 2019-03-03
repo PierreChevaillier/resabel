@@ -47,7 +47,7 @@
       $element = new Entete_Connexion();
       //$nom_club = isset($_GET['n_clb'])? $_GET['n_clb']: "AMP";
       $titre = Site_Web::accede()->sigle();
-      $element->def_titre($titre. " <br /> Accès à Resabel");
+      $element->def_titre($titre. " <br />Resabel");
       $this->ajoute_element_haut($element);
       
       foreach ($this->informations_temporaires as $info) {

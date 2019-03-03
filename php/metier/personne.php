@@ -11,7 +11,8 @@
   // revision: 17-aug-2016 pchevaillier@gmail.com, nouvel structure table membre
   // revision: 19-nov-2016 pchevaillier@gmail.com, ajout recherche_membres
   // revision: 30-nov-2016 pchevaillier@gmail.com, test si de permanance
-  // revision: 05-oct-2018 pchevaillier@gmail.com  chemin vers utilitaires
+  // revision: 05-oct-2018 pchevaillier@gmail.com chemin vers utilitaires
+  // revision: 03-mar-2019 pchevaillier@gmail.com ajout nom_commune
   // ------------------------------------------------------------------------
   // commentaires :
   // attention :
@@ -30,6 +31,7 @@
     public $prenom = "";
     public $nom = "";
     public $code_commune = 0;
+    public $nom_commune = ""; // pas dans la table
     public $rue = "";
     public $telephone = "";
     public $telephone2 = "";
@@ -42,6 +44,18 @@
     public function def_code($valeur) { $this->code = $valeur; }
     public function code() { return $this->code; }
 	
+    public function formatter_envoie_courriel($message) {
+      $club = isset($_SESSION['n_clb']) ? $_SESSION['n_clb'] : "";
+      $signature = isset($_SESSION['n_usr']) ? $_SESSION['n_usr'] : "";
+      $code_html = "<a href=\"mailto:" . $this->courriel . "?subject=" . $club . " Pour " . $this->prenom . " " . $this->nom . "&body=Bonjour " . $this->prenom . ",%0D%0A " . $message . "%0D%0A%0D%0A" . $signature . "\">" . $this->courriel . "</a>";
+      
+      // AMP pour Agnès
+      // Bonjour Agnès,
+      // message
+      // Pierre Chevaillier
+      // Aviron de Mer de Plougonvelon
+      return $code_html;
+    }
 /*
     static public function recherche_membres($critere_selection, $critere_tri, & $personnes) {
       $status = false;

@@ -6,11 +6,12 @@
   // --------------------------------------------------------------------------
   // utilisation : php - require_once <chemin_vers_ce_fichier.php>
   // dependances : bootstrap 4.1
-  // teste avec : PHP 7.1 sur Mac OS 10.14 ;
+  // teste avec : PHP 7.1 sur Mac OS 10.14 ; 
   //              PHP 7.0 sur hebergeur web (pas encore)
   // --------------------------------------------------------------------------
   // creation : 14-oct-2018 pchevaillier@gmail.com reprise de France 2018
   // revision : 16-dec-2018 pchevaillier@gmail.com sigle site web et home page
+  // revision : 02-mar-2019 pchevaillier@gmail.com erreur toggle Menu
   // --------------------------------------------------------------------------
   // commentaires :
   // -
@@ -39,7 +40,7 @@
       echo "\n<a class=\"navbar-brand\" href=\"" . htmlspecialchars(Site_Web::accede()->adresse_racine()) . "\" target=\"_new\">" . htmlspecialchars(Site_Web::accede()->sigle()) . "</a>\n";
       
       // toggler
-      echo ' <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">';
+      echo ' <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#menu_nav" aria-controls="menu_nav" aria-expanded="false" aria-label="Toggle navigation">';
       echo '<span class="navbar-toggler-icon"></span>';
       echo '</button>';
       

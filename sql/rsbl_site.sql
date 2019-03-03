@@ -25,7 +25,7 @@ START TRANSACTION;
 --
 -- Structure de la table `rsbl_site`
 --
-
+DROP TABLE IF EXISTS `rsbl_site`;
 CREATE TABLE `rsbl_site` (
   `code` tinyint(4) NOT NULL,
   `code_club` tinyint(4) NOT NULL,

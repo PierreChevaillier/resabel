@@ -25,7 +25,7 @@ START TRANSACTION;
 --
 -- Structure de la table `rsbl_communes`
 --
-
+DROP TABLE IF EXISTS `rsbl_communes`;
 CREATE TABLE `rsbl_communes` (
   `code` int(5) NOT NULL,
   `code_postal` int(5) NOT NULL,

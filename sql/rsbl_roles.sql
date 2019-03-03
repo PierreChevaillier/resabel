@@ -26,7 +26,7 @@ START TRANSACTION;
 --
 -- Structure de la table `rsbl_roles`
 --
-
+DROP TABLE IF EXISTS `rsbl_roles`;
 CREATE TABLE `rsbl_roles` (
   `code` varchar(10) COLLATE utf8_unicode_ci NOT NULL,
   `nom_masculin` varchar(30) COLLATE utf8_unicode_ci NOT NULL,

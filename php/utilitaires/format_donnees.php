@@ -74,4 +74,9 @@ function formatter_date_enregistrement($date) {
 								. substr($date, -10, 2);
 	return $resultat;
 }
+  
+  function formatter_courriel($courriel) {
+    $resultat = "<a href=\"mailto:" . $courriel . "\">" . $courriel . "</a>";
+    return $resultat;
+  }
 ?>

@@ -57,9 +57,10 @@
           $this->afficher_menu_inscription();
 
       echo '<li class="nav-item"><a class="nav-link" href="#">Sorties</a></li>';
+      echo '<li class="nav-item"><a class="nav-link" href="agendas.php">Agendas</a></li>';
       echo '<li class="nav-item"><a class="nav-link" href="#">Permanences</a></li>';
       echo '<li class="nav-item"><a class="nav-link" href="#">Indisponibilités</a></li>';
-      echo '<li class="nav-item"><a class="nav-link" href="#">Contacts</a></li>';
+      echo '<li class="nav-item"><a class="nav-link" href="contacts.php">Contacts</a></li>';
       echo '<li class="nav-item"><a class="nav-link" href="#">Bateaux</a></li>';
       
       if (isset($_SESSION['adm']) && $_SESSION['adm'])

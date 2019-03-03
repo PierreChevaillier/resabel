@@ -25,6 +25,7 @@
   // - les informations de connexion sont stockees dans $_SESSION
   // attention :
   // a faire :
+  // recuperer le code et le nom du club, meme si session 'prs'
   // ===========================================================================
   session_start(); // doit etre la premiere instruction
 
@@ -123,7 +124,8 @@
       $_SESSION['clb'] = $club->code();
       $_SESSION['n_clb'] = utf8_encode($club->nom());
     }
-    header("location: ../../page_tableau_journalier_sorties.php?ta=os");
+    //header("location: ../../page_tableau_journalier_sorties.php?ta=os");
+    header("location: ../../agendas.php");
     exit();
   }
   

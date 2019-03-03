@@ -20,7 +20,7 @@ START TRANSACTION;
 --
 -- Structure de la table `rsbl_club`
 --
-
+DROP TABLE IF EXISTS `rsbl_club`;
 CREATE TABLE `rsbl_club` (
   `code` tinyint(3) UNSIGNED NOT NULL,
   `identifiant` varchar(10) COLLATE utf8_unicode_ci NOT NULL,

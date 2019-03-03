@@ -2,7 +2,7 @@
   // ==========================================================================
   // contexte : Resabel - systeme de REServAtion de Bateau En Ligne
   // description : classe Enregistrement_Membre : interface base donnees
-  // copyright (c) 2018 AMP. Tous droits reserves.
+  // copyright (c) 2018-2019 AMP. Tous droits reserves.
   // --------------------------------------------------------------------------
   // utilisation : php - require_once <chemin_vers_ce_fichier.php>
   // dependances : Classes Membre, Calendrier et Base_Donnees
@@ -12,7 +12,8 @@
   // creation : 08-dec-2018 pchevaillier@gmail.com
   // revision : 23-dec-2018 pchevaillier@gmail.com requetes preparees
   // revision : 23-dec-2018 pchevaillier@gmail.com requetes preparees
-  // revision : 28-dec-2019 pchevaillier@gmail.com renomme Enregistrement_Membre
+  // revision : 28-dec-2018 pchevaillier@gmail.com renomme Enregistrement_Membre
+  // revision : 03-mar-2019 pchevaillier@gmail.com fonction collecter
   // --------------------------------------------------------------------------
   // commentaires :
   // - en chantier : pas complet
@@ -216,6 +217,48 @@
       } catch (PDOexception $e) {
         die("Erreur Mise a jour " . self::source() . " informations pour " . $code . " : ligne " . $e->getLine() . " :<br /> ". $e->getMessage());
       }
+    }
+    
+    static function collecter($critere_selection, $composante, $role, & $personnes) {
+      $status = false;
+      $personnes = array();
+      
+      // definition de la source des donnees
+      $table_membres = self::source();
+      $table_communes = Base_Donnees::$prefix_table . 'communes';
+      $table_roles = Base_Donnees::$prefix_table . 'roles_membres';
+      
+      $source = $table_membres;
+      if ((strlen($composante) > 0) || (strlen($role) > 0))
+        $source = $source .  ', ' .  $table_roles;
+      //echo '<p>source ' . $source . '</p>';
+      
+      $selection = (strlen($critere_selection) > 0) ? " WHERE " . $critere_selection . " " : "";
+      
+      //echo '<p>selection ' . $selection . '</p>';
+      
+      $tri =  " ORDER BY " . $table_membres . ".prenom, " . $table_membres . ".nom ";
+      try {
+        $bdd = Base_Donnees::accede();
+        $requete = "SELECT " . $table_membres . ".code AS code, genre, prenom, " . $table_membres . ".nom AS nom, telephone, courriel, " . $table_communes . ".nom AS nom_commune" . " FROM " . $source . " INNER JOIN " . $table_communes . " ON " . $table_communes. ".code = " . $table_membres . ".code_commune " . $selection . $tri;
+        //echo '<p>' . $requete . '</p>';
+        $resultat = $bdd->query($requete);
+        
+        while ($donnee = $resultat->fetch(PDO::FETCH_OBJ)) {
+          $personne = new Personne($donnee->code);
+          $personne->genre = $donnee->genre;
+          $personne->prenom = $donnee->prenom;
+          $personne->nom = $donnee->nom;
+          $personne->telephone = $donnee->telephone;
+          $personne->courriel = $donnee->courriel;
+          $personne->nom_commune = $donnee->nom_commune;
+          $personnes[$personne->code()] = $personne;
+        }
+      
+      } catch (PDOException $e) {
+        Base_Donnees::sortir_sur_exception(self::source(), $e);
+      }
+      return $status;
     }
   }
   // ==========================================================================

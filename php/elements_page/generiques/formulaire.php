@@ -3,6 +3,7 @@
   // description : definition de la classe Formulaire
   //               gestion d'un formulaire simple
   // utilisation : destine a etre affiche dans une page web
+  // dependances : bootstrap 4.x (teste avec bootstrap 4.1.3)
   // teste avec  : PHP 5.5.3 sur Mac OS 10.11
   // contexte    : Resabel
   // Copyright (c) 2017-2018 AMP. Tous droits reserves.
@@ -13,6 +14,7 @@
   // revision : 11-fev-2018 pchevaillier@gmail.com gestion valeur initiale
   // revision : 18-fev-2018 pchevaillier@gmail.com action
   // revision : 26-aug-2018 pchevaillier@gmail.com Resabel V2
+  // revision : 03-mar-2019 pchevaillier@gmail.com bootstrap 4.1 (boutons)
   // ------------------------------------------------------------------------
   // commentaires :
   // - en chantier
@@ -132,10 +134,10 @@
     
     protected function afficher_bouton_validation() {
       echo '<div class="form-group" id="btn_form">'; //<div class="col-sm-offset-2 col-sm-10">';
-      echo '<input class="btn btn-large btn-primary" type="submit" id="valid" value="'
+      echo '<input class="btn btn-large btn-outline-primary" type="submit" id="valid" value="'
       . $this->message_bouton_validation . '"></div>';
       echo '<div class="form-group" id="btn_form">'; //<div class="col-sm-offset-2 col-
-      echo '<input class="btn btn-large btn-default" type="reset" id="reset" value="Ré-initialiser la saisie"></div>'; // '</div>';
+      echo '<input class="btn btn-large btn-outline-secondary" type="reset" id="reset" value="Ré-initialiser la saisie"></div>'; // '</div>';
       
     }
     protected function afficher_fin() {
