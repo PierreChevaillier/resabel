@@ -37,7 +37,7 @@
     public function __construct($page, $membre) {
       //$this->def_titre("Connexion");
       $this->membre = $membre;
-      $this->message_bouton_validation = "Validation";
+      $this->message_bouton_validation = "Valider";
       $this->confirmation_requise = true;
       $info_mbr = isset($this->membre) ? '?mbr=' . $this->membre->code() : '';
       $script_traitement = 'php/scripts/membre_info_maj.php' . $info_mbr;

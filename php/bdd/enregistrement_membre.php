@@ -6,6 +6,7 @@
   // --------------------------------------------------------------------------
   // utilisation : php - require_once <chemin_vers_ce_fichier.php>
   // dependances : Classes Membre, Calendrier et Base_Donnees
+  //               dictionnaire de donnees cree dans personnes.php :
   // teste avec : PHP 7.1 sur Mac OS 10.14 ;
   //              PHP 7.0 sur hebergeur web
   // --------------------------------------------------------------------------
@@ -14,6 +15,7 @@
   // revision : 23-dec-2018 pchevaillier@gmail.com requetes preparees
   // revision : 28-dec-2018 pchevaillier@gmail.com renomme Enregistrement_Membre
   // revision : 03-mar-2019 pchevaillier@gmail.com fonction collecter
+  // revision : 16-mar-2019 pchevaillier@gmail.com collecter : criteres de selection 
   // --------------------------------------------------------------------------
   // commentaires :
   // - en chantier : pas complet
@@ -121,9 +123,9 @@
       $this->membre->def_actif($donnee->actif);
       $this->membre->def_autorise_connecter($donnee->connexion);
       $this->membre->niveau = $donnee->niveau;
-      $this->membre->genre = $donnee->genre;
-      $this->membre->prenom = utf8_encode($donnee->prenom);
-      $this->membre->nom = utf8_encode($donnee->nom);
+      $this->membre->genre = $donnee->genre; // deja en utf8 : pas besoin d'encoder
+      $this->membre->prenom = $donnee->prenom; // deja en utf8 : pas besoin d'encoder
+      $this->membre->nom = $donnee->nom;
       if ($donnee->date_naissance)
         $this->membre->date_naissance = $cal->def_depuis_date_sql($donnee->date_naissance);
       $this->membre->code_commune = $donnee->code_commune;
@@ -219,7 +221,7 @@
       }
     }
     
-    static function collecter($critere_selection, $composante, $role, & $personnes) {
+    static function collecter($criteres_selection, $composante, $role, & $personnes) {
       $status = false;
       $personnes = array();
       
@@ -233,14 +235,30 @@
         $source = $source .  ', ' .  $table_roles;
       //echo '<p>source ' . $source . '</p>';
       
-      $selection = (strlen($critere_selection) > 0) ? " WHERE " . $critere_selection . " " : "";
-      
-      //echo '<p>selection ' . $selection . '</p>';
+      $critere = "";
+      $i_crit = 0;
+      $n_crit = count($criteres_selection);
+      if ($n_crit > 0) {
+        $operateur = "";
+        $critere = $critere . " WHERE ";
+        foreach ($criteres_selection as $cle => $valeur) {
+          $operateur = ($i_crit > 0 && $i_crit < $n_crit) ? " AND " : "";
+          $i_crit = $i_crit + 1;
+          if ($cle == 'act')
+            $critere = $critere . $operateur . " actif = '" . $valeur . "' ";
+          if ($cle == 'cnx')
+            $critere = $critere . $operateur . " connexion = '" . $valeur . "' ";
+          if ($cle == 'prn')
+            $critere = $critere . $operateur . " prenom LIKE '" . $valeur . "%' ";
+          if ($cle == 'nom')
+            $critere = $critere . $operateur . $table_membres . ".nom LIKE '" . $valeur . "%' ";
+        }
+      }
       
       $tri =  " ORDER BY " . $table_membres . ".prenom, " . $table_membres . ".nom ";
       try {
         $bdd = Base_Donnees::accede();
-        $requete = "SELECT " . $table_membres . ".code AS code, genre, prenom, " . $table_membres . ".nom AS nom, telephone, courriel, " . $table_communes . ".nom AS nom_commune" . " FROM " . $source . " INNER JOIN " . $table_communes . " ON " . $table_communes. ".code = " . $table_membres . ".code_commune " . $selection . $tri;
+        $requete = "SELECT " . $table_membres . ".code AS code, genre, prenom, " . $table_membres . ".nom AS nom, telephone, courriel, " . $table_communes . ".nom AS nom_commune" . " FROM " . $source . " INNER JOIN " . $table_communes . " ON " . $table_communes. ".code = " . $table_membres . ".code_commune " . $critere . $tri;
         //echo '<p>' . $requete . '</p>';
         $resultat = $bdd->query($requete);
         

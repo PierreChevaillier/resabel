@@ -2,24 +2,24 @@
   // ---------------------------------------------------------------------------
   // description: Fonction de formatage des donnees stockees en base de donnees
   // contexte   : resabel
-  // Copyright (c) 2014-2017 AMP. All rights reserved
+  // Copyright (c) 2014-2019 AMP. All rights reserved
   // ---------------------------------------------------------------------------
-  // creation: 29-aug-2016 pchevaillier@gmail.com
-  // revision:
+  // creation : 29-aug-2016 pchevaillier@gmail.com
+  // revision : 04-mar-2019  pchevaillier@gmail.com, sep tel='.'
   // ---------------------------------------------------------------------------
   // commentaires :
   // attention :
   // a faire :
+  // verifier qu'avec ce separateur, le numero est appelable
   // ---------------------------------------------------------------------------
 
 function formatter_num_tel_affichage($numero) {
 	$tel = array();
-	$bon_separateur = " "; 
-	$mauvais_separateurs = array(".", "-");
+	$bon_separateur = ".";
+	$mauvais_separateurs = array(" ", "-");
 	$resultat = "";
   if (strlen($numero) === 0) {
-  	for ($i = 0; $i < 5; $i++)
-    	$tel[$i] = " ";
+    return "";
   } elseif (strlen($numero) === 10) {
     $tel[0] = substr($numero, -10, 2);
     $tel[1] = substr($numero, -8, 2);
@@ -30,8 +30,8 @@ function formatter_num_tel_affichage($numero) {
   	$x = str_replace($mauvais_separateurs, $bon_separateur, $numero);
     $tel = explode($bon_separateur, $x);
   }
-  $resultat = $tel[0] . $bon_separateur 
-  						. $tel[1] . $bon_separateur 
+  $resultat = $tel[0] . $bon_separateur
+  						. $tel[1] . $bon_separateur
   						. $tel[2] . $bon_separateur 
   						. $tel[3] . $bon_separateur 
   						. $tel[4];

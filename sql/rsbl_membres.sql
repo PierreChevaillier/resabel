@@ -57,7 +57,7 @@ CREATE TABLE `rsbl_membres` (
 --
 ALTER TABLE `rsbl_membres`
   ADD PRIMARY KEY (`code`),
-  ADD UNIQUE KEY `indentifiant` (`identifiant`);
+  ADD UNIQUE KEY `identifiant` (`identifiant`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

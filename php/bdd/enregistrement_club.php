@@ -2,7 +2,7 @@
   // ==========================================================================
   // contexte : Resabel - systeme de REServAtion de Bateau En Ligne
   // description : classe Enregistrement_Club : interface table 'Club'
-  // copyright (c) 2018 AMP. Tous droits reserves.
+  // copyright (c) 2018-2019 AMP. Tous droits reserves.
   // --------------------------------------------------------------------------
   // utilisation : php - require_once <chemin_vers_ce_fichier.php>
   // dependances : Classe Club et Base_Donnees
@@ -11,20 +11,21 @@
   // --------------------------------------------------------------------------
   // creation : 19-oct-2018 pchevaillier@gmail.com
   // revision : 09-dec-2018 pchevaillier@gmail.com
+  // revision : 11-mar-2019 pchevaillier@gmail.com logique de verifier_identite
   // --------------------------------------------------------------------------
   // commentaires :
-  // - en chantier : pas fonctionnel
+  // - en chantier
   // - lire, ajouter, modifier, supprimer, tester_exist, compter, collecter, verfier_xxx
+  // - utilise des requetes preparees (http://php.net/manual/fr/pdostatement.bindparam.php)
   // attention :
   // - 
   // a faire :
-  // - utiliser des requetes preparees
-  // http://php.net/manual/fr/pdostatement.bindparam.php
   // ==========================================================================
 
   require_once 'php/metier/club.php';
   
   class Erreur_Club_Introuvable extends Exception { }
+  class Erreur_Identifiant_Club extends Exception { }
   class Erreur_Mot_Passe_Club extends Exception { }
   
   // ==========================================================================
@@ -38,30 +39,24 @@
     public function club() { return $this->club; }
     public function def_club($club) { $this->club = $club; }
     
-    //static public function champs_recherche() {
-    //  return 'nom';
-   // }
-    
-    private function critere_recherche() {
-      $bdd = Base_Donnees::accede();
-      return "code = " . $bdd->quote($this->club->code()) ;
-    }
-    
-    public function verifier_identite($mot_passe) {
+    public function verifier_identite($identifiant, $mot_passe) {
       $identification_ok = false;
       $bdd = Base_Donnees::accede();
-      $requete= $bdd->prepare("SELECT code, mot_passe, nom FROM " . self::source() . " WHERE identifiant = :identifiant LIMIT 1");
-      $requete->bindParam(':identifiant', $this->club->identifiant, PDO::PARAM_STR);
+      $requete= $bdd->prepare("SELECT identifiant, mot_passe, nom FROM " . self::source() . " WHERE code = :code LIMIT 1");
+      $requete->bindParam(':code', $this->club()->code(), PDO::PARAM_INT);
       try {
 //        $resultat = $bdd->query($requete);
         $requete->execute();
         if ($club = $requete->fetch(PDO::FETCH_OBJ)) {//($resultat->rowCount() > 0) {
+          $this->club()->identifiant = $club->identifiant;
           
-          if ($club->mot_passe != $mot_passe) {
+          if (strtolower($club->identifiant) != strtolower($identifiant)) {
+            throw new Erreur_Identifiant_Club();
+            return $identification_ok;
+          } else if ($club->mot_passe != $mot_passe) {
             throw new Erreur_Mot_Passe_Club();
             return $identification_ok;
           } else {
-            $this->club->def_code($club->code);
             $this->club->def_nom(utf8_encode($club->nom));
             $identification_ok = true;
           }
@@ -92,11 +87,11 @@
     }
     
     public function lire() {
-      $critere = $this->critere_recherche();
       // TODO : completer avec tous les champs
-      $requete = "SELECT nom FROM " . self::source() . " WHERE " . $critere;
+      $bdd = Base_Donnees::accede();
+      $requete = $bdd->prepare("SELECT nom FROM " . self::source() . " WHERE code = :code LIMIT 1");
+      $requete->bindParam(':code', $this->club()->code(), PDO::PARAM_INT);
       try {
-        $bdd = Base_Donnees::accede();
         $resultat = $bdd->query($requete);
         $donnee = $resultat->fetch();
         $this->initialiser_depuis_table($donnee);

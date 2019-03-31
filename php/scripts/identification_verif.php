@@ -3,10 +3,9 @@
   // description: verifie les informations de connexion
   //              - identification de l'utilisateur pour la session
   // contexte   : resabel
-  // copyright (c) 2014-2018 AMP. All rights reserved
+  // copyright (c) 2014-2019 AMP. All rights reserved
   // ---------------------------------------------------------------------------
   // creation: 01-oct-2014 pchevaillier@gmail.com
-  // revision: 12-oct-2014 pchevaillier@gmail.com affichage menu
   // revision: 08-dec-2014 pchevaillier@gmail.com verification Id utilisateur
   // revision: 26-dec-2014 pchevaillier@gmail.com identification et mot de passe
   // revision: 26-jan-2015 pchevaillier@gmail.com chef de bord ou pas
@@ -18,7 +17,7 @@
   // revision: 02-jun-2015 pchevaillier@gmail.com restriction membres actifs
   // revision: 25-jul-2017 pchevaillier@gmail.com version 2 - utilisation PDO
   // revision: 06-oct-2018 pchevaillier@gmail.com reorganisation + nveau formulaire
-  // revision: 06-oct-2018 pchevaillier@gmail.com reorganisation + nveau formulaire
+  // revision: 10-mar-2019 pchevaillier@gmail.com logique identification club
   // ---------------------------------------------------------------------------
   // commentaires :
   // - en chantier V2 - pas completement teste
@@ -31,13 +30,14 @@
 
   // Les variables suivantes sont utilisees a partir d'ici
   // Variables toujours definies
-  unset($_SESSION['clb']); // identifiant du club
-  unset($_SESSION['n_clb']); // nom du club p.ex. AMP
+  unset($_SESSION['clb']);    // code du club
+  unset($_SESSION['id_clb']); // identifiant du club
+  unset($_SESSION['n_clb']);  // nom du club p.ex. AMP
   
   unset($_SESSION['prs']); // set (=true) si session 'perso' unset : session 'club'
   
   // les variables suivantes ne sont definies que si session 'perso'
-  unset($_SESSION['usr']); // si session perso: code membre personne connectee
+  unset($_SESSION['usr']);   // si session perso: code membre personne connectee
   unset($_SESSION['n_usr']); // si session perso: code usage membre personne connectee
  
   unset($_SESSION['act']); // personne connectee active (cf. classe Personne)
@@ -69,7 +69,9 @@
     exit();
 
   $identifiant = stripslashes(trim(utf8_decode($_POST['id'])));
-  //$identifiant = strip_tags(strtolower($identifiant));
+  //$identifiant = strtolower($identifiant);
+  // peut etre un identifiant de club (maj et minuscules sont conserves)
+  // ou de personne (ou passe alors l'identifiant en minuscules (cf plus loin)
   $motdepasse = stripslashes(trim($_POST['mdp_crypte']));
   
   $erreur_identification = (strlen($identifiant) === 0);
@@ -102,22 +104,26 @@
   // ou connection en tant que 'club'
   
   // Test si connection de type 'club' avec bon identifiant et mot de passe du club
-  $club = new Club(0);
-  $club->identifiant = $identifiant;
+  $club = new Club($code_club);
+  //$club->identifiant = $identifiant;
   $enreg_club = new Enregistrement_Club();
   $enreg_club->def_club($club);
   $session_club = false;
   
   try {
-    $session_club = $enreg_club->verifier_identite($motdepasse);
+    $session_club = $enreg_club->verifier_identite($identifiant, $motdepasse);
   } catch (Erreur_Mot_Passe_Club $e) {
     // l'identifiant est bien celui du club, mais ce n'est le bon mot de passe
     header("location: ../../connexion.php?err=mdp&c=" . $code_club . "&s=" . $code_site);
     exit();
-  } catch (Erreur_Club_Introuvable $e) {
+  } catch (Erreur_Identifiant_Club $e) {
     $session_club = false;
     // pas d'erreur a ce stade : l'ientifiant est peut-etre celui d'une personne
+  } catch (Erreur_Club_Introuvable $e) {
+    header("location: ../../connexion.php?err=id&c=" . $code_club . "&s=" . $code_site);
+    exit();
   }
+  $_SESSION['id_clb'] = $club->sigle();
   
   if ($session_club) {
     if (!isset($_GET['clb'])) {
@@ -135,7 +141,7 @@
   // autorise a se connecter
   
   $membre = new Membre(0);
-  $membre->identifiant = $identifiant;
+  $membre->identifiant = strtolower($identifiant);
 
   $enreg_membre = new Enregistrement_Membre();
   $enreg_membre->def_membre($membre);
@@ -185,13 +191,15 @@
   // --------------------------------------------------------------------------
   // --- Affichage contextuel en fonction du resultat de l'identification
   //     cas d'une identification personnelle (cas du club traite plus haut)
+ 
   if ($erreur_identification)
     header("location: ../../connexion.php?err=cnx&c=" . $code_club . "&s=" . $code_site);
   elseif ($erreur_mot_passe)
     header("location: ../../connexion.php?err=mdp&c=" . $code_club . "&s=" . $code_site);
-  elseif (!$_SESSION['act'])
-    header("location: ../../page_tableau_journalier_sorties.php?ta=os&d=" . Jour::aujourdhui()->jour);
-  elseif ($permanence) {
+  elseif (!$_SESSION['act']) {
+    header("location: ../../page_temporaire.php");
+   // header("location: ../../page_tableau_journalier_sorties.php?ta=os&d=" . Jour::aujourdhui()->jour);
+  } elseif ($permanence) {
     $j0 = date("N");
     $j = max(6, $j0);
     $jperm = mktime(0, 0, 0, date("m"), date("d") + $j - $j0, date("Y"));

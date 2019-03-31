@@ -22,11 +22,11 @@
 
 body {
   padding: 0 0 0 0;
-  margin-top:0;
-  margin-bottom:0;
-  background-color:white;
-  font-family:Avantgarde,CenturyGothic,Arial,Helvetica;
-  font-size:medium;
+  margin-top: 0;
+  margin-bottom: 0;
+  background-color: white;
+  font-family: Avantgarde,CenturyGothic,Arial,Helvetica;
+  font-size: medium;
 }
 
 .entete_sect {
@@ -67,8 +67,19 @@ p.lead {
 }
 */
 
+.rsbl-form {
+  margin-top: 0;
+  margin-bottom: 0;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
 .form-group {
    text-align: left;
+}
+
+.form-btn {
+  text-align: center;
 }
 
 /* --- Elements identifies --------------------------------------------------- */
@@ -93,8 +104,3 @@ p.lead {
   width: 50%;
   text-align: center;
 }
-
-#btn_form {
-  text-align: center;
-}
-

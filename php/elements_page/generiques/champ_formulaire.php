@@ -156,7 +156,7 @@
       if (isset($_GET['i']) && ($_GET['i'] == $this->id()) && isset($_GET['v']))
           $this->def_valeur($_GET['v']);
       $affiche = ($this->valeur_definie())? 'value="' . $this->valeur() . '" ' : '';
-      echo $affiche . ' />';
+      echo $affiche . ' >';
       if (isset($_GET['r']) && isset($_GET['i']) && ($_GET['i'] == $this->id())) {
         $msg = "<p id=\"" . $this->id() . "_msg\" class=\"text-danger\">Erreur : ";
         if ($_GET['r'] == 1)

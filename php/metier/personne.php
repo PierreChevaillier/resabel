@@ -36,6 +36,10 @@
     public $telephone = "";
     public $telephone2 = "";
     public $courriel = "";
+    
+    public $est_membre_actif = False;
+    public $est_autorise_connecte = False;
+    public $est_nouveau = False;
  
     public function __construct($code) {
       $this->code = $code;
@@ -44,18 +48,6 @@
     public function def_code($valeur) { $this->code = $valeur; }
     public function code() { return $this->code; }
 	
-    public function formatter_envoie_courriel($message) {
-      $club = isset($_SESSION['n_clb']) ? $_SESSION['n_clb'] : "";
-      $signature = isset($_SESSION['n_usr']) ? $_SESSION['n_usr'] : "";
-      $code_html = "<a href=\"mailto:" . $this->courriel . "?subject=" . $club . " Pour " . $this->prenom . " " . $this->nom . "&body=Bonjour " . $this->prenom . ",%0D%0A " . $message . "%0D%0A%0D%0A" . $signature . "\">" . $this->courriel . "</a>";
-      
-      // AMP pour Agnès
-      // Bonjour Agnès,
-      // message
-      // Pierre Chevaillier
-      // Aviron de Mer de Plougonvelon
-      return $code_html;
-    }
 /*
     static public function recherche_membres($critere_selection, $critere_tri, & $personnes) {
       $status = false;

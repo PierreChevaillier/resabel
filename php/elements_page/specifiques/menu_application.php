@@ -2,7 +2,7 @@
   // ==========================================================================
   // contexte : Resabel - systeme de REServAtion de Bateau En Ligne
   // description : definition du menu de navigation de l'application
-  // copyright (c) 2018 AMP. Tous droits reserves.
+  // copyright (c) 2018-2019 AMP. Tous droits reserves.
   // --------------------------------------------------------------------------
   // utilisation : php - require_once <nom_-fichier.php>
   // dependances : bootstrap 4.x
@@ -11,6 +11,7 @@
   // --------------------------------------------------------------------------
   // creation : 14-oct-2018 pchevaillier@gmail.com
   // revision : 29-dec-2018 pchevaillier@gmail.com deconnexion
+  // revision : 11-mar-2019 pchevaillier@gmail.com $_SESSION['prs'] pas necessairement defini
   // --------------------------------------------------------------------------
   // commentaires :
   // -
@@ -60,13 +61,13 @@
       echo '<li class="nav-item"><a class="nav-link" href="agendas.php">Agendas</a></li>';
       echo '<li class="nav-item"><a class="nav-link" href="#">Permanences</a></li>';
       echo '<li class="nav-item"><a class="nav-link" href="#">Indisponibilités</a></li>';
-      echo '<li class="nav-item"><a class="nav-link" href="contacts.php">Contacts</a></li>';
+      echo '<li class="nav-item"><a class="nav-link" href="personnes.php?a=l&act=1&cnx=1">Personnes</a></li>';
       echo '<li class="nav-item"><a class="nav-link" href="#">Bateaux</a></li>';
       
       if (isset($_SESSION['adm']) && $_SESSION['adm'])
           $this->afficher_menu_administration();
 
-      if ($_SESSION['prs'])
+      if (isset($_SESSION['prs']) && $_SESSION['prs'])
           echo '<li class="nav-item"><a class="nav-link" href="membre.php?mbr=' . $_SESSION['usr'] . '">' .  htmlspecialchars($_SESSION['n_usr']) . '</a></li>';
 
       echo '<li class="nav-item"><a class="nav-link"  href="php/scripts/deconnexion.php">Déconnexion</a></li>';
