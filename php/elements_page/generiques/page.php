@@ -11,14 +11,15 @@
   // creation: 04-jun-2017 pchevaillier@gmail.com
   // revision: 17-jun-2018 pchevaillier@gmail.com adaptation resabel V2
   // revision: 20-aug-2018 pchevaillier@gmail.com ajout feuilles de style
-  // revision: 02-mar-2019 pchevaillier@gmail.com version 4.1.3 de bootsrap
+  // revision: 02-mar-2019 pchevaillier@gmail.com version 4.1.3 de bootstrap
+  // revision: 05-avr-2019 pchevaillier@gmail.com version 4.3.1 de bootstrap
   // --------------------------------------------------------------------------
   // commentaires :
   // - https://getbootstrap.com/docs/4.1/getting-started/introduction/
   // attention :
   // -
   // a faire :
-  // -
+  // - ajouter favicon : <link rel="icon" href="data:;base64,iVBORw0KGgo=">
   // ==========================================================================
 
   // --- Classes utilisees
@@ -81,7 +82,12 @@
   }
   
   protected final function afficher_corps() {
-  	echo "      <div class=\"container-fluid\" style=\"padding:2px;\">\n";
+    // Le conteneur des elements de la page a comme id celui de la page
+    // ceci permet de l'identifier comme le parent d'elements du document HTML
+    // qui seraient crees dynamiquement par un script
+    $html_id = (strlen($this->id()) > 0) ? " id=\"" . $this->id() . "\" " : " ";
+    echo "      <div class=\"container-fluid\"" . $html_id . " style=\"padding:2px;\">\n";
+    
     foreach ($this->elements_haut as $e) $e->afficher();
     foreach ($this->contenus as $e) $e->afficher();
     foreach ($this->elements_bas as $e) $e->afficher();
@@ -103,20 +109,23 @@
       <meta name=\"viewport\" content=\"width=device-width, initial-scale=1, shrink-to-fit=no\" />\n";
     
     // Bootstrap CSS
-    echo "      <link href=\"https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css\" rel=\"stylesheet\" integrity=\"sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO\" crossorigin=\"anonymous\" />\n";
+    echo "      <link href=\"https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css\" rel=\"stylesheet\" integrity=\"sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T\" crossorigin=\"anonymous\" />\n";
     
     // Feuille de style locale (screen)
     foreach ($this->feuilles_style as $css)
       echo "      <link rel=\"stylesheet\" href=\"" . get_include_path() . "/" . $css . "\" media=\"screen\" />\n";
     
     // Jquery
+    echo "      <script src=\"https://code.jquery.com/jquery-3.3.1.min.js\" integrity=\"sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=\" crossorigin=\"anonymous\"></script>\n";
+    /*
+     // semble incompatible avec jquiery-3.3.1.min.js
     echo "      <script src=\"https://code.jquery.com/jquery-3.3.1.slim.min.js\" integrity=\"sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo\" crossorigin=\"anonymous\"></script>\n";
-  
-    //Popper
-    echo "      <script src=\"https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js\" integrity=\"sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49\" crossorigin=\"anonymous\"></script>\n";
+  */
+    // Popper (requis pour bootstrap modal)
+    echo "      <script src=\"https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js\" integrity=\"sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1\" crossorigin=\"anonymous\"></script>\n";
     
     // Bootstrap javascript
-    echo "      <script src=\"https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js\" integrity=\"sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy\" crossorigin=\"anonymous\"></script>\n";
+    echo "      <script src=\"https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js\" integrity=\"sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM\" crossorigin=\"anonymous\"></script>\n";
     
     foreach ($this->javascripts as $scripts) {
       echo "      <script src=\"" . get_include_path() . $scripts . "\"></script>\n";

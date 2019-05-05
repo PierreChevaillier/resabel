@@ -27,9 +27,13 @@
   class Personne {
     protected $code = 0;
     public $identifiant = "";
+    
     public $genre = "F";
+    public function civilite() { return ($this->genre == "F") ? "Mme" : "M."; }
     public $prenom = "";
     public $nom = "";
+    
+    
     public $code_commune = 0;
     public $nom_commune = ""; // pas dans la table
     public $rue = "";
@@ -39,7 +43,7 @@
     
     public $est_membre_actif = False;
     public $est_autorise_connecte = False;
-    public $est_nouveau = False;
+    //public $est_nouveau = False;
  
     public function __construct($code) {
       $this->code = $code;

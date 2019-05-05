@@ -83,6 +83,7 @@
     protected function afficher_debut() {
       if ($this->a_un_titre())
         echo '<div class="well well-sm"><p class="lead">' . $this->titre() . '</p></div>';
+      echo "\n";
       echo '<form class="form-horizontal rsbl-form" role="form" id="' . $this->id() . '" name="' . $this->id() . '" onsubmit="return verification_formulaire(this)"  method="' . $this->methode . '" action="' . $this->script_traitement . '">';
       echo '<input type="hidden" name="a" value="' . $this->action . '" />';
       //echo '<input type="hidden" name="id" value="' . $this->id_objet . '" />';

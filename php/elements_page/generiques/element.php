@@ -25,6 +25,7 @@
     public function def_page($page_web) {
       $this->page = $page_web;
     }
+    public function page() { return $this->page; }
     
     private $titre = "";
     public function titre() { return $this->titre; }

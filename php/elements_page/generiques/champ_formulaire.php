@@ -8,7 +8,7 @@
   // teste avec : PHP 5.5.3 sur Mac OS 10.11 ;
   //              PHP 7.1 sur Mac OS 10.14  (depuis 14-oct-2018)
   //              PHP 7.0 sur hebergeur web
-  // Copyright (c) 2017-2018 AMP. Tous droits reserves.
+  // Copyright (c) 2017-2019 AMP. Tous droits reserves.
   // ------------------------------------------------------------------------
   // creation : 21-oct-2017 pchevaillier@gmail.com
   // revision : 04-fev-2018 pchevaillier@gmail.com mise en forme, champ montant
@@ -18,6 +18,7 @@
   // revision : 14-oct-2018 pchevaillier@gmail.com class Champ_Mot_Passe
   //            id dans Element ; suppression utlisation grille bootstrap
   // revision : 29-dec-2018 pchevaillier@gmail.com gestion erreurs Champ_Nom
+  // revision : 30-avr-2019 pchevaillier@gmail.com Choix, Groupe_Choix
   // ------------------------------------------------------------------------
   // commentaires :
   // attention :
@@ -119,6 +120,7 @@
     public function initialiser() {
       parent::initialiser();
       $this->options = array('F' => 'Madame', 'H' => 'Monsieur');
+      
     }
   }
 
@@ -263,7 +265,9 @@
       echo ' id="' . $this->id() . '"  name="' . $this->id() . '"';
       if (strlen($this->fonction_controle_saisie) > 0)
         echo 'onchange="' . $this->fonction_controle_saisie . '(this)" ';
-      echo ' type="number" min="' . $this->valeur_min . '" max="' . $this->valeur_max . '" value="' . $this->valeur_min . '"/>';
+      echo ' type="number" min="' . $this->valeur_min
+        . '" max="' . $this->valeur_max . '" value="'
+        . $this->valeur_min . '"/>';
     }
   }
   
@@ -278,5 +282,31 @@
     }
   }
 
+  /*
+   * tentative infructueuse
+   *
+  class Choix {
+    public $id = '';
+    public $valeur = '';
+    public $label = '';
+    public $actif = false;
+  }
+  
+  class Groupe_Choix extends Champ_Formulaire {
+    public $choix = array();
+    protected function afficher_corps() {
+      echo '<fieldset>';
+      foreach ($this->choix as $choix) {
+        $selection = ($choix->actif) ? ' checked' : ' ';
+        echo '<div><input type="checkbox" id="' . $choix->id
+          . '" name="' . $this->id() . '"' . $selection
+          . ' value="' . $choix->valeur . '">';
+        echo '<label for="'  . $choix->id . '">&nbsp;&nbsp;' . $choix->label
+          . '</label></div>';
+      }
+      echo '</fieldset>';
+    }
+  }
+   */
   // ===========================================================================
 ?>

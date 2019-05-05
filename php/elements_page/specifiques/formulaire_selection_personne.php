@@ -23,6 +23,8 @@
   require_once 'php/elements_page/generiques/formulaire.php';
   require_once 'php/elements_page/generiques/champ_formulaire.php';
   
+   require_once 'php/bdd/enregistrement_commune.php';
+  
   // ==========================================================================
   class Formulaire_Selection_Personne extends Formulaire {
     
@@ -51,6 +53,32 @@
         $item->def_titre("Nom (début)");
         if (isset($_POST['nom']) && $_POST['nom'] != "")
           $item->def_valeur($_POST['nom']);
+        $this->ajouter_champ($item);
+        
+        $item = new Champ_Selection("cmn");
+        $item->def_titre("Commune");
+        $item->valeurs_multiples = false;
+        $communes = array();
+        Enregistrement_Commune::collecter("acces = 'O'"," nom ASC", $communes);
+        $item->options[0] = "Toutes les communes";
+        foreach ($communes as $code => $c)
+          $item->options[$code] = $c->nom();
+        if (isset($_POST['cmn']))
+          $item->def_valeur($_POST['cmn']);
+        $this->ajouter_champ($item);
+
+        $item = new Champ_Selection('cdb');
+        $item->def_titre("Chef.fe de bord");
+        $item->options = array(0 => 'Tout le monde', 1 => 'Oui', 2 => 'Non');
+        if (isset($_POST['cdb']))
+          $item->def_valeur($_POST['cdb']);
+        $this->ajouter_champ($item);
+        
+        $item = new Champ_Selection('niv');
+        $item->def_titre("Expérience");
+        $item->options = array(0 => 'Tout le monde', 1 => 'Débutant.e.s', 2 => 'Confirmé.e.s');
+        if (isset($_POST['niv']))
+          $item->def_valeur($_POST['niv']);
         $this->ajouter_champ($item);
         
         parent::initialiser();

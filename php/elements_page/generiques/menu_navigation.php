@@ -34,7 +34,7 @@
     }
     
     protected function afficher_debut() {
-      echo "        <nav class=\"navbar navbar-expand-lg navbar-light\" role=\"navigation\">\n";
+      echo "\n        <nav class=\"navbar navbar-expand-lg navbar-light\" role=\"navigation\">\n";
     
       // Lien vers le site web du club
       echo "\n<a class=\"navbar-brand\" href=\"" . htmlspecialchars(Site_Web::accede()->adresse_racine()) . "\" target=\"_new\">" . htmlspecialchars(Site_Web::accede()->sigle()) . "</a>\n";

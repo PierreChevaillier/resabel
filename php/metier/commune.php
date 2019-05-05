@@ -1,8 +1,8 @@
 <?php
   // ==========================================================================
   // contexte : Resabel - systeme de REServAtion de Bateau En Ligne
-  // description : classe Club
-  // copyright (c) 2018 AMP. Tous droits reserves.
+  // description : classe Commune
+  // copyright (c) 2018-2019 AMP. Tous droits reserves.
   // --------------------------------------------------------------------------
   // utilisation : php - require_once <chemin_vers_ce_fichier.php>
   // dependances : 
@@ -10,7 +10,7 @@
   //              PHP 7.0 sur hebergeur web
   // --------------------------------------------------------------------------
   // creation : 07-jan-2019 pchevaillier@gmail.com
-  // revision :
+  // revision : 29-avr-2019 pchevaillier@gmail.com constructeur avec code
   // --------------------------------------------------------------------------
   // commentaires :
   // source de donnees :
@@ -27,7 +27,7 @@
     public function code() { return $this->code; }
     public function def_code($valeur) { $this->code = $valeur;}
     
-    private $code_postal =  0;
+    private $code_postal = 0;
     public function code_postal() { return $this->code_postal; }
     public function def_code_postal($valeur) { $this->code_postal = $valeur;}
     

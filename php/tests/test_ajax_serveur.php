@@ -10,7 +10,7 @@
   //              PHP 7.0 sur hebergeur web
   // --------------------------------------------------------------------------
   // creation : 17-mar-2019 pchevaillier@gmail.com
-  // revision :
+  // revision : 01-avr-2019 pchevaillier@gmail.com JSON
   // --------------------------------------------------------------------------
   // commentaires :
   // -
@@ -22,8 +22,22 @@
   // echo(json_encode($tuple_requete_sql)
   // ==========================================================================
 
-  $code = $_GET['mbr'];
-  $valeur = $_GET['v'];
-  echo $code . ':' . $valeur;
+  if (isset($_GET['fmt']) && $_GET['fmt'] == 'json') {
+    // on recoit :
+    $code = $_GET['code'];
+    $niveau = $_GET['niveau'];
+    
+    // on retourne :
+    $donnee = array('code' => $code, 'niveau' => $niveau);
+    $resultat_json = json_encode($donnee);
+    echo $resultat_json;
+    
+  } else {
+    
+    $code = $_GET['mbr'];
+    $valeur = $_GET['v'];
+    echo $code . ':' . $valeur;
+  }
+  
   // ==========================================================================
 ?>

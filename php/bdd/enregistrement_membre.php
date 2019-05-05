@@ -15,15 +15,18 @@
   // revision : 23-dec-2018 pchevaillier@gmail.com requetes preparees
   // revision : 28-dec-2018 pchevaillier@gmail.com renomme Enregistrement_Membre
   // revision : 03-mar-2019 pchevaillier@gmail.com fonction collecter
-  // revision : 16-mar-2019 pchevaillier@gmail.com collecter : criteres de selection 
+  // revision : 16-mar-2019 pchevaillier@gmail.com collecter : criteres de selection
+  // revision : 04-mai-2019 pchevaillier@gmail.com modifier_niveau_debutants
   // --------------------------------------------------------------------------
   // commentaires :
   // - en chantier : pas complet
-  // - lire, ajouter, modifier, supprimer, tester_exist, compter, collecter, verfier_xxx
+  // - lire, ajouter, modifier, supprimer,
+  //   tester_existe, compter, collecter, verfier_xxx
   // attention :
   // - 
   // a faire :
-  // -
+  // - dans lire : recuperer la commune
+  // - ajouter lire_roles : ? personne qui depend de role ou l'inverse ?
   // ==========================================================================
 
   require_once 'php/metier/membre.php';
@@ -134,7 +137,8 @@
       $this->membre->telephone2 = $donnee->telephone2;
       $this->membre->courriel = $donnee->courriel;
       $this->membre->def_chef_de_bord($donnee->cdb);
-      $this->membre->date_derniere_connexion = $cal->def_depuis_timestamp_sql($donnee->derniere_connexion);
+      if ($donnee->derniere_connexion)
+        $this->membre->date_derniere_connexion = $cal->def_depuis_timestamp_sql($donnee->derniere_connexion);
       $this->membre->num_licence = $donnee->num_licence;
     }
     
@@ -169,6 +173,55 @@
         die("Erreur Mise a jour " . self::source() . " date derniere connexion pour " . $code . " : ligne " . $e->getLine() . " :<br /> ". $e->getMessage());
       }
     }
+    
+    public function modifier_niveau($valeur) {
+      $bdd = Base_Donnees::accede();
+      try {
+        $requete= $bdd->prepare("UPDATE " . self::source()
+                                . " SET niveau = :niv WHERE code = :code_membre");
+        $code = $this->membre->code();
+        $requete->bindParam(':code_membre', $code, PDO::PARAM_INT);
+        $requete->bindParam(':niv', $valeur, PDO::PARAM_INT);
+        $requete->execute();
+        $this->membre->niveau = $valeur;
+        $requete->closeCursor();
+      } catch (PDOexception $e) {
+        Base_Donnees::sortir_sur_exception(self::source(), $e);
+      }
+
+    }
+    
+    
+    public function modifier_cdb($valeur) {
+      $bdd = Base_Donnees::accede();
+      try {
+        $requete= $bdd->prepare("UPDATE " . self::source()
+                                . " SET cdb = :cdb WHERE code = :code_membre");
+        $code = $this->membre->code();
+        $requete->bindParam(':code_membre', $code, PDO::PARAM_INT);
+        $requete->bindParam(':cdb', $valeur, PDO::PARAM_INT);
+        $requete->execute();
+        $this->membre->def_chef_de_bord($valeur);
+      } catch (PDOexception $e) {
+        Base_Donnees::sortir_sur_exception(self::source(), $e);
+      }
+
+    }
+    
+    public static function modifier_niveaux($valeur_actuelle, $nouvelle_valeur) {
+      $bdd = Base_Donnees::accede();
+      try {
+        $requete= $bdd->prepare("UPDATE " . self::source()
+                                . " SET niveau = :nouveau WHERE niveau = :actuel AND actif = 1");
+        $requete->bindParam(':actuel', $valeur_actuelle, PDO::PARAM_INT);
+        $requete->bindParam(':nouveau', $nouvelle_valeur, PDO::PARAM_INT);
+        $requete->execute();
+      } catch (PDOexception $e) {
+        Base_Donnees::sortir_sur_exception(self::source(), $e);
+      }
+       $requete->closeCursor();
+    }
+    
     
     public function modifier() {
       $bdd = Base_Donnees::accede();
@@ -223,6 +276,7 @@
     
     static function collecter($criteres_selection, $composante, $role, & $personnes) {
       $status = false;
+      $cal = new Calendrier();
       $personnes = array();
       
       // definition de la source des donnees
@@ -238,6 +292,9 @@
       $critere = "";
       $i_crit = 0;
       $n_crit = count($criteres_selection);
+      $cdb_oui = false;
+      $cdb_non = false;
+      
       if ($n_crit > 0) {
         $operateur = "";
         $critere = $critere . " WHERE ";
@@ -246,30 +303,58 @@
           $i_crit = $i_crit + 1;
           if ($cle == 'act')
             $critere = $critere . $operateur . " actif = '" . $valeur . "' ";
-          if ($cle == 'cnx')
+          elseif ($cle == 'cnx')
             $critere = $critere . $operateur . " connexion = '" . $valeur . "' ";
-          if ($cle == 'prn')
+          elseif ($cle == 'prn')
             $critere = $critere . $operateur . " prenom LIKE '" . $valeur . "%' ";
-          if ($cle == 'nom')
+          elseif ($cle == 'nom')
             $critere = $critere . $operateur . $table_membres . ".nom LIKE '" . $valeur . "%' ";
+          elseif ($cle == 'cmn' && $valeur > 0)
+            $critere = $critere . $operateur . " code_commune = '" . $valeur . "' ";
+          elseif ($cle == 'cdb' && $valeur > 0)
+            $critere = $critere . $operateur . " cdb = '" . (($valeur == 2) ? 0 : 1) . "' ";
+          elseif ($cle == 'niv' && $valeur > 0)
+              $critere = $critere . $operateur . " niveau " . (($valeur >= 2) ? ">=" : "<") . "2 ";
+          else
+            echo $cle . ' ' . $valeur . '<br />';
         }
       }
       
       $tri =  " ORDER BY " . $table_membres . ".prenom, " . $table_membres . ".nom ";
       try {
         $bdd = Base_Donnees::accede();
-        $requete = "SELECT " . $table_membres . ".code AS code, genre, prenom, " . $table_membres . ".nom AS nom, telephone, courriel, " . $table_communes . ".nom AS nom_commune" . " FROM " . $source . " INNER JOIN " . $table_communes . " ON " . $table_communes. ".code = " . $table_membres . ".code_commune " . $critere . $tri;
+        $requete = "SELECT " . $table_membres . ".code AS code, identifiant, genre, prenom, " . $table_membres . ".nom AS nom, telephone, telephone2, rue, courriel, actif, connexion, niveau, date_naissance, cdb, derniere_connexion, num_licence, " . $table_communes . ".nom AS nom_commune" . " FROM " . $source . " INNER JOIN " . $table_communes . " ON " . $table_communes . ".code = " . $table_membres . ".code_commune " . $critere . $tri;
         //echo '<p>' . $requete . '</p>';
         $resultat = $bdd->query($requete);
         
         while ($donnee = $resultat->fetch(PDO::FETCH_OBJ)) {
-          $personne = new Personne($donnee->code);
+          $personne = new Membre($donnee->code);
+          
+          // Proprietes d'une personne
           $personne->genre = $donnee->genre;
           $personne->prenom = $donnee->prenom;
           $personne->nom = $donnee->nom;
           $personne->telephone = $donnee->telephone;
+          $personne->telephone2 = $donnee->telephone2;
           $personne->courriel = $donnee->courriel;
           $personne->nom_commune = $donnee->nom_commune;
+          
+          $personne->rue = $donnee->rue;
+          $personne->telephone2 = $donnee->telephone2;
+          
+          // proprietes d'un membre
+          
+          $personne->identifiant = $donnee->identifiant;
+          $personne->def_actif($donnee->actif);
+          $personne->def_autorise_connecter($donnee->connexion);
+          $personne->niveau = $donnee->niveau;
+          if ($donnee->date_naissance)
+            $personne->date_naissance = $cal->def_depuis_date_sql($donnee->date_naissance);
+           $personne->def_chef_de_bord($donnee->cdb);
+          if ($donnee->derniere_connexion)
+            $personne->date_derniere_connexion = $cal->def_depuis_timestamp_sql($donnee->derniere_connexion);
+          $personne->num_licence = $donnee->num_licence;
+          
           $personnes[$personne->code()] = $personne;
         }
       

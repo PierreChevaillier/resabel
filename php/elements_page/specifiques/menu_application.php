@@ -36,8 +36,8 @@
       echo '<a class="nav-link dropdown-toggle" href="#" id="mnu_inscr" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Inscriptions</a>';
       echo ' <div class="dropdown-menu" aria-labelledby="mnu-inscr">';
       if (isset($_SESSION['prs']))
-          echo '<a class="dropdown-item" href="tests/vide.php">Individuelle</a>';
-      echo '<a class="dropdown-item" href="tests/vide.php">Equipage</a>';
+          echo '<a class="dropdown-item" href="page_temporaire.php">Individuelle</a>';
+      echo '<a class="dropdown-item" href="page_temporaire.php">Equipage</a>';
       echo '</div></li>';
     }
     
@@ -46,8 +46,9 @@
       echo ' <li class="nav-item dropdown">';
       echo '<a class="nav-link dropdown-toggle" href="#" id="mnu_admin" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Administration</a>';
       echo ' <div class="dropdown-menu" aria-labelledby="mnu-admin">';
-      echo '<a class="dropdown-item" href="tests/vide.php">Equipe permanences</a>';
-      echo '<a class="dropdown-item" href="tests/vide.php">Visiteurs</a>';
+      echo '<a class="dropdown-item" href="page_temporaire.php">Equipe permanences</a>';
+      echo '<a class="dropdown-item" href="debutants.php">Débutants</a>';
+      echo '<a class="dropdown-item" href="page_temporaire.php">Visiteurs</a>';
       echo '</div></li>';
     }
     

@@ -25,7 +25,7 @@
   
   require_once 'php/metier/membre.php';
   require_once 'php/elements_page/generiques/element.php';
-  
+  require_once 'php/elements_page/generiques/modal.php';
   
   class Afficheur_Telephone {
     
@@ -85,8 +85,31 @@
   // --------------------------------------------------------------------------
   class Menu_Actions_Personne extends Element {
     public $personne;
+    public $afficheur_info;
+    
+    public function __construct($page) {
+      $this->def_page($page);
+      // ajour du script qui declenchera l'affichage des informations sur le personne
+      $page->javascripts[] = "js/requete_info_personne.js";
+      $page->javascripts[] = "js/requete_maj_statut_cdb.js";
+      $page->javascripts[] = "js/requete_maj_niveau.js";
+      
+      // element modal pour affichage des informations sur la personne
+      $this->afficheur_info = new Element_Modal();
+      $this->afficheur_info->def_id('aff_mbr');
+      $this->afficheur_info->def_titre('Informations contact');
+      $this->page()->ajoute_contenu($this->afficheur_info);
+      
+      // element modal pour indiquer le resultat d'une action
+      $this->message_modal = new Element_Modal();
+      $this->message_modal->def_id('aff_msg');
+      $this->message_modal->def_titre('Action effectuée');
+      $this->page()->ajoute_contenu($this->message_modal);
+       
+    }
     
     public function initialiser() {
+     
     }
     
     protected function afficher_debut() {
@@ -95,11 +118,12 @@
     }
     
     protected function afficher_actions() {
-      echo '<a class="dropdown-item" href="#">Afficher</a>';
-      if (isset($_SESSION['adm']))
-        echo '<a class="dropdown-item" href="membre.php?mbr=' . $this->personne->code() . '">Modifier</a>';
+      echo '<a class="dropdown-item" data-toggle="modal" data-target="#aff_mbr" href="#" onclick="return requete_info_personne(' . $this->personne->code() .', \'aff_mbr\');">Afficher</a>';
       if (isset($_SESSION['prs']) && isset($_SESSION['usr']) && $this->personne->code() == $_SESSION['usr'])
         echo '<a class="dropdown-item" href="membre.php?mbr=' . $this->personne->code() . '">Modifier mes données</a>';
+      elseif (isset($_SESSION['adm'])) {
+        echo '<a class="dropdown-item" href="membre.php?mbr=' . $this->personne->code() . '">Modifier</a>';
+      }
     }
     protected function afficher_corps() {
       $this->afficher_actions();
@@ -117,9 +141,17 @@
     protected function afficher_actions() {
       parent::afficher_actions();
       if (isset($_SESSION['adm'])) {
+        // Changements de statuts possibles (reversibles)
         if (!$this->personne->est_chef_de_bord())
-          echo '<a class="dropdown-item" href="#">Passer chef de bord</a>';
-           
+          echo '<a class="dropdown-item" id="ctrl_cdb" data-toggle="modal" data-target="#aff_msg" href="#" onclick="return requete_maj_statut_cdb(this, ' . $this->personne->code() .', 1, \'aff_msg\');">Passer chef de bord</a>';
+        else
+          echo '<a class="dropdown-item" id="ctrl_cdb" data-toggle="modal" data-target="#aff_msg" href="#" onclick="return requete_maj_statut_cdb(this, ' . $this->personne->code() .', 0, \'aff_msg\');">Plus chef de bord</a>';
+        
+        if ($this->personne->est_debutant())
+          echo '<a class="dropdown-item" id="ctrl_nouv" data-toggle="modal" data-target="#aff_msg" href="#" onclick="return requete_maj_niveau(this, ' . $this->personne->code() .', 2, \'aff_msg\');">Passer non débutant</a>';
+        elseif (!$this->personne->est_chef_de_bord())
+          echo '<a class="dropdown-item" id="ctrl_nouv" data-toggle="modal" data-target="#aff_msg" href="#" onclick="return requete_maj_niveau(this, ' . $this->personne->code() .', 1, \'aff_msg\');">Repasser débutant</a>';
+        
         if ($this->personne->est_actif())
           echo '<a class="dropdown-item" href="#">Désactiver compte</a>';
         else
@@ -127,6 +159,6 @@
         }
     }
    }
-     
+  
   // ==========================================================================
 ?>

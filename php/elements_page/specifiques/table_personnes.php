@@ -32,7 +32,15 @@
     private $personnes = array();
     private $composante = '';
     private $role = '';
+    
+    protected $menu_action_personne;
     //private $legende = 'Liste des membres';
+    
+    public function __construct($page) {
+      $this->def_page($page);
+      //$this->menu_action_personne = new Menu_Actions_Personne($page);
+      $this->menu_action_personne = new Menu_Actions_Membre($page);
+    }
     
     public function initialiser() {
       $personnes = array();
@@ -48,10 +56,9 @@
     }
     
     protected function afficher_menu_actions($personne) {
-      $menu = new Menu_Actions_Personne();
-      $menu->personne = $personne;
-      $menu->initialiser();
-      $menu->afficher();
+      $this->menu_action_personne->personne = $personne;
+      $this->menu_action_personne->initialiser();
+      $this->menu_action_personne->afficher();
     }
     
     protected function afficher_corps() {
@@ -65,7 +72,7 @@
         $presentation_courriel->def_personne($p);
         echo '<tr><td>' . $presentation_nom->formatter() . '</td>';
         echo '<td><span>' . $presentation_tel->formatter($p->telephone) . '</span></td>';
-        echo '<td>' . $presentation_courriel->formatter("Je te contacte pour ",  $sujet_courriel) . '</td><td>' . $p->nom_commune . '</td>';
+        //echo '<td>' . $presentation_courriel->formatter("Je te contacte pour ",  $sujet_courriel) . '</td><td>' . $p->nom_commune . '</td>';
         echo '<td>';
         $this->afficher_menu_actions($p);
         echo '</td></tr>';

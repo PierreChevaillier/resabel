@@ -20,12 +20,42 @@
   // -
   // ==========================================================================
   
-   require_once 'php/metier/commune.php';
+  require_once 'php/metier/commune.php';
+  
+  class Erreur_Commune_Introuvable extends Exception { }
   
   // ==========================================================================
   class Enregistrement_Commune {
+    private $commune = null;
+    public function def_commune($commune) { $this->commune = $commune; }
+    
     static function source() {
       return Base_Donnees::$prefix_table . 'communes';
+    }
+    
+    public function lire() {
+      $trouve = false;
+      try {
+        $bdd = Base_Donnees::accede();
+        
+        $requete= $bdd->prepare("SELECT * FROM " . self::source() . " WHERE code = :code_commune LIMIT 1");
+        $code = $this->commune->code();
+        $requete->bindParam(':code_commune', $code, PDO::PARAM_INT);
+        
+        $requete->execute();
+        
+        if ($donnee = $requete->fetch(PDO::FETCH_OBJ)) {
+          $this->commune->def_code_postal($donnee->code_postal);
+          $this->commune->def_nom($donnee->nom);
+          $trouve = true;
+        } else {
+          //throw new Erreur_Commune_Introuvable();
+          return $trouve;
+        }
+      } catch (PDOexception $e) {
+        Base_Donnees::sortir_sur_exception(self::source(), $e);
+      }
+      return $trouve;
     }
     
     static function collecter($critere_selection, $critere_tri, & $communes) {

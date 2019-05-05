@@ -15,6 +15,7 @@
       // ----------------------------------------------------------------------
       // creation : 03-mar-2019 pchevaillier@gmail.com
       // revision : 16-mar-2019 pchevaillier@gmail.com nveau nom, Page_Personnes
+      // revision : 30-avr-2019 pchevaillier@gmail.com criteres de selection
       // ----------------------------------------------------------------------
       // commentaires :
       //  -
@@ -53,6 +54,15 @@
       if (isset($_POST['nom']) && $_POST['nom'] != "")
         $criteres_selection['nom'] = $_POST['nom'];
       
+      if (isset($_POST['cmn']) && $_POST['cmn'] != 0)
+        $criteres_selection['cmn'] = $_POST['cmn'];
+      
+      if (isset($_POST['cdb'])&& $_POST['cdb'] != 0)
+        $criteres_selection['cdb'] = $_POST['cdb'];
+      
+      if (isset($_POST['niv'])&& $_POST['niv'] != 0)
+        $criteres_selection['niv'] = $_POST['niv'];
+      
       // ----------------------------------------------------------------------
       // --- connection a la base de donnees
       include 'php/bdd/base_donnees.php';
@@ -72,11 +82,13 @@
       $feuilles_style[] = "css/resabel_ecran.css";
       $nom_site = Site_Web::accede()->sigle() . " Resabel";
       $page = new Page_Personnes($nom_site, "Carnet addresses", $feuilles_style);
+      $page->def_id("pg_prs");
       
       $page->criteres_selection = $criteres_selection;
       
       // --- Affichage de la page
       $page->initialiser();
+      
       $page->afficher();
       // ======================================================================
     ?>

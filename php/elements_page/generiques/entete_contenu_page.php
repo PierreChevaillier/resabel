@@ -32,11 +32,14 @@
     }
     
     protected function afficher_debut() {
+      echo "\n";
       echo '<div class="jumbotron" style="padding:20px;text-align:center;">';
     }
     
     protected function afficher_corps() {
-      echo "<h1 class=\"display-4\">" . $this->titre() . "</h1><p class=\"lead\">" . $this->sous_titre . "</p>";
+      echo "<h1 class=\"display-4\">" . $this->titre() . "</h1>";
+      if (strlen($this->sous_titre) > 0)
+        echo "<p class=\"lead\">" . $this->sous_titre . "</p>";
      }
 
     protected function afficher_fin() {

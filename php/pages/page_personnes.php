@@ -21,6 +21,7 @@
 
   // --- Classes utilisees
   require_once 'php/elements_page/generiques/entete_contenu_page.php';
+  require_once 'php/elements_page/generiques/modal.php';
   require_once 'php/elements_page/specifiques/page_menu.php';
   require_once 'php/elements_page/specifiques/formulaire_selection_personne.php';
   require_once 'php/elements_page/specifiques/table_personnes.php';
@@ -42,10 +43,15 @@
       $formulaire_selection->def_titre("Critères de sélection");
       $this->ajoute_contenu($formulaire_selection);
       
-      $table = new Table_Personnes();
+      $table = new Table_Personnes($this);
       $this->ajoute_contenu($table);
-      $table->def_page($this);
-       
+    
+    /*
+      $afficheur_info = new Element_Modal();
+      $afficheur_info->def_id('aff_mbr');
+      $afficheur_info->def_titre('Info contact');
+      $this->ajoute_contenu($afficheur_info);
+      */
     }
    }
   // ==========================================================================
