@@ -13,6 +13,7 @@
   // revision: 20-aug-2018 pchevaillier@gmail.com ajout feuilles de style
   // revision: 02-mar-2019 pchevaillier@gmail.com version 4.1.3 de bootstrap
   // revision: 05-avr-2019 pchevaillier@gmail.com version 4.3.1 de bootstrap
+  // revision: 11-ami-2019 pchevaillier@gmail.com jquery UI 
   // --------------------------------------------------------------------------
   // commentaires :
   // - https://getbootstrap.com/docs/4.1/getting-started/introduction/
@@ -32,7 +33,8 @@
   abstract class Page extends Element {
   
     public $javascripts = array();
-
+    public $prive = true;
+    
     // --- Elements (code_html) dans la section <head> de la page
     private $elements_entete = array();
     public function ajoute_element_entete($code_html) {
@@ -103,13 +105,18 @@
   protected function afficher_debut() {
     echo "<head>\n      <meta charset=\"utf-8\" />";
     
-    $this->inclure_meta_donnees_open_graph();
+    if ($this->prive)
+      echo "\n      <meta name=\"robots\" content=\"none\" />";
+    else
+      $this->inclure_meta_donnees_open_graph();
     
-    echo "  <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\" />
+    echo "\n      <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\" />
       <meta name=\"viewport\" content=\"width=device-width, initial-scale=1, shrink-to-fit=no\" />\n";
     
     // Bootstrap CSS
     echo "      <link href=\"https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css\" rel=\"stylesheet\" integrity=\"sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T\" crossorigin=\"anonymous\" />\n";
+    
+    echo "      <link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.css\" />\n";
     
     // Feuille de style locale (screen)
     foreach ($this->feuilles_style as $css)
@@ -126,6 +133,9 @@
     
     // Bootstrap javascript
     echo "      <script src=\"https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js\" integrity=\"sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM\" crossorigin=\"anonymous\"></script>\n";
+    
+    // JQuery UI (pour datepicker ...)
+    echo "      <script src=\"https://code.jquery.com/ui/1.12.1/jquery-ui.min.js\" integrity=\"sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=\" crossorigin=\"anonymous\"></script>";
     
     foreach ($this->javascripts as $scripts) {
       echo "      <script src=\"" . get_include_path() . $scripts . "\"></script>\n";

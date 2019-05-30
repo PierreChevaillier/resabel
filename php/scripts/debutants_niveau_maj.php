@@ -1,11 +1,12 @@
 <?php
   // ==========================================================================
   // contexte : Resabel - systeme de REServAtion de Bateau En Ligne
-  // description : traitement requete / information personne (json)
+  // description : traitement requete (json) de passage de tous les debutants
+  //               a niveau 'non debutant'
   // copyright (c) 2018-2019 AMP. Tous droits reserves.
   // --------------------------------------------------------------------------
   // utilisation : php - pour traitement requete ajax
-  // dependances : script qui lance cette requete : requete_maj_status_cdb.js
+  // dependances : script qui lance cette requete
   // teste avec : PHP 7.1 sur Mac OS 10.14 ;
   //              PHP 7.0 sur hebergeur web
   // --------------------------------------------------------------------------
@@ -13,11 +14,8 @@
   // revision :
   // --------------------------------------------------------------------------
   // commentaires :
-  // -
   // attention :
-  // -
   // a faire :
-  // -
   // ==========================================================================
   
   set_include_path('./../../');

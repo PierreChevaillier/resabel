@@ -17,10 +17,13 @@
   // attention :
   // -
   // a faire :
-  // -
+  // - Cas des nouveaux : initialisation et script de controle de l'identifiant
+  //  ajout du script quji fait quelque choe comme
+  //  $('#formId').change(function(){...});
   // ==========================================================================
 
   // --- Classes utilisees
+  require_once 'php/elements_page/generiques/element.php';
   require_once 'php/elements_page/generiques/entete_contenu_page.php';
   require_once 'php/elements_page/specifiques/page_menu.php';
   require_once 'php/elements_page/specifiques/formulaire_membre.php';
@@ -43,21 +46,47 @@
       
       parent::definir_elements();
       
+      // Creation & configuration des elements de la page
+      // contextuelle selon le type d'action
+      $creation =  (isset($_GET['a']) && $_GET['a'] == 'c');
+      $creation_nouveau = $creation && (isset($_GET['o']) && $_GET['o'] == 'n');
+      
+      $modification =  (isset($_GET['a']) && $_GET['a'] == 'm');
+      $modif_info_perso = $modification  && (isset($_GET['o']) && $_GET['o'] == 'u');
+      $modif_info_membre = $modification  && (isset($_GET['o']) && $_GET['o'] == 'm');
+      
+     
       $element = new Entete_Contenu_Page();
-      $element->def_titre("Informations personnelles");
+      if ($creation)
+        $element->def_titre("Nouveau membre");
+      elseif ($modif_info_perso)
+        $element->def_titre("Informations personnelles");
+      else
+        $element->def_titre("Informations membre");
       $this->ajoute_element_haut($element);
     
-      if (isset($_GET['mbr']))
-        $code_membre = $_GET['mbr'];
-      //else
-      //  $code_membre = $_SESSION['usr'];
       
-      $membre = new Membre($code_membre);
+      // Initialisation des informations sur la personne
+      $membre = null;
       
-      $enregistrement = new Enregistrement_Membre();
-      $enregistrement->def_membre($membre);
-      $enregistrement->lire();
+      if ($modification) {
+        if (isset($_GET['mbr']))
+          $code_membre = $_GET['mbr'];
+        $membre = new Membre($code_membre);
+        /* La personne existe deja
+         * On va initialiser le formulaire avec les informations enregistrees
+         * dans la base de donnees
+        */
+        $enregistrement = new Enregistrement_Membre();
+        $enregistrement->def_membre($membre);
+        $enregistrement->lire();
+        
+      } elseif ($creation_nouveau) {
+        $membre = new Membre(0);
+        $membre->initialiser_debutant();
+      }
       
+      // Ceation du formulaire pour la modification des informations
       $formulaire = new Formulaire_Membre($this, $membre);
       $this->ajoute_contenu($formulaire);
       $this->form = $formulaire;

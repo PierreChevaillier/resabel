@@ -42,7 +42,7 @@ function verif_nom(element) {
     var regExpr = /^[a-zA-Zéèëçñì\ '-]+$/;
     if (!regExpr.test(x)) {
       element.style.color = "red";
-      element.focus(); // marche pas...
+      element.focus();
     } else {
       est_correct = true;
     }

@@ -36,26 +36,40 @@
     
     public function __construct($page, $membre) {
       //$this->def_titre("Connexion");
+      if (isset($_GET['a']) && $_GET['a'] == 'c')
+        $page->javascripts[] = "js/generer_identifiant_connexion.js";
+      
       $this->membre = $membre;
       $this->message_bouton_validation = "Valider";
       $this->confirmation_requise = true;
-      $info_mbr = isset($this->membre) ? '?mbr=' . $this->membre->code() : '';
-      $script_traitement = 'php/scripts/membre_info_maj.php' . $info_mbr;
+      
+      // Parametrage de l'appel du script php qui traite
+      // les donnees saisies ou modifiees grace au formulaire
+      $script_traitement = 'php/scripts/membre_info_maj.php?';
+      $params = 'a=' . $_GET['a'] . '&o=' . $_GET['o'];
+      if (isset($_GET['a']) && $_GET['a'] == 'm')
+        $params = $params . (isset($this->membre) ? '&mbr=' . $this->membre->code() : '');
+      $script_traitement = $script_traitement . $params;
+        
       $action = 'a';
       $id = 'form_mbr';
       
       parent::__construct($page, $script_traitement, $action, $id);
+      
     }
     
     public function initialiser() {
       
       $item = null;
+      if (isset($_GET['a']) && $_GET['a'] == 'c') {
+        $code_chargement = new Element_Code();
+        $script = "\n<script>window.onload = function() {creer_gestionnaire_evenement('id', 'prn', 'nom'); };</script>\n";
+        $code_chargement->def_code($script);
+        $this->page->ajoute_contenu($code_chargement);
+      }
+      
       try {
-        $item = new Champ_Identifiant("id");
-        $item->def_titre("Identifiant de connexion");
-        $item->def_obligatoire();
-        $this->ajouter_champ($item);
-        
+    
         $item = new Champ_Civilite("gnr");
         $item->def_titre("Civilité");
         $item->def_obligatoire();
@@ -68,6 +82,11 @@
         
         $item = new Champ_Nom("nom", "js/controle_saisie_nom.js", "verif_nom");
         $item->def_titre("Nom");
+        $item->def_obligatoire();
+        $this->ajouter_champ($item);
+        
+        $item = new Champ_Identifiant("id");
+        $item->def_titre("Identifiant de connexion");
         $item->def_obligatoire();
         $this->ajouter_champ($item);
         

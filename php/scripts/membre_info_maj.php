@@ -2,18 +2,21 @@
   // ==========================================================================
   // contexte : Resabel - systeme de REServAtion de Bateau En Ligne
   // description : verificaiton et mise a jour des informations sur un membre
-  // copyright (c) 2018 AMP. Tous droits reserves.
+  // copyright (c) 2018-2019 AMP. Tous droits reserves.
   // --------------------------------------------------------------------------
   // utilisation : php - require_once <chemin_vers_ce_fichier.php>
-  // dependances : 
+  // dependances : formulaire_membre.php (ids des champs du formulaire)
   // teste avec : PHP 7.1 sur Mac OS 10.14 ;
   //              PHP 7.0 sur hebergeur web
   // --------------------------------------------------------------------------
   // creation : 28-dec-2018 pchevaillier@gmail.com
-  // revision :
+  // revision : 08-mai-2019 pchevaillier@gmail.com refonte : maj ET creation
   // --------------------------------------------------------------------------
   // commentaires :
   // - en chantier
+  // ta : type action = [c => creation ; m => modif (maj)]
+  // a  : action : [nm => nouveau membre]
+  // mbr = code de la personne (valeur si ta = m)
   // i : identifiant de l'objet du document html ($iod)
   // r : code_erreur
   //     0 : pas d'erreur : mise a jour effectuee
@@ -46,17 +49,86 @@
   $ok = true;
   
   // --------------------------------------------------------------------------
+  // --- recuperation des parametres de l'appel du script
+  //     et verification
+  
+  $code = 0;
+  $action = '';
+  $mot_passe = "";
+  if (isset($_GET['a'])) {
+    if ($_GET['a'] == 'm') {
+      $action = 'm';
+      $code = $_GET['mbr'];
+    } elseif ($_GET['a'] == 'c') {
+      $action = 'c';
+      $code = Enregistrement_Membre::generer_nouveau_code();
+    } else {
+      die("code action incorrect " . $_GET['a']);
+    }
+  } else {
+    die("action non definie ");
+  }
+  
+  if (isset($_GET['o'])) {
+    $objet = $_GET['o'];
+  } else {
+    die("objet cible de l'action non defini");
+  }
+  
+  $membre = new Membre($code);
+  $enreg_membre = new Enregistrement_Membre();
+  $enreg_membre->def_membre($membre);
+  
+  if ($action == 'm') {
+    try {
+      $enreg_membre->lire();
+    } catch (Erreur_Membre_introuvable $e) {
+      die("Pas trouve " . $code);
+    }
+  } elseif ($action == 'c') {
+    $mot_passe = Enregistrement_Membre::generer_mot_passe();
+    $membre->mot_passe = $mot_passe;
+    if ($objet == 'n')
+      $membre->niveau = 1;
+  }
+  
+  // parametre de l'appel de la page du formulaire.
+  $params = "a=m&o=" . $objet;
+  // --------------------------------------------------------------------------
   // --- recuperation des informations saisies dans le formulaire
   //     et verification
   
-  $code = $_GET['mbr'];
-  try {
-    $membre = new Membre($code);
-    $enreg_membre = new Enregistrement_Membre();
-    $enreg_membre->def_membre($membre);
-    $enreg_membre->lire();
-  } catch (Erreur_Membre_introuvable $e) {
-    die("Pas trouve " . $code);
+  // Verification identifiant correct et unique (saisie obligatoire)
+  
+  $iod = 'id';
+  if (isset($_POST[$iod])) {
+    $x = trim(utf8_decode($_POST[$iod]));
+    $nCar1 = strlen($x);
+    $x = strip_tags($x);
+    $nCar2 = strlen($x);
+    if ($nCar2 != $nCar1) {
+      // tres louche => on deconnecte l'utilisateur
+      include 'php/scripts/deconnexion.php';
+    }
+    $erreur = 0;
+    if ($nCar2 < 3) {
+      $erreur = 1;
+    } elseif (!$enreg_membre->verifier_identifiant_unique($x)) {
+      // le nouvel identifiant saisi correspond a celui d'un autre membre
+      // or il doit etre unique
+      $erreur = 2;
+    } elseif (Enregistrement_Club::tester_existe($x)) {
+      // l'identifiant saisi correspond a un identifiant de club
+      // ce n'est pas possible vu la procedure de controle de l'identifiant lors
+      // de la connexion (cf. identification_verif.php)
+      $erreur = 3;
+    }
+    
+    if ($erreur > 0) {
+      header("location: ../../membre.php?a=m&o=" . $objet . "&mbr=" . $code . "&r=" . $erreur . "&i=" . $iod . "&v=" . $x);
+      exit();
+    }
+    $membre->identifiant = $x;
   }
   
   // --------------------------------------------------------------------------
@@ -71,7 +143,7 @@
     $x = strip_tags($x);
     if (!preg_match("#^(F|H)$#", $x)) {
       $erreur = 1;
-      header("location: ../../membre.php?mbr=" . $code . " &r=" . $erreur . "&i=" . $iod . "&v=" . $x);
+      header("location: ../../membre.php?a=m&o=" . $objet . "&mbr=" . $code . "&r=" . $erreur . "&i=" . $iod . "&v=" . $x);
       exit();
     }
     $membre->genre = $x;
@@ -82,7 +154,8 @@
   
   $iod = 'prn';
   if (isset($_POST[$iod])) {
-    $x = trim(utf8_decode($_POST[$iod]));
+    //$x = trim(utf8_decode($_POST[$iod]));
+    $x = trim($_POST[$iod]);
     $nCar1 = strlen($x);
     $x = strip_tags($x);
     $nCar2 = strlen($x);
@@ -94,7 +167,7 @@
     if (strlen($x) < 2) $erreur = 1;
     elseif (!preg_match("#^[a-zA-Zéèëçñì\ '-]+$#", $x)) $erreur = 2;
     if ($erreur > 0) {
-      header("location: ../../membre.php?mbr=" . $code . " &r=" . $erreur . "&i=" . $iod . "&v=" . $x);
+      header("location: ../../membre.php?a=m&o=" . $objet . "&mbr=" . $code . "&r=" . $erreur . "&i=" . $iod . "&v=" . $x);
       exit();
     }
     $membre->prenom = $x;
@@ -104,7 +177,8 @@
   // Controle de la valeur saisie pour le nom (saisie obligatoire)
   $iod = 'nom';
   if (isset($_POST[$iod])) {
-    $x = trim(utf8_decode($_POST[$iod]));
+    //$x = trim(utf8_decode($_POST[$iod]));
+    $x = trim($_POST[$iod]);
     $nCar1 = strlen($x);
     $x = strip_tags($x);
     $nCar2 = strlen($x);
@@ -116,7 +190,7 @@
     if (strlen($x) < 2) $erreur = 1;
     elseif (!preg_match("#^[a-zA-Zéèëçñì\ '-]+$#", $x)) $erreur = 2;
     if ($erreur > 0) {
-      header("location: ../../membre.php?mbr=" . $code . " &r=" . $erreur . "&i=" . $iod . "&v=" . $x);
+      header("location: ../../membre.php?a=m&o=" . $objet . "&mbr=" . $code . " &r=" . $erreur . "&i=" . $iod . "&v=" . $x);
       exit();
     }
     $membre->nom = $x;
@@ -138,7 +212,7 @@
     $erreur = 0;
     if ($nCar2 > 0 && !preg_match("#^0[1-9]([-. ]?[0-9]{2}){4}$#", $x)) {
       $erreur = 1;
-      header("location: ../../membre.php?mbr=" . $code . " &r=" . $erreur . "&i=" . $iod . "&v=" . $x);
+      header("location: ../../membre.php?a=m&o=" . $objet . "&mbr=" . $code . " &r=" . $erreur . "&i=" . $iod . "&v=" . $x);
       exit();
     }
     $membre->telephone = $x;
@@ -158,45 +232,13 @@
     }
     if ($nCar2 > 0 && !preg_match("#^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$#", $x)) {
       $erreur = 1;
-      header("location: ../../membre.php?mbr=" . $code . " &r=" . $erreur . "&i=" . $iod . "&v=" . $x);
+      header("location: ../../membre.php?a=m&o=" . $objet . "&mbr=" . $code . " &r=" . $erreur . "&i=" . $iod . "&v=" . $x);
       exit();
     }
     $membre->courriel = $x;
   }
   
-  // --------------------------------------------------------------------------
-  // Verification identifiant correct et unique (saisie obligatoire)
-  
-  $iod = 'id';
-  if (isset($_POST[$iod])) {
-    $x = trim(utf8_decode($_POST[$iod]));
-    $nCar1 = strlen($x);
-    $x = strip_tags($x);
-    $nCar2 = strlen($x);
-    if ($nCar2 != $nCar1) {
-      // tres louche => on deconnecte l'utilisateur
-      include 'php/scripts/deconnexion.php';
-    }
-    $erreur = 0;
-    if ($nCar2 < 3) {
-      $erreur = 1;
-    } elseif (!$enreg_membre->verifier_identifiant_unique()) {
-      // le nouvel identifiant saisi correspond a celjuo d'un autre membre
-      $erreur = 2;
-    } elseif (Enregistrement_Club::tester_existe($x)) {
-      // l'identifiant saisi correspond a un identifiant de club
-      // ce n'est pas possible vu la procedure de controle de l'identifiant lors
-      // de la connexion (cf. identification_verif.php)
-      $erreur = 3;
-    }
-
-    if ($erreur > 0) {
-      header("location: ../../membre.php?mbr=" . $code . " &r=" . $erreur . "&i=" . $iod . "&v=" . $x);
-      exit();
-    }
-    $membre->identifiant = $x;
-  }
-  
+ 
   // --------------------------------------------------------------------------
   // Verification du code de la commune de residence (saisie non obligatoire)
   
@@ -208,7 +250,10 @@
   $iod = 'nais';
   if (isset($_POST[$iod])) {
     $x = trim(strip_tags($_POST[$iod]));
-    $membre->date_naissance = Calendrier::obtenir()->def_depuis_date_sql($x); //formatter_date_enregistrement($x);
+    if (strlen($x))
+      $membre->date_naissance = Calendrier::obtenir()->def_depuis_date_sql($x); //formatter_date_enregistrement($x);
+    else
+      $membre->date_naissance = null;
   }
   
   $iod = 'lic';
@@ -227,9 +272,14 @@
   if ($membre->est_debutant()) $membre->def_est_chef_de_bord(false);
   
   // Enregistrement des nouvelles donnees personnelles
-  if ($ok) {
-    $mise_a_jour = $enreg_membre->modifier();
   
+  $mise_a_jour = false;
+  if ($ok) {
+    if ($action == 'm')
+      $mise_a_jour = $enreg_membre->modifier();
+    elseif ($action == 'c')
+      $mise_a_jour = $enreg_membre->ajouter();
+
     /*
     // --- La photo ---------------------------------------------------------------
     $nom_fichier_photo = basename($_FILES["fichierPhoto"]["name"]);
@@ -337,12 +387,13 @@
     }
     
   // --- les donnees ont bien ete mises a jour
-  $ta = (isset($_POST['ta'])) ? ("&ta=" . $_POST['ta']) : "";
-    
+  //$ta = (isset($_POST['ta'])) ? ("&ta=" . $_POST['ta']) : "";
+ 
+  //echo '<p>code fin ajout' . $code . '</a>';
   if (!$mise_a_jour)
-    header("location: ../../membre.php?r=99&mbr=" . $code . $ta);
+    header("location: ../../membre.php?" . $params . "&r=99&mbr=" . $code);
   else
-    header("location: ../../membre.php?r=0mbr=" . $code . $ta);
+    header("location: ../../membre.php?" . $params . "&r=0&mbr=" . $code);
   exit();
   // ==========================================================================
 ?>

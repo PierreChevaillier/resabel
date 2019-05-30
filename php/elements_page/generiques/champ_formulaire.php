@@ -4,7 +4,7 @@
   // description : definition des classes de champs de formulaire (classiques)
   //               = elements d'un formulaire simple (classe Formulaire)
   // utilisation : php - require_once <nom_-fichier.php'
-  // dependances : classe Formulaire, scripts javascripts
+  // dependances : classe Formulaire, scripts javascripts, JQuery UI
   // teste avec : PHP 5.5.3 sur Mac OS 10.11 ;
   //              PHP 7.1 sur Mac OS 10.14  (depuis 14-oct-2018)
   //              PHP 7.0 sur hebergeur web
@@ -19,6 +19,7 @@
   //            id dans Element ; suppression utlisation grille bootstrap
   // revision : 29-dec-2018 pchevaillier@gmail.com gestion erreurs Champ_Nom
   // revision : 30-avr-2019 pchevaillier@gmail.com Choix, Groupe_Choix
+  // revision : 11-mai-2019 pchevaillier@gmail.com portabilite Champ_Date
   // ------------------------------------------------------------------------
   // commentaires :
   // attention :
@@ -180,6 +181,17 @@
       $this->def_obligatoire();
     }
     
+    protected function afficher_message_erreur($code_erreur) {
+      $msg = "<p id=\"" . $this->id() . "_msg\" class=\"text-danger\">Erreur : ";
+      if ($code_erreur == 1)
+        $msg = $msg . $this->titre() . " trop court";
+      elseif ($code_erreur == 2)
+        $msg = $msg . $this->titre() . " saisi déjà attribué - opération annulée";
+      else
+        $msg = $msg . "saisie incorrecte";
+      echo $msg . "</p>";
+    }
+    
     protected function afficher_corps () {
       $this->afficher_ouverture_commune();
       echo 'type="text" maxlength="50" ';
@@ -191,6 +203,9 @@
         echo "<p class=\"text-danger\">Erreur : connexion impossible avec cet identifiant</p>";
       if (isset($_GET['err']) && ($_GET['err'] == 'act'))
         echo "<p class=\"text-danger\">Connexion impossible : votre compte a été désactivé</p>";
+      
+      if (isset($_GET['r']) && isset($_GET['i']) && ($_GET['i'] == $this->id()))
+        $this->afficher_message_erreur($_GET['r']);
     }
   }
   
@@ -231,6 +246,16 @@
 
   // --------------------------------------------------------------------------
   class Champ_Date extends Champ_Formulaire {
+    
+    protected function afficher_debut() {
+      // raison : safari et IE (< 12) ne supportent pas le type date
+      // utulisation du selectionneur de date de JQuery UI
+      echo "\n<script type=\"text/javascript\">";
+      echo "$(function() { if ($('[type=\"date\"]').prop('type') != 'date' ) { $('[type=\"date\"]').datepicker(); }});\n";
+      echo "</script>\n";
+      parent::afficher_debut();
+    }
+  
     protected function afficher_corps () {
       $this->afficher_ouverture_commune();
       if (strlen($this->fonction_controle_saisie) > 0)

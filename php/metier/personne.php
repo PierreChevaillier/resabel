@@ -29,17 +29,35 @@
     public $identifiant = "";
     
     public $genre = "F";
+    public function def_genre($valeur) {
+      $this->genre = strtoupper($valeur);
+    }
+    
+    public function est_femme() { return ($this->genre == "F"); }
+    public function est_homme() { return ($this->genre == "M"); }
+    
     public function civilite() { return ($this->genre == "F") ? "Mme" : "M."; }
+    
     public $prenom = "";
+    public function prenom() { return $this->prenom; }
+    public function def_prenom($valeur) { $this->prenom = $valeur; }
+    
     public $nom = "";
+    public function nom() { return $this->nom; }
+    public function def_nom($valeur) { $this->nom = $valeur; }
     
     
     public $code_commune = 0;
     public $nom_commune = ""; // pas dans la table
     public $rue = "";
+    
     public $telephone = "";
+    public function def_telephone($valeur) { $this->telephone = $valeur; }
+    
     public $telephone2 = "";
+    
     public $courriel = "";
+    public function def_courriel($valeur) { $this->courriel = $valeur; }
     
     public $est_membre_actif = False;
     public $est_autorise_connecte = False;

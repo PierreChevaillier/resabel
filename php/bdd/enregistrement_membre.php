@@ -50,7 +50,7 @@
     public function verifier_identite($mot_passe) {
       $identification_ok = false;
       $bdd = Base_Donnees::accede();
-      $requete= $bdd->prepare("SELECT code, actif, identifiant, connexion, mot_passe, prenom, nom, cdb FROM " . self::source() . " WHERE identifiant = :identifiant LIMIT 1");
+      $requete = $bdd->prepare("SELECT code, actif, identifiant, connexion, mot_passe, prenom, nom, cdb FROM " . self::source() . " WHERE identifiant = :identifiant LIMIT 1");
       $requete->bindParam(':identifiant', $this->membre->identifiant, PDO::PARAM_STR);
       try {
         $requete->execute();
@@ -78,7 +78,43 @@
       return $identification_ok;
     }
     
-    public function verifier_identifiant_unique() {
+    public static function generer_nouveau_code() {
+      $annee = date("y");
+      $code = $annee * 1000;
+      $code_debut = $code;
+      $code_fin = ($annee + 1) * 1000;
+      try {
+        $bdd = Base_Donnees::accede();
+        $requete = $bdd->prepare("SELECT MAX(code) AS code FROM ". self::source() . " WHERE code BETWEEN :debut AND :fin");
+        $requete->bindParam(':debut', $code_debut, PDO::PARAM_INT);
+        $requete->bindParam(':fin', $code_fin, PDO::PARAM_INT);
+        $requete->execute();
+      if ($resultat = $requete->fetch(PDO::FETCH_OBJ))
+        if ($resultat->code)
+          $code = $resultat->code + 1;
+      } catch (PDOException  $e) {
+        Base_Donnees::sortir_sur_exception(self::source(), $e);
+      }
+      return $code;
+    }
+    
+    public static function generer_mot_passe() {
+      // TODO : rechercher le bon club
+      $mot_passe = "";
+      try {
+        $bdd = Base_Donnees::accede();
+        $requete = $bdd->prepare("SELECT mot_passe FROM rsbl_club WHERE code = 1 LIMIT 1");
+        $requete->execute();
+        if ($resultat = $requete->fetch(PDO::FETCH_OBJ))
+          $mot_passe = $resultat->mot_passe;
+      } catch (PDOException  $e) {
+        Base_Donnees::sortir_sur_exception(self::source(), $e);
+      }
+      return $mot_passe;
+    }
+    
+    
+    public function verifier_identifiant_unique($identifiant) {
       $unique = false;
       try {
         $bdd = Base_Donnees::accede();
@@ -88,10 +124,11 @@
         $requete->bindParam(':code', $code, PDO::PARAM_INT);
         $requete->execute();
         if ($resultat = $requete->fetch(PDO::FETCH_OBJ))
-          $unique= ($resultat->n == 0);
+          $unique = ($resultat->n == 0);
       } catch (PDOException  $e) {
         Base_Donnees::sortir_sur_exception(self::source(), $e);
       }
+     
       return $unique;
     }
     
@@ -148,7 +185,7 @@
       $source = Base_Donnees::$prefix_table . 'roles_membres';
       $bdd = Base_Donnees::accede();
       try {
-        $requete= $bdd->prepare("SELECT COUNT(*) as n FROM " . $source . " WHERE code_membre = :code_membre AND code_role = 'admin' AND code_composante = 'resabel'");
+        $requete= $bdd->prepare("SELECT COUNT(*) as n FROM " . $source . " WHERE code_membre = :code_membre AND code_role = 8 AND code_composante = 2");
         $code = $this->membre->code();
         $requete->bindParam(':code_membre', $code, PDO::PARAM_INT);
         $requete->execute();
@@ -220,6 +257,72 @@
         Base_Donnees::sortir_sur_exception(self::source(), $e);
       }
        $requete->closeCursor();
+    }
+    
+    
+    public function ajouter() {
+      $status = true;
+      try {
+        $bdd = Base_Donnees::accede();
+        $code_sql = "INSERT INTO " . self::source()
+        . " (code, identifiant, mot_passe"
+        . ", actif, connexion, niveau, cdb"
+        . ", genre, prenom, nom, date_naissance"
+        . ", code_commune, rue"
+        . ", telephone, telephone2, courriel"
+        . ", num_licence"
+        . ") VALUES"
+        . " (:code, :identifiant, :mot_passe"
+        . ", :actif, :connexion, :niveau, :cdb"
+        . ", :genre, :prenom, :nom, :date_naissance"
+        . ", :code_commune, :rue"
+        . ", :telephone, :telephone2, :courriel"
+        . ", :num_licence"
+        . " )";
+        
+        $requete= $bdd->prepare($code_sql);
+        
+        $code = $this->membre->code();
+        $requete->bindParam(':code', $code, PDO::PARAM_INT);
+        $requete->bindParam(':identifiant', $this->membre->identifiant, PDO::PARAM_STR);
+        $requete->bindParam(':mot_passe', $this->membre->mot_passe, PDO::PARAM_STR);
+        
+        $actif = ($this->membre->est_actif()) ? 1: 0;
+        $requete->bindParam(':actif', $actif, PDO::PARAM_INT);
+        $connexion = ($this->membre->est_autorise_connecter()) ? 1: 0;
+        $requete->bindParam(':connexion', $connexion, PDO::PARAM_INT, 1);
+        $cdb = ($this->membre->est_chef_de_bord()) ? 1: 0;
+        $requete->bindParam(':cdb', $cdb, PDO::PARAM_INT);
+        $requete->bindParam(':niveau', $this->membre->niveau, PDO::PARAM_INT);
+        
+        $requete->bindParam(':genre', $this->membre->genre, PDO::PARAM_STR);
+        $requete->bindParam(':prenom', $this->membre->prenom, PDO::PARAM_STR);
+        $requete->bindParam(':nom', $this->membre->nom, PDO::PARAM_STR);
+        
+        if ($this->membre->date_naissance) {
+          $cal = new Calendrier();
+          $date_naissance = $cal->formatter_date_sql($this->membre->date_naissance);
+          $requete->bindParam(':date_naissance', $date_naissance, PDO::PARAM_STR);
+        } else {
+          $requete->bindParam(':date_naissance', $this->membre->date_naissance, PDO::PARAM_NULL);
+        }
+        
+        $requete->bindParam(':code_commune', $this->membre->code_commune, PDO::PARAM_INT);
+        $requete->bindParam(':rue', $this->membre->rue, PDO::PARAM_STR);
+        $requete->bindParam(':telephone', $this->membre->telephone, PDO::PARAM_STR);
+        $requete->bindParam(':telephone2', $this->membre->telephone2, PDO::PARAM_STR);
+        $requete->bindParam(':courriel', $this->membre->courriel, PDO::PARAM_STR);
+        
+        $requete->bindParam(':num_licence', $this->membre->num_licence);
+        
+        $requete->execute();
+        
+      } catch (PDOexception $e) {
+        die("Erreur Mise a jour " . self::source() . " informations pour " . $code . " : ligne " . $e->getLine() . " :<br /> ". $e->getMessage());
+        //Base_Donnees::sortir_sur_exception(self::source(), $e);
+      }
+      $requete->closeCursor();
+      return $status;
     }
     
     

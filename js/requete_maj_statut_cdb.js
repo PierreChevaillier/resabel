@@ -32,9 +32,16 @@ function requete_maj_statut_cdb(item_menu, code_membre, nouveau_statut, modal_id
                                });
                         code_html += items.join("");
                         $("#" + modal_id + "_corps").html(code_html + "</div>");
-                        $("#" + modal_id + "_btn").html("Fermer");
-                        document.getElementById(modal_id + "_btn").classList.add("btn-success");
                         
+                        $("#" + modal_id + "_btn").html("Fermer");
+                        var bouton = document.getElementById(modal_id + "_btn");
+                        bouton.classList.add("btn-success");
+                        // Quand on modifie les proprietes d'une personne, elle ne correspond
+                        // peut-etre plus aux personnes selectionnees
+                        // il faut donc soumettre a nouveau le formulaire de selection
+                        var formulaire = document.getElementById("form_sel_prs");
+                        bouton.addEventListener("click", function() { formulaire.submit(); });
+                        /*
                         // Change l'option du menu (bascule)
                         while (item_menu.firstChild) {
                           item_menu.removeChild(item_menu.firstChild);
@@ -48,6 +55,7 @@ function requete_maj_statut_cdb(item_menu, code_membre, nouveau_statut, modal_id
                           item_menu.setAttribute("onclick", "return requete_maj_statut_cdb(this, " + code_membre + ", 0, 'aff_msg');");
                         }
                         item_menu.appendChild(texte);
+                         */
                         console.log("fin affichage");
                         })
   .done(function(retour) {

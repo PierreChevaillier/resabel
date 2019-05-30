@@ -1,10 +1,10 @@
 <?php
   // ==========================================================================
   // contexte : Resabel - systeme de REServation de Bateaux En Ligne
-  // description: definition de la classe Personne
+  // description: definition de la classe Membre
   // utilisation : php - require_once
   // teste avec : PHP 7.1 sur Mac OS 10.14 ; PHP 7.0 sur serveur OVH
-  // Copyright (c) 2014-2018 AMP. Tous droits reserves.
+  // Copyright (c) 2014-2019 AMP. Tous droits reserves.
   // ------------------------------------------------------------------------
   // creation: 28-fev-2015 pchevaillier@gmail.com
   // revision: 29-avr-2015 pchevaillier@gmail.com, recherche information
@@ -12,12 +12,11 @@
   // revision: 19-nov-2016 pchevaillier@gmail.com, ajout recherche_membres
   // revision: 30-nov-2016 pchevaillier@gmail.com, test si de permanance
   // revision: 05-oct-2018 pchevaillier@gmail.com  chemin vers utilitaires
+  // revision: 06-ami-2019 pchevaillier@gmail.com  initialiser_debutant
   // ------------------------------------------------------------------------
   // commentaires :
   // attention :
   // a faire :
-  // - code : entier
-  // - revoir les requetes a la base de donnees
   // - lever une erreur si donnee manquante (chef de bord)
   // -----------------------------------------------------------------------
 
@@ -55,6 +54,14 @@
     public function est_debutant() {
       return ($this->niveau < 2);
     }
+    
+    public function initialiser_debutant() {
+      $this->def_actif(1);
+      $this->def_autorise_connecter(1);
+      $this->def_chef_de_bord(0);
+      $this->niveau = 1;
+    }
+    
 /*
     static public function recherche_membres($critere_selection, $critere_tri, & $personnes) {
       $status = false;

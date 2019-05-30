@@ -137,10 +137,10 @@
     
     protected function afficher_bouton_validation() {
       echo '<div class="form-group form-btn" >'; //<div class="col-sm-offset-2 col-sm-10">';
-      echo '<input class="btn btn-large btn-outline-primary" type="submit" id="valid" value="'
+      echo '<input class="btn btn-large btn-outline-primary" type="submit" id="' . $this->id() . '_valid" value="'
       . $this->message_bouton_validation . '"></div>';
       echo '<div class="form-group form-btn" >'; //<div class="col-sm-offset-2 col-
-      echo '<input class="btn btn-large btn-outline-secondary" type="reset" id="reset" value="Ré-initialiser la saisie"></div>'; // '</div>';
+      echo '<input class="btn btn-large btn-outline-secondary" type="reset" id="' . $this->id() . '_reset" value="Ré-initialiser la saisie"></div>'; // '</div>';
       
     }
     protected function afficher_fin() {

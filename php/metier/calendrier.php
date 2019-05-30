@@ -160,6 +160,36 @@
       return self::$jours[date("N", $j) - 1];
     }
     
+    public function numero_semaine($jour) {
+      $j = $jour->date();
+      return date("W", $j);
+    }
+    
+    public function annee_semaine($jour) {
+      $j = $jour->date();
+      $jourDeLAn = mktime(0, 0, 0, 1, 1, date("Y", $j));
+      $jour_semaine_jourDeLAn = date("N", $jourDeLAn);
+      // On est le jour de l'an et c'est un dimanche : derniere semaine de l'annee qui se termine.
+      // cas du 1er janvier 2017
+      if (($j == mktime(0, 0, 0, 1, 1, date("Y", $j))) && (date("N", $j) == 7))
+        return (date("Y", $j) - 1);
+      elseif ((date("W", $j) == 53) && (date('W', $jourDeLAn) == 53) && (date("N", $j) >= $jour_semaine_jourDeLAn))
+        return (date("Y", $j) - 1);
+      else
+        return date("Y", $j);
+    }
+    
+    public function date_jour_semaine($jourSemaine, $numSemaine, $annee) {
+      $jourDeLAn = mktime(0, 0, 0, 1, 1, $annee);
+      $jour_semaine_jourDeLAn = date("N", $jourDeLAn);
+      if (date('W', $jourDeLAn) == 1) // modif du 20-dec-2015
+        $jours = ($numSemaine - 1) * 7 + $jourSemaine - $jour_semaine_jourDeLAn + date('j', $jourDeLAn);
+      else
+        $jours = ($numSemaine - 1) * 7 + $jourSemaine + (7 - $jour_semaine_jourDeLAn + 1); // ajout 20-dec-2015
+      $j = mktime(0, 0, 0, date('n', $jourDeLAn),  $jours, $annee);
+      return new Instant($j);
+    }
+    
     public function date_texte($jour) {
       $j = $jour->date();
       return self::$jours[date("N", $j) - 1] . " " . date("j", $j) . " " . self::$mois[date("n", $j) - 1] . " " . date("Y", $j);

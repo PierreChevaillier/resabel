@@ -1,7 +1,7 @@
 <?php
   // ==========================================================================
   // contexte : Resabel - systeme de REServAtion de Bateau En Ligne
-  // description : collecte (pour l'instant), affichage de la liste des personnes
+  // description : affichage de la liste des roles des personnes dans une composante
   // copyright (c) 2018-2019 AMP. Tous droits reserves.
   // --------------------------------------------------------------------------
   // utilisation : php - require_once <chemin_vers_ce_fichier.php>
@@ -9,8 +9,8 @@
   // teste avec : PHP 7.1 sur Mac OS 10.14 ;
   //              PHP 7.0 sur hebergeur web
   // --------------------------------------------------------------------------
-  // creation : 03-mar-2019 pchevaillier@gmail.com
-  // revision : 04-mar-2019 pchevaillier@gmail.com utlisation Vue_Personne
+  // creation : 25-mai-2019 pchevaillier@gmail.com
+  // revision :
   // --------------------------------------------------------------------------
   // commentaires :
   // -
@@ -20,51 +20,39 @@
   // -
   // ==========================================================================
 
-  require_once 'php/metier/personne.php';
+  require_once 'php/metier/struct_orga.php';
   require_once 'php/elements_page/specifiques/vue_personne.php';
-  require_once 'php/bdd/enregistrement_membre.php';
+  require_once 'php/bdd/enregistrement_struct_orga.php';
   require_once 'php/utilitaires/format_donnees.php';
   
   // --------------------------------------------------------------------------
-  class Table_Personnes extends Element {
+  class Table_Entite_Organisationnelle extends Element {
     
-    private $personnes = array();
+    private $roles_membres = array();
+    private $composante = null;
     
-    protected $menu_action_personne;
-    public function def_menu_action($element) {
-      $this->menu_action_personne = $element;
-    }
-    
-    public function def_personnes($liste_personnes) {
-      $this->personnes = $liste_personnes;
-    }
-    
-    //private $legende = 'Liste des membres';
-    
-    public function __construct($page) {
+    public function __construct($page, $composante, $roles_membres) {
       $this->def_page($page);
+      $this->composante = $composante;
+      
+      // on ne retient que les informations sur la composante
+      foreach ($roles_membres as $rm) {
+        if ($rm->composante()->code() == $this->composante->code())
+          $this->roles_membres[] = $rm;
+      }
     }
     
     public function initialiser() {
-      // Rien de specifique a faire ici
+      // rien a faire
     }
     
     protected function afficher_debut() {
-      echo '<p>Nombre de personnes : ' . count($this->personnes) . '</p>';
       echo '<div class="container"><table class="table table-sm table-striped table-hover">';
       echo '<tbody>';
       //if (strlen($this->legende) > 0)
       //  echo '<caption>' . $this->legende . '</caption>';
     }
     
-    protected function afficher_menu_actions($personne) {
-      if (isset($this->menu_action_personne)) {
-        // il n'y a pas necessairement de menu (depend du contexte)
-        $this->menu_action_personne->personne = $personne;
-        $this->menu_action_personne->initialiser();
-        $this->menu_action_personne->afficher();
-      }
-    }
     
     protected function afficher_corps() {
       $presentation_nom = new Afficheur_Nom();
@@ -72,16 +60,23 @@
       $presentation_courriel = new Afficheur_Courriel_Actif();
       $sujet_courriel = ""; // pas de sujet particulier ici
       
-      if (!isset($this->personnes)) return; // on ne sait jamais...
-      foreach ($this->personnes as $p) {
+      foreach ($this->roles_membres as $rm) {
+        echo '<tr>';
+        $p = $rm->personne();
+        
+        $nom_role = $p->est_femme() ? $rm->role()->nom_feminin : $rm->role()->nom_masculin;
+        echo '<td>' . $nom_role . '</td>';
+        
         $presentation_nom->def_personne($p);
         $presentation_courriel->def_personne($p);
-        echo '<tr><td>' . $presentation_nom->formatter() . '</td>';
+        echo '<td>' . $presentation_nom->formatter() . '</td>';
         echo '<td><span>' . $presentation_tel->formatter($p->telephone) . '</span></td>';
-        //echo '<td>' . $presentation_courriel->formatter("Je te contacte pour ",  $sujet_courriel) . '</td><td>' . $p->nom_commune . '</td>';
-        echo '<td>';
-        $this->afficher_menu_actions($p);
-        echo '</td></tr>';
+        echo '<td>' . $presentation_courriel->formatter("Je te contacte pour ",  $sujet_courriel) . '</td><td>' . $p->nom_commune . '</td>';
+        
+        //echo '<td>';
+        //$this->afficher_menu_actions($p);
+        //echo '</td>';
+        echo '</tr>';
       }
     }
     

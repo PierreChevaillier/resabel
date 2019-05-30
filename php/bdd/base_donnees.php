@@ -43,9 +43,9 @@
     // le moins d'information sur les erreurs rencontrees 
     public static function sortir_sur_exception($table, $e) {
       if ($base_locale)
-        echo "Erreur requete sur la table " . $table . " : ligne "
-          . $e->getLine() . " :<br /> " . $e->getMessage();
-      exit();
+        die("Erreur requete sur la table " . $table . " : ligne "
+          . $e->getLine() . " :<br /> " . $e->getMessage());
+      //exit();
     }
     
     static $prefix_table = 'rsbl_';

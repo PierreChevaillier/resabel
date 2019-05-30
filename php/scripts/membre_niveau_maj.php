@@ -37,7 +37,7 @@
   // on recoit :
   $code = (isset($_GET['code'])) ? $_GET['code'] : 0;
 
-  if (isset($_GET['niv'])) // && preg_match('/[1-9][0-9]*/', $_GET['niv']))
+  if (isset($_GET['niv']) && preg_match('/[1-9][0-9]*/', $_GET['niv']))
     $niveau = $_GET['niv'];
   else
     die();
@@ -56,6 +56,7 @@
   if (!$trouve) {
       $donnee = array('code' => $code, 'err' => 'membre introuvable');
   } else {
+    $donnee = array();
     $enreg_membre->modifier_niveau($niveau);
     
     // Informations utiles pour identifier la personne
