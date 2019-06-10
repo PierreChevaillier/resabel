@@ -15,6 +15,7 @@
   // revision : 11-mar-2019 pchevaillier@gmail.com $_SESSION['prs'] pas necessairement defini
   // revision : 07-mai-2019 pchevaillier@gmail.com logique / affichage item
   // revision : 23-mai-2019 pchevaillier@gmail.com + afficher_menu_club
+  // revision : 10-jun-2019 pchevaillier@gmail.com + menu_indisponibilites
   // --------------------------------------------------------------------------
   // commentaires :
   // attention :
@@ -64,8 +65,19 @@
       echo '</div></li>';
     }
     
+    private function afficher_menu_indisponibilites() {
+      echo ' <li class="nav-item dropdown">';
+      echo '<a class="nav-link dropdown-toggle" href="#" id="mnu_indisp" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Indisponibilités</a>';
+      echo ' <div class="dropdown-menu" aria-labelledby="mnu_indisp">';
+      echo '<a class="dropdown-item" href="indisponibilites.php">Indisponibilités supports</a>';
+      echo '<a class="dropdown-item" href="fermetures_sites.php">Fermetures de site</a>';
+      if ($this->session_admin) {
+       echo '<a class="dropdown-item" href="page_temporaire.php">Motifs</a>';
+      }
+      echo '</div></li>';
+    }
+    
     private function afficher_menu_administration() {
-      
       echo ' <li class="nav-item dropdown">';
       echo '<a class="nav-link dropdown-toggle" href="#" id="mnu_admin" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Administration</a>';
       echo ' <div class="dropdown-menu" aria-labelledby="mnu-admin">';
@@ -78,7 +90,7 @@
     protected function afficher_corps() {
     
       echo '<li class="nav-item"><a class="nav-link" href="page_temporaire.php">Accueil</a></li>';
-       $this->afficher_menu_club();
+      $this->afficher_menu_club();
       
       //if (!isset($_SESSION['prs']) || (isset($_SESSION['prs']) && isset($_SESSION['act'])))
       if ($this->session_club || $this->membre_actif)
@@ -87,7 +99,10 @@
       echo '<li class="nav-item"><a class="nav-link" href="#">Sorties</a></li>';
       echo '<li class="nav-item"><a class="nav-link" href="agendas.php">Agendas</a></li>';
       echo '<li class="nav-item"><a class="nav-link" href="permanences.php">Permanences</a></li>';
-      echo '<li class="nav-item"><a class="nav-link" href="#">Indisponibilités</a></li>';
+      
+      $this->afficher_menu_indisponibilites();
+      //echo '<li class="nav-item"><a class="nav-link" href="#">Indisponibilités</a></li>';
+      
       echo '<li class="nav-item"><a class="nav-link" href="personnes.php?a=l&act=1&cnx=1">Personnes</a></li>';
       echo '<li class="nav-item"><a class="nav-link" href="#">Bateaux</a></li>';
       

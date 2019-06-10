@@ -63,7 +63,11 @@
       return $cal->date_jour_semaine(6, $this->semaine, $this->annee);
     }
     
-    
+    public function jour_texte() {
+      $jour = $this->jour();
+      $cal = Calendrier::obtenir();
+      return $cal->date_texte($jour);
+    }
   }
   
   // ==========================================================================

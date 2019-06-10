@@ -25,6 +25,8 @@
   // attention :
   // - 
   // a faire :
+  // - lire_identite : nom, prenom
+  // - lire_info_activite
   // - dans lire : recuperer la commune
   // - ajouter lire_roles : ? personne qui depend de role ou l'inverse ?
   // ==========================================================================

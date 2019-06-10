@@ -4,11 +4,12 @@
   // utilisation : require_once car instantiation d'une variable statique
   // teste avec  : PHP 5.5.3 sur Mac OS 10.11
   // contexte    : Applications WEB
-  // Copyright (c) 2017-2018 AMP
+  // Copyright (c) 2017-2019 AMP
   // ---------------------------------------------------------------------------
   // creation : 11-nov-2017 pchevaillier@gmail.com
   // revision : 08-jan-2018 pchevaillier@gmail.com Intervalle temporel (debut)
   // revision : 18-fev-2018 pchevaillier@gmail.com Calendrier::date_html
+  // revision : 10-jun-2019 pchevaillier@gmail.com
   // ---------------------------------------------------------------------------
   // commentaires :
   // - en evolution
@@ -68,7 +69,10 @@
     }
     
     private $debut;
+    public function debut() { return $this->debut; }
+    
     private $fin;
+    public function fin() { return $this->fin; }
     
     public function __construct($debut, $fin) {
       if ($debut == null)
@@ -201,7 +205,8 @@
     }
     
     public function date_texte_court($jour) {
-      return self::$jours_courts[date("N", $jour) - 1] . " " . date("j", $jour) . " " . self::$mois_courts[date("n", $jour) - 1];
+      $j = $jour->date();
+      return self::$jours_courts[date("N", $j) - 1] . " " . date("j", $j) . " " . self::$mois_courts[date("n", $j) - 1];
     }
     
     public function heures_minutes_texte($instant) {
@@ -225,6 +230,12 @@
       return date("Y", $j) . "-" . date("m", $j) . "-" . date("d", $j);
     }
   
+    public function formatter_date_heure_sql($jour) {
+      // AAAA-MM-JJ HH:MM:SS
+      $j = $jour->date();
+      return date("Y", $j) . "-" . date("m", $j) . "-" . date("d", $j) . " " . date("H", $j) . ":" . date("i", $j) . ":" . date("s", $j);
+    }
+    
     public function def_depuis_date_sql($date_sql) {
       // $date : AAAA-MM-JJ
       if (strlen($date_sql) === 10) {

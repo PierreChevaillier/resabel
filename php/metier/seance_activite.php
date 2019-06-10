@@ -1,7 +1,7 @@
 <?php
   // ==========================================================================
   // contexte : Resabel - systeme de REServAtion de Bateau En Ligne
-  // description : Fichier vide : modele entete
+  // description : Classe Seance Activite
   // copyright (c) 2018-2019 AMP. Tous droits reserves.
   // --------------------------------------------------------------------------
   // utilisation : php - require_once <chemin_vers_ce_fichier.php>
@@ -20,5 +20,24 @@
   // -
   // ==========================================================================
 
+  class Seance_activite {
+    $site;
+    $support;
+    $intervalle_programme;
+    //$intervalle_realise;
+    $chef_de_bord;
+    $equipiers = array();
+  }
+  
+  //classes : sortie en mer, seance ergo, regate, randonnee, seance_stage...
+  
+  class Seance_Personnelle {
+    $seance = null;
+    $personne;
+    $informations = "";
+    $programme ="";
+    $forme = "";
+    $condition_pratique = "";
+  }
   // ==========================================================================
 ?>
