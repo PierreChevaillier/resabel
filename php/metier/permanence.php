@@ -21,14 +21,14 @@
 
   // --------------------------------------------------------------------------
   require_once 'php/metier/calendrier.php';
-  //require_once 'php/metier/personne.php';
+  require_once 'php/metier/personne.php';
   
   // ==========================================================================
   class Permanence {
     
-    private $responsable = null;
+    public $responsable = null;
     public function responsable() { return $this->responsable; }
-    public function def_responsable($personne) { $this->responsable = $personne;}
+    public function def_responsable(Personne $personne) { $this->responsable = $personne;}
     
     private $semaine = 0;
     public function semaine() { return $this->semaine; }
@@ -38,7 +38,7 @@
     public function annee() { return $this->annee; }
     //public function def_annee($valeur) { $this->annee = $valeur; }
     
-    public function code_reponsable() { return $this->responsable->code(); }
+    public function code_responsable() { return $this->responsable->code(); }
     
     public function __construct($semaine, $annee) {
       $this->semaine = $semaine;

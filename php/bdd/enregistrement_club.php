@@ -88,21 +88,27 @@
     
     public function lire() {
       // TODO : completer avec tous les champs
-      $bdd = Base_Donnees::accede();
-      $requete = $bdd->prepare("SELECT nom FROM " . self::source() . " WHERE code = :code LIMIT 1");
-      $requete->bindParam(':code', $this->club()->code(), PDO::PARAM_INT);
       try {
-        $resultat = $bdd->query($requete);
-        $donnee = $resultat->fetch();
-        $this->initialiser_depuis_table($donnee);
+        $bdd = Base_Donnees::accede();
+        $requete = $bdd->prepare("SELECT nom, fuseau_horaire FROM " . self::source() . " WHERE code = :code LIMIT 1");
+        $code_club = $this->club()->code();
+        $requete->bindParam(':code', $code_club, PDO::PARAM_STR);
+        $requete->execute();
+        if ($donnee = $requete->fetch(PDO::FETCH_OBJ)) {
+          $this->initialiser_depuis_table($donnee);
+        } else {
+          return false;
+        }
       } catch (PDOexception $e) {
         die("Erreur recherche dans " . self::source() . " avec " . $critere . " : ligne " . $e->getLine() . ' :<br /> ' . $e->getMessage());
       }
-      $resultat->closeCursor();
+      $requete->closeCursor();
+      return true;
     }
     
     private function initialiser_depuis_table($donnee) {
-      $this->club->def_nom($donnee['nom']);
+      $this->club->def_nom($donnee->nom);
+      $this->club->def_fuseau_horaire($donnee->fuseau_horaire);
     }
   }
   // ==========================================================================

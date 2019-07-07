@@ -10,7 +10,7 @@
   //              PHP 7.0 sur hebergeur web
   // --------------------------------------------------------------------------
   // creation : 30-mai-2019 pchevaillier@gmail.com
-  // revision :
+  // revision : 13-jun-2019 pchevaillier@gmail.com affichage responsable
   // --------------------------------------------------------------------------
   // commentaires :
   // attention :
@@ -26,7 +26,9 @@
   class Afficheur_Permanence extends Element {
     
     public $permanence;
-    public function def_permanence($objet) { $this->permanence = $objet; }
+    public function def_permanence(Permanence $objet) {
+      $this->permanence = $objet;
+    }
     
     public function __construct($page) {
         $this->def_page($page);
@@ -40,7 +42,7 @@
     
     protected function afficher_jour() {
       $cal = calendrier::obtenir();
-      echo "<div class=\"col-sm-6\" style=\"font-size:24px\"><p>semaine " . $this->permanence->semaine() .  "<br /> " . $cal->date_texte($this->permanence->jour()) . "</div>";
+      echo "<p>semaine " . $this->permanence->semaine() .  "<br /> " . $cal->date_texte($this->permanence->jour());
     }
     
     protected function afficher_responsable() {
@@ -61,20 +63,29 @@
       $courriel = $presentation_courriel->formatter($message_courriel, $sujet_courriel);
       
       $contact = "<ul class=\"list-inline\"><li class=\"list-inline-item\">" . $telephone . "</li><li class=\"list-inline-item\">" . $courriel . "</li></ul>";
-      echo "<div class=\"col-sm-6\" style=\"text-align:right;font-size:24px\">" .  $prenom_nom . $contact . "</div>";
+      echo $prenom_nom . $contact;
     }
     
-    
     protected function afficher_corps() {
-      $cal = calendrier::obtenir();
       echo "<div class=\"row\">\n";
+      echo "<div class=\"col-sm-6\" style=\"font-size:24px\">";
       $this->afficher_jour();
+      echo "</div>\n";
+      echo "<div class=\"col-sm-6\" style=\"text-align:right;font-size:24px\">";
       $this->afficher_responsable();
+      echo "</div>\n";
       echo "</div>\n";
     }
       
     protected function afficher_fin() {
       echo "</div>\n";
+    }
+  }
+  
+  class Afficheur_Responsable_Permanence extends Afficheur_Permanence {
+    
+    protected function afficher_corps() {
+      $this->afficher_responsable();
     }
   }
   

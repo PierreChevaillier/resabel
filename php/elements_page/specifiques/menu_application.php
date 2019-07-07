@@ -25,6 +25,7 @@
 
   // --- Classes utilisees
   require_once 'php/elements_page/generiques/menu_navigation.php';
+  require_once 'php/metier/calendrier.php';
   
   // ==========================================================================
   class Menu_Application extends Menu_Navigation {
@@ -35,12 +36,16 @@
     private $session_pers = false;
     private $session_club = false;
     private $membre_actif = false;
+    private $jour;
     
     public function initialiser() {
       $this->session_admin = isset($_SESSION['adm']) && $_SESSION['adm'];
       $this->session_pers = isset($_SESSION['prs']) && $_SESSION['prs'];
       $this->session_club = ! $this->session_pers;
       $this->membre_actif = $this->session_pers && isset($_SESSION['act']);
+      
+      $cal = Calendrier::obtenir();
+      $this->jour = isset($GET['j']) ? new Instant($GET['j']): $cal->aujourdhui();
     }
     
     private function afficher_menu_club() {
@@ -96,7 +101,8 @@
       if ($this->session_club || $this->membre_actif)
           $this->afficher_menu_inscription();
 
-      echo '<li class="nav-item"><a class="nav-link" href="#">Sorties</a></li>';
+      echo '<li class="nav-item"><a class="nav-link" href="activites.php?a=l&j=' . $this->jour->date() . '">Sorties</a></li>';
+      
       echo '<li class="nav-item"><a class="nav-link" href="agendas.php">Agendas</a></li>';
       echo '<li class="nav-item"><a class="nav-link" href="permanences.php">Permanences</a></li>';
       

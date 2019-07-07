@@ -22,6 +22,7 @@
   // --- Classes utilisees
   
   // --- variables statiques
+  date_default_timezone_set("Europe/Paris");
   
   new Calendrier();
   
@@ -37,6 +38,7 @@
       return $this->valeur;
     }
     
+    public function timestamp() { return $this->valeur; }
     public function definir($valeur) {
       $this->valeur = $valeur;
     }
@@ -265,6 +267,20 @@
       }
     }
     
+    public function def_DateInterval_depuis_time_sql(string $time_sql) {
+      // en entree : hh:mm:ss
+      // resultat new DateInterval('PThhHmmMssS');
+       if (strlen($time_sql) === 8) {
+         $heures = substr($time_sql, -8, 2);
+         $minutes = substr($time_sql, -5, 2);
+         $secondes = substr($time_sql, -2, 2);
+         $expression_iso8601 = 'PT' . $heures . 'H' . $minutes . 'M' . $secondes . 'S';
+         return new DateInterval($expression_iso8601);
+       } else {
+         throw new InvalidArgumentException('Erreur Calendrier::def_DateInterval_depuis_time_sql - format heure invalide: ' . $timestamp_sql);
+         return null;
+       }
+    }
   }
     
   // ===========================================================================

@@ -24,7 +24,19 @@
   require_once 'php/metier/calendrier.php';
   
   // --------------------------------------------------------------------------
-  class Site_Activite {
+  abstract class Site_Activite {
+    
+    public $longitude = 0.0;
+    public $latitude = 0.0;
+    
+    public $supports_activite = null; // array
+    private $ouvert = true;
+    
+    private $code_regime_ouverture = 0;
+    public function code_regime_ouverture() { return $this->code_regime_ouverture; }
+    public function def_code_regime_ouverture($valeur) { $this->code_regime_ouverture = $valeur;}
+    
+    public $regime_ouverture;
     
     private $code = 0;
     public function code() { return $this->code; }
@@ -34,34 +46,38 @@
     public function nom() { return $this->nom; }
     public function def_nom($valeur) { $this->nom = $valeur; }
     
-    public $supports_activite = array();
-    private $ouvert = true;
-    
-    private $longitude;
-    private $latitude;
-    private $time_zone;
+    private $nom_court = ""; // utf8
+    public function nom_court() { return $this->nom; }
+    public function def_nom_court($valeur) { $this->nom_court = $valeur; }
     
     public function __construct($code) { $this->code = $code; }
     
-    public function est_creneau_possible($intervalle_temporel) {
-      return true;
-    }
-    
+    public abstract function est_creneau_possible($intervalle_temporel);
   }
     
   // --------------------------------------------------------------------------
   class Site_Activite_Mer extends Site_Activite {
     public $marees = array(); // on avant charge le tableau des marees
+    
     public $hauteur_maree_min;
     public $hauteur_maree_max;
     
     public function est_creneau_possible($intervalle_temporel) {
       $possible = true;
-      // verifier heures levée- coucher soleil
       // verifier contraintes marees
-        return $possible;
+      return $possible;
     }
   }
   
+  // --------------------------------------------------------------------------
+  class Salle_Sport extends Site_Activite {
+   
+    
+    public function est_creneau_possible($intervalle_temporel) {
+      $possible = true;
+      // verifier regime_ouverture
+      return $possible;
+    }
+  }
   // ==========================================================================
 ?>

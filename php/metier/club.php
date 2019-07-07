@@ -31,6 +31,12 @@
     public function nom() { return $this->nom; }
     public function def_nom($valeur) { $this->code = $valeur; }
     
+    private $fuseau_horaire = null;
+    public function def_fuseau_horaire(string $nom_fuseau) {
+         $this->fuseau_horaire = new DateTimeZone($nom_fuseau);
+    }
+    public function fuseau_horaire() { return $this->fuseau_horaire; }
+    
     private $mot_passe = '';
     
     public $lieu_principal_activite = null; // Site_Activite

@@ -47,7 +47,6 @@
         //echo "<p>" . $code_sql . "<br />annee= " . $annee . " - semaine= " . $semaine . "</p>";
         $requete->execute();
         if ($donnee = $requete->fetch(PDO::FETCH_OBJ)) {
-          $this->permanence = new Permanence($donnee->semaine, $donnee->annee);
           $responsable = new Personne($donnee->code_membre);
           $responsable->def_genre($donnee->genre);
           $responsable->def_prenom($donnee->prenom);

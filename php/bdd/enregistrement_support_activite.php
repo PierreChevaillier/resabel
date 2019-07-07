@@ -82,11 +82,18 @@
       $tri = (strlen($critere_tri) > 0) ? " ORDER BY " . $critere_tri . " " : "";
       try {
         $bdd = Base_Donnees::accede();
-        $requete = "SELECT code, nom FROM " . self::source() . $selection . $tri;
+        $requete = "SELECT support.code AS code, numero, support.nom AS nom, type.nom_court AS nom_type, type.code AS type, type.code_type AS code_type FROM rsbl_supports AS support INNER JOIN rsbl_types_support AS type ON support.code_type_support = type.code " . $selection . $tri;
+        //echo "<p>" . $requete . "</p>";
         $resultat = $bdd->query($requete);
         while ($donnee = $resultat->fetch(PDO::FETCH_OBJ)) {
-          $support_activite = new support_activite($donnee->code);
+          if ($donnee->code_type == 1) {
+            $support_activite = new Bateau($donnee->code);
+            $support_activite->def_numero($donnee->numero);
+          } elseif ($donnee->code_type == 2) {
+           $support_activite = new Plateau_Ergo($donnee->code);
+          }
           $support_activite->def_nom($donnee->nom);
+          
           $support_activites[$support_activite->code()] = $support_activite;
         }
       } catch (PDOException $e) {

@@ -20,7 +20,7 @@
   // attention :
   // - non teste
   // a faire :
-  // -
+  // - collecter  : tester le type comme dans lire
   // ==========================================================================
   
   require_once 'php/metier/site_activite.php';
@@ -45,7 +45,7 @@
       try {
         $bdd = Base_Donnees::accede();
         
-        $code_sql = "SELECT site.code AS code, site.nom AS nom_site, site.code_type AS code_type FROM rsbl_sites_activite AS site INNER JOIN rsbl_types_site_activite as type ON site.code_type = type.code WHERE site.code = :code_site_activite LIMIT 1";
+        $code_sql = "SELECT site.code AS code, site.nom AS nom_site, site.code_type AS code_type site.code_regime AS code_regime FROM rsbl_sites_activite AS site INNER JOIN rsbl_types_site_activite as type ON site.code_type = type.code WHERE site.code = :code_site_activite LIMIT 1";
         
         $requete= $bdd->prepare($code_sql);
         $code = $this->site_activite->code();
@@ -60,6 +60,7 @@
           } else {
             throw new Erreur_Type_Site_Activite();
           }
+          $this->site->def_code_regime_ouverture($donnee->code_regime);
           $this->site_activite->def_nom($donnee->nom_site);
           $trouve = true;
         } else {
@@ -72,19 +73,32 @@
       return $trouve;
     }
     
-    static function collecter($critere_selection, $critere_tri, & $site_activites) {
+    static function collecter($critere_selection, $critere_tri, & $sites_activite) {
       $status = false;
-      $site_activites = array();
       $selection = (strlen($critere_selection) > 0) ? " WHERE " . $critere_selection . " " : "";
       $tri = (strlen($critere_tri) > 0) ? " ORDER BY " . $critere_tri . " " : "";
       try {
         $bdd = Base_Donnees::accede();
-        $requete = "SELECT code, nom FROM " . self::source() . $selection . $tri;
+        //$requete = "SELECT code, nom FROM " . self::source() . $selection . $tri;
+        $requete = "SELECT site.code AS code, site.nom AS nom_site, site.nom_court AS nom_court, longitude, latitude, site.code_type AS code_type, site.code_regime AS code_regime FROM rsbl_sites_activite AS site INNER JOIN rsbl_types_site_activite as type ON site.code_type = type.code " . $selection . $tri;
         $resultat = $bdd->query($requete);
         while ($donnee = $resultat->fetch(PDO::FETCH_OBJ)) {
-          $site_activite = new site_activite($donnee->code);
-          $site_activite->def_nom($donnee->nom);
-          $site_activites[$site_activite->code()] = $site_activite;
+          $site_activite = null;
+          if ($donnee->code_type == 1) {
+            $site_activite = new Site_Activite_Mer($donnee->code);
+          } elseif ($donnee->code_type == 2) {
+             $site_activite = new Salle_Sport($donnee->code);
+          } else {
+            throw new Erreur_Type_Site_Activite();
+          }
+          $site_activite->def_code_regime_ouverture($donnee->code_regime);
+          $site_activite->def_nom($donnee->nom_site);
+          $site_activite->def_nom_court($donnee->nom_court);
+          
+          $site_activite->longitude = $donnee->longitude;
+          $site_activite->latitude = $donnee->latitude;
+          
+          $sites_activite[$site_activite->code()] = $site_activite;
         }
       } catch (PDOException $e) {
         Base_Donnees::sortir_sur_exception(self::source(), $e);

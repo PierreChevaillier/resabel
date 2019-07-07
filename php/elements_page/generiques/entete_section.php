@@ -2,7 +2,7 @@
   // ==========================================================================
   // contexte : Resabel - systeme de REServAtion de Bateaux En Ligne
   // description : Definition de la classe Entete_Section
-  //  - Tittre de section d'une page
+  //  - Titre de section d'une page
   // copyright (c) 2018-2019 AMP. Tous droits reserves.
   // --------------------------------------------------------------------------
   // utilisation : php - require_once <nom_-fichier.php'

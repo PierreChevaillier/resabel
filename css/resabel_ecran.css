@@ -4,10 +4,11 @@
  utilisation :
  teste avec  : Mac OS 10.14 - Firefox, Safari
  contexte    : resabel - aux couleurs du club
- Copyright (c) 2017 AMP
+ Copyright (c) 2017-2019 AMP
  -------------------------------------------------------------------------------
  creation : 22-jul-2017 pchevaillier@gmail.com
  revision : 02-mar-2019 pchevaillier@gmail.com
+ revision : 15-jun-2019 pchevaillier@gmail.com maree (idem France 2018)
  -------------------------------------------------------------------------------
  commentaires
  nom de couleurs : https://html-color-codes.info/color-names/
@@ -104,3 +105,74 @@ p.lead {
   width: 50%;
   text-align: center;
 }
+
+/* --- Maree  -------------------------------------------------------------- */
+
+div.maree_haute {
+  text-align: center;
+  color: rgb(221,52,47); /* rouge vif */
+}
+
+div.maree_basse {
+  text-align:center;
+  color: rgb(248,138,34); /* orange */
+  
+}
+
+div.cadre_coef_maree {
+  min-height: 60px;
+  display: flex;
+  align-content: center;
+  flex-wrap: wrap;
+  /* webkit pour compatibilite autres navigateurs, mais ca ne marche pas */
+  display: -webkit-flex;
+  -webkit-flex-wrap: wrap;
+  -webkit-align-content: center;
+}
+
+div.coef_maree {
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  color: white;
+  background-color: rgb(16,32,80);
+  text-align:center;
+}
+
+div.marnage_maree {
+  text-align:center;
+  color: rgb(16,32,80); /* var(--coul-text-accen); */
+  min-height: 60px;
+  
+  display: flex;
+  align-content: center;
+  flex-wrap: wrap;
+  /* webkit pour compatibilite autres navigateurs, mais ca ne marche pas */
+  display: -webkit-flex;
+  -webkit-flex-wrap: wrap;
+  -webkit-align-content: center;
+}
+
+td.cel_bateau {
+   text-align:center;
+}
+
+div.num_bateau {
+  width: 92px;
+  height: 64px;
+  line-height: 64px;
+  font-size: x-large;
+  color: black;
+  background-color: rgb(242,203,0);
+  text-align:center;
+}
+
+
+td.cel_bateau.compet {
+  background-color: PapayaWhip;
+}
+
+td.cel_bateau.loisir {
+  background-color: PowderBlue;
+}
+*/

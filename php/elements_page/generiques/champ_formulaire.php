@@ -249,7 +249,7 @@
     
     protected function afficher_debut() {
       // raison : safari et IE (< 12) ne supportent pas le type date
-      // utulisation du selectionneur de date de JQuery UI
+      // utilisation du selectionneur de date de JQuery UI
       echo "\n<script type=\"text/javascript\">";
       echo "$(function() { if ($('[type=\"date\"]').prop('type') != 'date' ) { $('[type=\"date\"]').datepicker(); }});\n";
       echo "</script>\n";
