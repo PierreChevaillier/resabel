@@ -1,15 +1,16 @@
 <?php
   // ==========================================================================
   // contexte : Resabel - systeme de REServAtion de Bateau En Ligne
-  // description : Fichier vide : modele entete
-  // copyright (c) 2018-2020 AMP. Tous droits reserves.
+  // description : definit les informations de localisation (langue, fuseau horaire)
+  // copyright (c) 2019 AMP. Tous droits reserves.
   // --------------------------------------------------------------------------
-  // utilisation : php - require_once <chemin_vers_ce_fichier_php>
+  // utilisation : php - include
+  //   au debut des scripts qui utilisent les dates ou heures
   // dependances : 
   // teste avec : PHP 7.1 sur Mac OS 10.14 ;
   //              PHP 7.3 sur hebergeur web
   // --------------------------------------------------------------------------
-  // creation : 09-jun-2019 pchevaillier@gmail.com
+  // creation : 25-dec-2019 pchevaillier@gmail.com
   // revision :
   // --------------------------------------------------------------------------
   // commentaires :
@@ -17,8 +18,8 @@
   // attention :
   // -
   // a faire :
-  // -
   // ==========================================================================
-
+  date_default_timezone_set('Europe/Paris'); // peut etre change ailleurs
+  setlocale(LC_ALL, 'fr_FR', 'french');
   // ==========================================================================
 ?>

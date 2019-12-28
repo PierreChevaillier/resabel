@@ -5,7 +5,7 @@
   // copyright (c) 2018-2019 AMP. Tous droits reserves.
   // --------------------------------------------------------------------------
   // utilisation : php - require_once <chemin_vers_ce_fichier.php>
-  // dependances : Classes Membre, Calendrier et Base_Donnees
+  // dependances : Classes Membre, Instant et Base_Donnees
   //               dictionnaire de donnees cree dans personnes.php :
   // teste avec : PHP 7.1 sur Mac OS 10.14 ;
   //              PHP 7.0 sur hebergeur web
@@ -17,6 +17,7 @@
   // revision : 03-mar-2019 pchevaillier@gmail.com fonction collecter
   // revision : 16-mar-2019 pchevaillier@gmail.com collecter : criteres de selection
   // revision : 04-mai-2019 pchevaillier@gmail.com modifier_niveau_debutants
+  // revision : 26-dec-2019 pchevaillier@gmail.com impact revision calendrier
   // --------------------------------------------------------------------------
   // commentaires :
   // - en chantier : pas complet
@@ -34,7 +35,7 @@
   require_once 'php/metier/membre.php';
 
   require_once 'php/metier/calendrier.php';
-
+  
   class Erreur_Membre_Introuvable extends Exception { }
   class Erreur_Mot_Passe_Membre extends Exception { }
   class Erreur_Doublon_Identifiant_Membre extends Exception { }
@@ -130,7 +131,6 @@
       } catch (PDOException  $e) {
         Base_Donnees::sortir_sur_exception(self::source(), $e);
       }
-     
       return $unique;
     }
     
@@ -159,7 +159,7 @@
     }
     
     private function initialiser_depuis_table($donnee) {
-      $cal = new Calendrier();
+      //$cal = new Calendrier();
       
       $this->membre->identifiant = $donnee->identifiant;
       $this->membre->def_actif($donnee->actif);
@@ -169,7 +169,7 @@
       $this->membre->prenom = $donnee->prenom; // deja en utf8 : pas besoin d'encoder
       $this->membre->nom = $donnee->nom;
       if ($donnee->date_naissance)
-        $this->membre->date_naissance = $cal->def_depuis_date_sql($donnee->date_naissance);
+        $this->membre->date_naissance = new Instant($donnee->date_naissance); //$cal->def_depuis_date_sql($donnee->date_naissance);
       $this->membre->code_commune = $donnee->code_commune;
       $this->membre->rue = $donnee->rue;
       $this->membre->telephone = $donnee->telephone;
@@ -177,7 +177,7 @@
       $this->membre->courriel = $donnee->courriel;
       $this->membre->def_chef_de_bord($donnee->cdb);
       if ($donnee->derniere_connexion)
-        $this->membre->date_derniere_connexion = $cal->def_depuis_timestamp_sql($donnee->derniere_connexion);
+        $this->membre->date_derniere_connexion = new Instant($donnee->derniere_connexion); //$cal->def_depuis_timestamp_sql($donnee->derniere_connexion);
       $this->membre->num_licence = $donnee->num_licence;
     }
     
@@ -202,9 +202,10 @@
     
     public function modifier_date_derniere_connexion() {
       $bdd = Base_Donnees::accede();
+      $maintenant = Calendrier::maintenant()->format('Y-m-d H:i:s');
       try {
         $requete= $bdd->prepare("UPDATE " . self::source()
-                              . " SET derniere_connexion = CURRENT_TIMESTAMP() WHERE code = :code_membre");
+                                . " SET derniere_connexion = \"" . $maintenant . "\" WHERE code = :code_membre");
         $code = $this->membre->code();
         $requete->bindParam(':code_membre', $code, PDO::PARAM_INT);
         $requete->execute();
@@ -302,8 +303,7 @@
         $requete->bindParam(':nom', $this->membre->nom, PDO::PARAM_STR);
         
         if ($this->membre->date_naissance) {
-          $cal = new Calendrier();
-          $date_naissance = $cal->formatter_date_sql($this->membre->date_naissance);
+          $date_naissance = $this->membre->date_naissance->date_sql(); //$cal->formatter_date_sql($this->membre->date_naissance);
           $requete->bindParam(':date_naissance', $date_naissance, PDO::PARAM_STR);
         } else {
           $requete->bindParam(':date_naissance', $this->membre->date_naissance, PDO::PARAM_NULL);
@@ -355,8 +355,7 @@
         $requete->bindParam(':prenom', $this->membre->prenom, PDO::PARAM_STR);
         $requete->bindParam(':nom', $this->membre->nom, PDO::PARAM_STR);
         if ($this->membre->date_naissance) {
-          $cal = new Calendrier();
-          $date_naissance = $cal->formatter_date_sql($this->membre->date_naissance);
+          $date_naissance = $this->membre->date_naissance->date_sql(); //$cal->formatter_date_sql($this->membre->date_naissance);
           $requete->bindParam(':date_naissance', $date_naissance, PDO::PARAM_STR);
         } else {
           $requete->bindParam(':date_naissance', $this->membre->date_naissance, PDO::PARAM_NULL);
@@ -381,7 +380,7 @@
     
     static function collecter($criteres_selection, $composante, $role, & $personnes) {
       $status = false;
-      $cal = new Calendrier();
+      //$cal = new Calendrier();
       $personnes = array();
       
       // definition de la source des donnees
@@ -443,21 +442,19 @@
           $personne->telephone2 = $donnee->telephone2;
           $personne->courriel = $donnee->courriel;
           $personne->nom_commune = $donnee->nom_commune;
-          
           $personne->rue = $donnee->rue;
           $personne->telephone2 = $donnee->telephone2;
           
           // proprietes d'un membre
-          
           $personne->identifiant = $donnee->identifiant;
           $personne->def_actif($donnee->actif);
           $personne->def_autorise_connecter($donnee->connexion);
           $personne->niveau = $donnee->niveau;
           if ($donnee->date_naissance)
-            $personne->date_naissance = $cal->def_depuis_date_sql($donnee->date_naissance);
-           $personne->def_chef_de_bord($donnee->cdb);
+            $personne->date_naissance = new Instant($donnee->date_naissance);
+          $personne->def_chef_de_bord($donnee->cdb);
           if ($donnee->derniere_connexion)
-            $personne->date_derniere_connexion = $cal->def_depuis_timestamp_sql($donnee->derniere_connexion);
+            $personne->date_derniere_connexion =  new Instant($donnee->derniere_connexion);
           $personne->num_licence = $donnee->num_licence;
           
           $personnes[$personne->code()] = $personne;

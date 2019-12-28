@@ -10,7 +10,7 @@
   //              PHP 7.0 sur hebergeur web
   // --------------------------------------------------------------------------
   // creation : 01-jul-2019 pchevaillier@gmail.com
-  // revision :
+  // revision : 27-dec-2019 pchevaillier@gmail.com impact refonte Calendrier
   // --------------------------------------------------------------------------
   // commentaires :
   // attention :
@@ -32,7 +32,6 @@
     
     public static function creer($code) {
       $regime = null;
-      $cal = Calendrier::obtenir();
       try {
         $bdd = Base_Donnees::accede();
         $code_sql = "SELECT code, code_type, nom, heure_ouverture, heure_fermeture, duree_seance, decalage_heure_hiver FROM " . self::source() . " WHERE code = "  . $code . " ORDER BY code, jour_semaine";
@@ -46,9 +45,9 @@
             }
             // 1 seul enregistrement avec jour_semaine = 0
             
-            $regime->heure_ouverture = $cal->def_DateInterval_depuis_time_sql($donnee->heure_ouverture);
-            $regime->heure_fermeture = $cal->def_DateInterval_depuis_time_sql($donnee->heure_fermeture);
-            $regime->decalage_heure_hiver = $cal->def_DateInterval_depuis_time_sql($donnee->decalage_heure_hiver);
+            $regime->heure_ouverture = Calendrier::creer_DateInterval_depuis_time_sql($donnee->heure_ouverture);
+            $regime->heure_fermeture = Calendrier::creer_DateInterval_depuis_time_sql($donnee->heure_fermeture);
+            $regime->decalage_heure_hiver = Calendrier::creer_DateInterval_depuis_time_sql($donnee->decalage_heure_hiver);
             
           } elseif ($donnee->code_type == 2) {
             if (!isset($this->regime)) {
@@ -61,7 +60,7 @@
             throw new Erreur_Type_Regime_Ouverture();
           }
           $regime->def_nom($donnee->nom);
-          $regime->duree_seance = $cal->def_DateInterval_depuis_time_sql($donnee->duree_seance);
+          $regime->duree_seance = Calendrier::creer_DateInterval_depuis_time_sql($donnee->duree_seance);
         }
       } catch (PDOexception $e) {
         Base_Donnees::sortir_sur_exception(self::source(), $e);

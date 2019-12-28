@@ -1,7 +1,7 @@
 <?php
   // ==========================================================================
   // contexte : Resabel - systeme de REServAtion de Bateau En Ligne
-  // description : Affichage du calendrier des permanances futures
+  // description : Affichage du calendrier des permanences futures
   // copyright (c) 2018-2019 AMP. Tous droits reserves.
   // --------------------------------------------------------------------------
   // utilisation : php - require_once <chemin_vers_ce_fichier.php>

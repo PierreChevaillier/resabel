@@ -16,6 +16,7 @@
   // revision : 07-mai-2019 pchevaillier@gmail.com logique / affichage item
   // revision : 23-mai-2019 pchevaillier@gmail.com + afficher_menu_club
   // revision : 10-jun-2019 pchevaillier@gmail.com + menu_indisponibilites
+  // revision : 25-dec-2019 pchevaillier@gmail.com impact refonte calendrier
   // --------------------------------------------------------------------------
   // commentaires :
   // attention :
@@ -42,10 +43,10 @@
       $this->session_admin = isset($_SESSION['adm']) && $_SESSION['adm'];
       $this->session_pers = isset($_SESSION['prs']) && $_SESSION['prs'];
       $this->session_club = ! $this->session_pers;
-      $this->membre_actif = $this->session_pers && isset($_SESSION['act']);
+      $this->membre_actif = $this->session_pers && isset($_SESSION['usr']) && isset($_SESSION['act']);
       
-      $cal = Calendrier::obtenir();
-      $this->jour = isset($GET['j']) ? new Instant($GET['j']): $cal->aujourdhui();
+      //$cal = Calendrier::obtenir();
+      $this->jour = isset($GET['j']) ? new Instant($GET['j']): Calendrier::aujourdhui();
     }
     
     private function afficher_menu_club() {
@@ -62,9 +63,8 @@
       echo ' <li class="nav-item dropdown">';
       echo '<a class="nav-link dropdown-toggle" href="#" id="mnu_inscr" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Inscriptions</a>';
       echo ' <div class="dropdown-menu" aria-labelledby="mnu-inscr">';
-      //if (isset($_SESSION['prs']))
       if ($this->membre_actif)
-          echo '<a class="dropdown-item" href="page_temporaire.php">Individuelle</a>';
+          echo '<a class="dropdown-item" href="inscription_individuelle.php?a=ii">Individuelle</a>';
       
       echo '<a class="dropdown-item" href="page_temporaire.php">Equipage</a>';
       echo '</div></li>';
@@ -101,7 +101,7 @@
       if ($this->session_club || $this->membre_actif)
           $this->afficher_menu_inscription();
 
-      echo '<li class="nav-item"><a class="nav-link" href="activites.php?a=l&j=' . $this->jour->date() . '">Sorties</a></li>';
+      echo '<li class="nav-item"><a class="nav-link" href="activites.php?a=l&j=' . $this->jour->getTimestamp() . '">Sorties</a></li>';
       
       echo '<li class="nav-item"><a class="nav-link" href="agendas.php">Agendas</a></li>';
       echo '<li class="nav-item"><a class="nav-link" href="permanences.php">Permanences</a></li>';

@@ -39,20 +39,22 @@
       return $this->instant;
     }
     
-    public function __construct($point, $instant, $hauteur) {
+    public function __construct(string $point,
+                                Instant $instant,
+                                float $hauteur) {
       $this->instant = $instant;
       $this->hauteur = $hauteur;
       $this->point = $point;
     }
     
     public function dupliquer() {
-      $heure = $this->instant->dupliquer();
+      $heure = clone $this->instant; //->dupliquer();
       $copie = new Point_Maree($this->point, $heure, $this->hauteur);
       return $copie;
     }
   }
   
-  // ---------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   class Maree {
     public $debut = null;
     public $fin = null;
@@ -61,11 +63,11 @@
     public function coefficient() {
       return $this->coefficient;
     }
-    public function def_coefficient($valeur) {
+    public function def_coefficient(float $valeur) {
       $this->coefficient = $valeur;
     }
     
-    public function __construct($debut, $fin) {
+    public function __construct(Point_Maree $debut, Point_Maree $fin) {
       $this->debut = $debut->dupliquer();
       $this->fin = $fin->dupliquer();
     }
@@ -73,19 +75,22 @@
     public function marnage() {
       return abs($this->debut->hauteur() - $this->fin->hauteur());
     }
-    
+    /*
     public function duree() {
       $i = new Intervalle_Temporel($this->debut->heure(), $this->fin->heure());
       return $i->duree();
     }
-    
+    */
     public function duree_texte() {
-      $i = new Intervalle_Temporel($this->debut->heure(), $this->fin->heure());
-      return $i->duree_texte();
+      $intervale = $this->debut->heure()->diff($this->fin->heure());
+      $texte = $intervale->format("%H:$I");
+      return $texte;
+      //$i = new Intervalle_Temporel($this->debut->heure(), $this->fin->heure());
+      //return $i->duree_texte();
     }
   }
   
-  // ---------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   class Marees_Jour {
     private $lieu = '';
     private $jour = null;
@@ -105,7 +110,7 @@
     }
   }
   
-  // ===========================================================================
+  // ==========================================================================
   // Presentation des informations sur les marees
   
   
@@ -137,10 +142,12 @@
       echo '<div style="height:120px; float:left;" >';
       foreach ($this->marees->marees() as $maree) {
         $classe_div = ($maree->debut->point() === 'PM') ? 'maree_haute': 'maree_basse';
-        echo '<div class="' . $classe_div . '" style="width:60px; height:30px;">' . Calendrier::obtenir()->heures_minutes_texte($maree->debut->heure()) . '</div>';
+        //echo '<div class="' . $classe_div . '" style="width:60px; height:30px;">' . Calendrier::obtenir()->heures_minutes_texte($maree->debut->heure()) . '</div>';
+        echo '<div class="' . $classe_div . '" style="width:60px; height:30px;">' . $maree->debut->heure()->heure_texte() . '</div>';
         
         $classe_div = ($maree->fin->point() === 'PM') ? 'maree_haute': 'maree_basse';
-        echo '<div class="' . $classe_div . '" style="width:60px; height:30px;">' . Calendrier::obtenir()->heures_minutes_texte($maree->fin->heure()) . '</div>';
+        //echo '<div class="' . $classe_div . '" style="width:60px; height:30px;">' . Calendrier::obtenir()->heures_minutes_texte($maree->fin->heure()) . '</div>';
+        echo '<div class="' . $classe_div . '" style="width:60px; height:30px;">' . $maree->fin->heure()->heure_texte() . '</div>';
       }
       echo '</div>';
     }
@@ -190,7 +197,7 @@
     }
   }
     
-  // ===========================================================================
+  // ==========================================================================
   // Enregistrement des informations sur les marees
   
   class Enregistrement_Maree {
@@ -201,14 +208,12 @@
     
     static public function recherche_marees_jour($lieu, $jour) {
       $bdd = Base_Donnees::accede();
-      $cal = Calendrier::obtenir();
-      
       $horaires = array();
       $coefficients = array();
       $n = self::recherche_horaires($bdd,
                                $lieu,
-                               $jour->date(),
-                               $cal->lendemain($jour)->date(),
+                               $jour->date_heure_sql(),
+                               $jour->lendemain()->date_heure_sql(),
                                $horaires,
                                $coefficients);
       $marees = null;
@@ -233,12 +238,12 @@
                                               $fin,
                                               & $horaires,
                                               & $coefficients) {
-      $requete = "SELECT etat, heure, hauteur, coefficient FROM " . self::source() . " WHERE code_lieu = '" . $lieu . "' AND heure BETWEEN '" . $debut . "' AND '" . $fin . "' ORDER BY heure";
+      $requete = "SELECT etat, date_heure, hauteur, coefficient FROM " . self::source() . " WHERE code_lieu = '" . $lieu . "' AND date_heure BETWEEN '" . $debut . "' AND '" . $fin . "' ORDER BY date_heure";
       //echo $requete;
       try {
         $resultat = $base_donnees->query($requete);
         while ($donnee = $resultat->fetch()) {
-          $h = new Instant($donnee['heure']);
+          $h = new Instant($donnee['date_heure']);
           $m = new Point_Maree($donnee['etat'], $h, $donnee['hauteur']);
           $horaires[] = $m;
           //          $h->date_clair = $donnee['date'];
@@ -255,5 +260,5 @@
     
   }
   
-  // ===========================================================================
+  // ==========================================================================
   ?>

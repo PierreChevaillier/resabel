@@ -11,7 +11,7 @@
   //              PHP 7.0 sur hebergeur web
   // --------------------------------------------------------------------------
   // creation : 09-jun-2019 pchevaillier@gmail.com
-  // revision :
+  // revision : 08-sep-2019 pchevaillier@gmail.com identite_texte()
   // --------------------------------------------------------------------------
   // commentaires :
   // -
@@ -48,6 +48,8 @@
     public function est_pour_loisir() { return $pour_loisir; }
     public function est_pour_competition() { return $pour_comeptition; }
     
+    public function identite_texte() { return $this->nom() .  ' (' .  $this->nom_type() . ')'; }
+    
   }
   
   class Bateau extends Support_Activite {
@@ -58,6 +60,9 @@
     
     public $immatriculation;
     public $categorie_navigation;
+    
+    public function identite_texte() { return $this->numero() . ' ' . $this->nom() .  ' (' .  $this->nom_type() . ')'; }
+    
   }
   
   class Plateau_Ergo extends Support_Activite {
@@ -68,7 +73,7 @@
     public $type_site = null; // Type de site auquel est destine ce type de support
     public $nombre_personnes_min; // pour l'aviron: min = max
     public $nombre_personnes_max; // pour ergo, on ne pet rien
-    public $chef_de_bord_recquis;
+    public $chef_de_bord_requis;
     
     private $code = 0;
     public function code() { return $this->code; }

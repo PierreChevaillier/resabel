@@ -77,6 +77,10 @@
   class Conteneur_Elements extends Element {
     public $elements = array();
     
+    public function ajouter_element(Element $elem) {
+      $this->elements[] = $elem;
+    }
+    
     public function initialiser() {
       foreach ($this->elements as $element)
         $element->initialiser();

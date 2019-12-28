@@ -11,6 +11,7 @@
   // --------------------------------------------------------------------------
   // creation : 28-dec-2018 pchevaillier@gmail.com
   // revision : 08-mai-2019 pchevaillier@gmail.com refonte : maj ET creation
+  // revision : 25-dec-2019 pchevaillier@gmail.com impact refonte calendrier
   // --------------------------------------------------------------------------
   // commentaires :
   // - en chantier
@@ -36,10 +37,8 @@
   include 'php/bdd/base_donnees.php';
   
   $bdd = Base_donnees::accede();
+  
   require_once 'php/metier/calendrier.php';
-  
-  new Calendrier();
-  
   require_once 'php/metier/club.php';
   require_once 'php/bdd/enregistrement_club.php';
   
@@ -251,7 +250,7 @@
   if (isset($_POST[$iod])) {
     $x = trim(strip_tags($_POST[$iod]));
     if (strlen($x))
-      $membre->date_naissance = Calendrier::obtenir()->def_depuis_date_sql($x); //formatter_date_enregistrement($x);
+      $membre->date_naissance = new Instant($x); //Calendrier::obtenir()->def_depuis_date_sql($x);
     else
       $membre->date_naissance = null;
   }

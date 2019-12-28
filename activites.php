@@ -1,12 +1,13 @@
 <?php
   include('php/utilitaires/controle_session.php');
+  include('php/utilitaires/definir_locale.php');
  ?>
 <!DOCTYPE html>
   <html lang="fr">
     <?php
       // ======================================================================
       // contexte : Resabel - systeme de REServation de Bateaux En Ligne
-      // description : page pour la gestion des acitivites d'une journee
+      // description : page pour la gestion des activites d'une journee
       // copyright (c) 2018-2019 AMP. Tous droits réserves.
       // ----------------------------------------------------------------------
       // utilisation : navigateur web
@@ -23,7 +24,7 @@
       
       set_include_path('./');
       
-      // --------------------------------------------------------------------------
+      // ----------------------------------------------------------------------
       // --- connection a la base de donnees
       include 'php/bdd/base_donnees.php';
       
@@ -36,8 +37,9 @@
       // --- Classe definissant la page a afficher
       require_once 'php/pages/page_activites.php';
 
+      require_once 'php/pages/page_inscription_individuelle.php';
+
       // --- Classes des elements de la page
-      //require_once 'php/elements_page/generiques/element.php';
 
       // ----------------------------------------------------------------------
       // --- Creation dynamique de la page

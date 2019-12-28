@@ -93,6 +93,8 @@
            $support_activite = new Plateau_Ergo($donnee->code);
           }
           $support_activite->def_nom($donnee->nom);
+          $support_activite->type = new Type_Support_Activite($donnee->type);
+          $support_activite->type->def_nom($donnee->nom_type);
           
           $support_activites[$support_activite->code()] = $support_activite;
         }
@@ -103,5 +105,6 @@
       }
       
     }
+  
   // ==========================================================================
 ?>

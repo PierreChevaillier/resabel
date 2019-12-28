@@ -19,7 +19,7 @@
 
   // --- Classes utilisees
   require_once 'php/elements_page/generiques/entete_contenu_page.php';
-  require_once 'php/elements_page/generiques/modal.php';
+  //require_once 'php/elements_page/generiques/modal.php';
   require_once 'php/elements_page/specifiques/page_menu.php';
   require_once 'php/elements_page/specifiques/formulaire_selection_personne.php';
   require_once 'php/bdd/enregistrement_membre.php';

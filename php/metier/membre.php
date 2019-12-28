@@ -10,7 +10,7 @@
   // revision: 29-avr-2015 pchevaillier@gmail.com, recherche information
   // revision: 17-aug-2016 pchevaillier@gmail.com, nouvel structure table membre
   // revision: 19-nov-2016 pchevaillier@gmail.com, ajout recherche_membres
-  // revision: 30-nov-2016 pchevaillier@gmail.com, test si de permanance
+  // revision: 30-nov-2016 pchevaillier@gmail.com, test si de permanence
   // revision: 05-oct-2018 pchevaillier@gmail.com  chemin vers utilitaires
   // revision: 06-ami-2019 pchevaillier@gmail.com  initialiser_debutant
   // ------------------------------------------------------------------------

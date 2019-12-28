@@ -2,7 +2,9 @@
   // ==========================================================================
   // contexte : Resabel - systeme de REServAtion de Bateau En Ligne
   // description : Definition de la classe Formulaire_Membre
-  // copyright (c) 2018 AMP. Tous droits reserves.
+  //               Formulaire pour la saisie/modification des informations
+  //               relatives a un membre du club
+  // copyright (c) 2018-2019 AMP. Tous droits reserves.
   // --------------------------------------------------------------------------
   // utilisation : php - require_once <nom_-fichier.php>
   // dependances :
@@ -10,7 +12,7 @@
   //              PHP 7.0 sur hebergeur web
   // --------------------------------------------------------------------------
   // creation : 06-dec-2018 pchevaillier@gmail.com
-  // revision :
+  // revision : 27-dec-2019 pchevaillier@gmail.com impact refonte Calendrier
   // --------------------------------------------------------------------------
   // commentaires :
   // -
@@ -23,10 +25,10 @@
   // --- Classes utilisees
   require_once 'php/elements_page/generiques/formulaire.php';
   require_once 'php/elements_page/generiques/champ_formulaire.php';
-  
-  require_once 'php/metier/membre.php';
+
   require_once 'php/metier/calendrier.php';
   
+  require_once 'php/metier/membre.php';
   require_once 'php/bdd/enregistrement_commune.php';
   
   // ==========================================================================
@@ -131,10 +133,8 @@
         $this->champ('courriel')->def_valeur($this->membre->courriel);
         $this->champ('tel')->def_valeur($this->membre->telephone);
         $this->champ('cmn')->def_valeur($this->membre->code_commune);
-        
         if ($this->membre->date_naissance) {
-          $cal = new Calendrier();
-          $val_date = $cal->date_html($this->membre->date_naissance);
+          $val_date = $this->membre->date_naissance->date_html();
           $this->champ('nais')->def_valeur($val_date);
         }
         $this->champ('lic')->def_valeur($this->membre->num_licence);

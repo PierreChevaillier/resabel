@@ -20,9 +20,9 @@
 
   // --- Classes utilisees
   require_once 'php/elements_page/generiques/element.php';
-  
   require_once 'php/metier/calendrier.php';
   
+  // --------------------------------------------------------------------------
   class Cadre_Controleur_Date extends Conteneur_Elements {
     
     private $format_colonnes = array();
@@ -98,14 +98,12 @@
     
     protected function afficher_corps() {
       foreach ($this->jours as $jour)
-      $this->afficher_item($jour);
+        $this->afficher_item($jour);
     }
     
     protected function afficher_item($date_jour) {
-      $valeur_jour = $date_jour->getTimestamp();
-      $cal = Calendrier::obtenir();
-      $jour = new Instant($valeur_jour);
-      $texte_jour = $cal->date_texte_court($jour);
+      $texte_jour = $date_jour->date_texte_court();
+      $valeur_jour =  $date_jour->getTimestamp();
       $code_param_url = "?j=" . $valeur_jour . $this->code_html_parametres;
       echo "\n<a class=\"flex-sm-fill text-sm-center nav-link active\" href=\"", $this->page_cible, $code_param_url, "\">", $texte_jour, "</a>\n";
       
@@ -125,9 +123,9 @@
     private $valeur_initiale;
     
     protected function definir_jours() {
-      $cal = Calendrier::obtenir();
-      $jour = new Instant($this->date_ref->getTimestamp());
-      $this->valeur_initiale = $cal->date_html($jour);
+      //$cal = Calendrier::obtenir();
+      //$jour = new Instant($this->date_ref->getTimestamp());
+      $this->valeur_initiale = $this->date_ref->date_html(); //$cal->date_html($jour);
     }
     
     protected function afficher_debut() {

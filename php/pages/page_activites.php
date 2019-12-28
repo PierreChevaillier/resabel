@@ -31,6 +31,7 @@
   require_once 'php/elements_page/specifiques/controleur_date_page.php';
   require_once 'php/elements_page/specifiques/vue_permanence.php';
   
+  require_once 'php/elements_page/generiques/conteneur_repliable.php';
   require_once 'php/metier/maree.php';
   
   require_once 'php/elements_page/specifiques/vue_regime_ouverture.php';
@@ -42,7 +43,7 @@
   class Page_Activites extends Page_Menu {
     private $activite_journaliere = null;
     
-    protected function jour() { return $this->activite_journaliere->jour(); }
+    protected function jour() { return $this->activite_journaliere->date_jour(); }
     
     private $entete;
    
@@ -54,7 +55,7 @@
     
     public function definir_elements() {
       parent::definir_elements();
-      $this->entete = new Entete_Contenu_Page();
+      $this->entete = new Entete_Section(); //Contenu_Page();
       $this->ajoute_element_haut($this->entete);
       
       $this->definir_affichage_navigateur_dates();
@@ -93,9 +94,13 @@
     
     protected function definir_affichage_permanence() {
       if (isset($this->activite_journaliere->permanence)) {
+        $cadre = new Conteneur_Repliable();
+        $cadre->def_id('cadre_perm');
+        $cadre->def_titre("Permanence semaine");
+        $this->ajoute_contenu($cadre);
         $afficheur_permanence = new Afficheur_Responsable_Permanence($this);
         $afficheur_permanence->permanence = $this->activite_journaliere->permanence;
-        $this->ajoute_contenu($afficheur_permanence);
+        $cadre->ajouter_element($afficheur_permanence);
       }
     }
 
@@ -108,7 +113,7 @@
         $onglet->def_id('tab_site_' . $site->code());
         $onglet->def_titre($site->nom());
         if (is_a($site, 'Site_Activite_Mer')) {
-          $entete = new entete_Section();
+          $entete = new Entete_Section();
           $entete->def_titre("Sorties en mer");
           $onglet->elements[] = $entete;
           $this->definir_affichage_marees($activite_site, $onglet);
@@ -127,8 +132,12 @@
     }
 
     protected function definir_affichage_marees($activite_site, $conteneur) {
+      $cadre = new Conteneur_Repliable();
+      $cadre->def_id('cadre_maree');
+      $cadre->def_titre("Marées");
+      $conteneur->ajouter_element($cadre);
       $table_marees = new Table_Marees_jour($activite_site->marees);
-      $conteneur->elements[] = $table_marees;
+      $cadre->ajouter_element($table_marees);
     }
     
     protected function definir_affichage_horaires($site, $conteneur) {
@@ -139,8 +148,7 @@
     }
     
     public function initialiser() {
-      $cal = Calendrier::obtenir();
-      $this->entete->def_titre($cal->date_texte($this->jour()));
+      $this->entete->def_titre($this->jour()->date_texte());
 
 /*
       $debut = $cal->aujourdhui();

@@ -73,7 +73,10 @@ class Site_web {
   // Information indispensable pour la manipulation des dates et du temps
   private $fuseau_horaire = "Europe/Paris";
   public function fuseau_horaire() { return  $this->fuseau_horaire; }
-  public function def_fuseau_horaire($valeur) { $this->fuseau_horaire= $valeur; }
+  public function def_fuseau_horaire($valeur) {
+    $this->fuseau_horaire = $valeur;
+    date_default_timezone_set($valeur);
+  }
   /*
   public $latitude = 48.347;
   public $longitude = -4.704;

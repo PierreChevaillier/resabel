@@ -1,32 +1,89 @@
 <?php
-  // ===========================================================================
+  // ==========================================================================
   // description : definition des classes relatives a la representation du temps
   // utilisation : require_once car instantiation d'une variable statique
   // teste avec  : PHP 5.5.3 sur Mac OS 10.11
   // contexte    : Applications WEB
   // Copyright (c) 2017-2019 AMP
-  // ---------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   // creation : 11-nov-2017 pchevaillier@gmail.com
   // revision : 08-jan-2018 pchevaillier@gmail.com Intervalle temporel (debut)
   // revision : 18-fev-2018 pchevaillier@gmail.com Calendrier::date_html
   // revision : 10-jun-2019 pchevaillier@gmail.com
-  // ---------------------------------------------------------------------------
+  // revision : 26-dec-2019 pchevaillier@gmail.com refonte, gros impact / utilisation
+  // --------------------------------------------------------------------------
   // commentaires :
   // - en evolution
   // attention :
   // - calcul duree approximatif (pb : annees inhabituelles, heure d'ete ...
   // a faire :
   // - finir intervalle temporel. Utiliser les fonctions php / timeDiff
-  // ===========================================================================
+  // ==========================================================================
   
   // --- Classes utilisees
   
   // --- variables statiques
-  date_default_timezone_set("Europe/Paris");
+  //date_default_timezone_set("Europe/Paris");
+  //new Calendrier();
   
-  new Calendrier();
+  // --------------------------------------------------------------------------
+  class Instant extends DateTimeImmutable {
   
-  // ---------------------------------------------------------------------------
+    public static function maintenant() {
+      return new Instant("now");
+    }
+  
+    public static function aujourdhui() {
+      return new Instant("today");
+    }
+  
+    public function lendemain() {
+      return $this->add(new DateInterval('P1D'));
+    }
+    
+    public function jour() {
+      //$j = new Instant($this->format('Y-m-d'));
+      //$valeur = $this->format('Y-m-d') . " 00:00:00";
+      //$j->setTime(0, 0, 0);
+      //return $j;
+      $valeur = $this->format('Y-m-d') . " 00:00:00";
+      return new Instant($valeur);
+    }
+    
+    public function heure_hiver() {
+      return (1 - date('I', $this->getTimestamp()));
+    }
+    
+    public function date_html() {
+      return $this->format('Y-m-d');
+    }
+  
+    public function date_sql() {
+      return $this->format('Y-m-d');
+    }
+
+    public function date_heure_sql() {
+      return $this->format('Y-m-d H:i:s');
+    }
+  
+    public function date_texte() {
+      return strftime('%A %d %B %Y', $this->getTimestamp());
+    }
+  
+    public function date_texte_abbr() {
+      return strftime('%a %d %h %y', $this->getTimestamp());
+    }
+  
+    public function date_texte_court() {
+         return strftime('%a %d %h', $this->getTimestamp());
+    }
+    
+    public function heure_texte() {
+      return $this->format('H:i');
+    }
+  }
+  
+  /* version avant dec-2019
   class Instant {
     private $valeur = 0;
     
@@ -61,7 +118,10 @@
     
   }
   
-  class Intervalle_Temporel {
+   */
+  // ---------------------------------------------------------------------------
+  /* Version avant dec-2019
+     class Intervalle_Temporel {
     public static function origine() {
      return new Instant(0);
     }
@@ -121,7 +181,66 @@
     }
     
   }
-  // ---------------------------------------------------------------------------
+   */
+  // --------------------------------------------------------------------------
+  // Fabrique d'instants et autres
+  class Calendrier {
+    public static function maintenant() {
+      return new Instant("now");
+    }
+       
+    public static function aujourdhui() {
+      return new Instant("today");
+    }
+    
+    public static function creer_Instant(int $timestamp) {
+      //$resultat = new Instant("now");
+      //$resultat->setTimestamp($timestamp);
+      return (new Instant())->setTimestamp($timestamp);
+    }
+    
+    public static function jours_futurs_texte($nJours, & $resultat) {
+      $d = new Instant("today");
+      $un_jour = new DateInterval('P1D');
+      for ($j = 0; $j < $nJours; $j++) {
+        $ts = $d->getTimestamp();
+        //$jour = new Instant($ts);
+        $resultat[$ts] = $d->date_texte();
+        $d = $d->add($un_jour);
+      }
+    }
+    
+    public static function creer_DateInterval_depuis_time_sql(string $time_sql) {
+      // en entree : hh:mm:ss
+      // resultat new DateInterval('PThhHmmMssS');
+       if (strlen($time_sql) === 8) {
+         $heures = substr($time_sql, -8, 2);
+         $minutes = substr($time_sql, -5, 2);
+         $secondes = substr($time_sql, -2, 2);
+         $expression_iso8601 = 'PT' . $heures . 'H' . $minutes . 'M' . $secondes . 'S';
+         return new DateInterval($expression_iso8601);
+       } else {
+         throw new InvalidArgumentException('Erreur Calendrier::creer_DateInterval_depuis_time_sql - format heure invalide: ' . $timestamp_sql);
+         return null;
+       }
+    }
+    
+    public static function annee_semaine(DateTimeImmutable $jour) {
+      $j = $jour->getTimestamp();
+      $jourDeLAn = mktime(0, 0, 0, 1, 1, date("Y", $j));
+      $jour_semaine_jourDeLAn = date("N", $jourDeLAn);
+      // On est le jour de l'an et c'est un dimanche : derniere semaine de l'annee qui se termine.
+      // cas du 1er janvier 2017
+      if (($j == mktime(0, 0, 0, 1, 1, date("Y", $j))) && (date("N", $j) == 7))
+        return (date("Y", $j) - 1);
+      elseif ((date("W", $j) == 53) && (date('W', $jourDeLAn) == 53) && (date("N", $j) >= $jour_semaine_jourDeLAn))
+        return (date("Y", $j) - 1);
+      else
+        return date("Y", $j);
+       }
+    
+  }
+  /* Version avant dec-2019
   class Calendrier {
     
     
@@ -131,6 +250,7 @@
     public static $jours_courts = array("lun", "mar", "mer", "jeu", "ven", "sam", "dim");
     public static $mois_courts = array("janv", "févr", "mars", "avr", "mai", "juin", "juil", "août", "sept", "oct", "nov", "déc");
     
+    public $fuseau_horaire = null;
     private static $instance = null;
     
     private static function reference($objet) {
@@ -142,6 +262,7 @@
     }
     
     public function __construct() {
+      $this->fuseau_horaire = new DateTimeZone("Europe/Paris");
       //date_default_timezone_set("Europe/Paris"); parametre du site defini dans la base de donnees
       self::reference($this);
     }
@@ -194,6 +315,18 @@
         $jours = ($numSemaine - 1) * 7 + $jourSemaine + (7 - $jour_semaine_jourDeLAn + 1); // ajout 20-dec-2015
       $j = mktime(0, 0, 0, date('n', $jourDeLAn),  $jours, $annee);
       return new Instant($j);
+    }
+    
+    public function jours_futurs_texte($n, & $resultat) {
+      $d = new DateTime("now", $this->fuseau_horaire);
+      $d->setTime(0, 0, 0); // pour etre coherent
+      $un_jour = new DateInterval('P1D');
+      for ($j = 0; $j < $n; $j++) {
+        $ts = $d->getTimestamp();
+        $jour = new Instant($ts);
+        $resultat[$ts] = $this->date_texte($jour);
+        $d = $d->add($un_jour);
+      }
     }
     
     public function date_texte($jour) {
@@ -282,6 +415,6 @@
        }
     }
   }
-    
+    */
   // ===========================================================================
 ?>

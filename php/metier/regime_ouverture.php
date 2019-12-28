@@ -11,7 +11,7 @@
   //              PHP 7.0 sur hebergeur web
   // --------------------------------------------------------------------------
   // creation : 30-jun-2019 pchevaillier@gmail.com
-  // revision :
+  // revision : 25-dec-2019 pchevaillier@gmail.com modif definir_creneaux
   // --------------------------------------------------------------------------
   // commentaires :
   // -
@@ -23,7 +23,7 @@
   // ==========================================================================
 
   // --------------------------------------------------------------------------
-  //require_once 'php/metier/calendrier.php';
+  require_once 'php/metier/calendrier.php';
   
   // --------------------------------------------------------------------------
   abstract class Regime_Ouverture {
@@ -42,8 +42,7 @@
     public function __construct($code) { $this->code = $code; }
     
     //public abstract function est_creneau_possible($intervalle_temporel);
-    public abstract function definir_creneaux(int $jour,
-                                              DateTimeZone $fuseau,
+    public abstract function definir_creneaux(Instant $jour,
                                               float $latitude,
                                               float $longitude);
   }
@@ -54,43 +53,37 @@
     public $heure_ouverture; // DateInterval
     public $heure_fermeture; // DateInterval
 
-    public function definir_creneaux(int $jour,
-                                     DateTimeZone $fuseau,
+    public function definir_creneaux(Instant $date_jour,
                                      float $latitude,
                                      float $longitude) {
       
-    // Activite de jour uniquement, donc il faut les heures locales
-    // de lever et coucher du soleil
-      $t_lever = date_sunrise($jour,
+      // Activite de jour uniquement, donc il faut les heures locales
+      // de lever et coucher du soleil
+      
+      $t_lever = date_sunrise($date_jour->getTimestamp(),
                               SUNFUNCS_RET_TIMESTAMP,
                               $latitude,
                               $longitude);
       
       //echo 'latitude ', $latitude, ' long. ', $longitude;
-      $lever = new DateTime("now", $fuseau);
-      $lever->setTimestamp($t_lever);
+      $lever = Calendrier::creer_Instant($t_lever);
       //echo ' Lever ', $lever->format('d-m-Y H:i:s');
-      $t_coucher = date_sunset($jour,
+      $t_coucher = date_sunset($date_jour->getTimestamp(),
                               SUNFUNCS_RET_TIMESTAMP,
                               $latitude,
                               $longitude);
-      $coucher = new DateTime("now", $fuseau);
-      $coucher->setTimestamp($t_coucher);
+      $coucher = Calendrier::creer_Instant($t_coucher);
       //echo 'Coucher ', $coucher->format('d-m-Y H:i:s');
       
       // Initialisation des dates de debut et fin (ouverture, fermeture)
-      $d = new DateTime("now", $fuseau);
-      $d->setDate(date('Y', $jour), date('m', $jour), date('d', $jour));
-      $d->setTime(0, 0, 0);
-      $date_jour = DateTimeImmutable::createFromMutable($d);
       
       $debut = $date_jour->add($this->heure_ouverture);
       //echo 'Debut ', $debut->format('d-m-Y H:i:s');
       $fin = $date_jour->add($this->heure_fermeture);
       //echo 'Fin ', $fin->format('d-m-Y H:i:s');
       
-      $heure_hiver = (1 - date('I', $jour));
-      if ($heure_hiver && isset($this->decalage_heure_hiver)) {
+      //$heure_hiver = (1 - date('I', $jour));
+      if ($date_jour->heure_hiver() && isset($this->decalage_heure_hiver)) {
         $debut = $debut->add($this->decalage_heure_hiver);
         $fin = $fin->add($this->decalage_heure_hiver);
       }
@@ -98,6 +91,7 @@
       $debut_creneau = $debut;
       $fin_creneau = $debut->add($this->duree_seance);
       $creneaux = array();
+      
       while ($fin_creneau <= $fin) {
         if (($debut_creneau > $lever) && ($fin_creneau < $coucher))
           $creneaux[] = $debut_creneau;
@@ -111,8 +105,7 @@
    // --------------------------------------------------------------------------
   class Regime_Hebdomadaire extends Regime_Ouverture {
     public $horaires_journaliers = array(); //Plages horaires ; remarque : potentiellement plusieurs plages horaires par jour
-    public function definir_creneaux(int $jour,
-                                     DateTimeZone $fuseau,
+    public function definir_creneaux(Instant $jour,
                                      float $latitude,
                                      float $longitude) {
     }

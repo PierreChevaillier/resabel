@@ -1,5 +1,6 @@
 <?php
   include('php/utilitaires/controle_session.php');
+  include('php/utilitaires/definir_locale.php');
  ?>
 <!DOCTYPE html>
   <html lang="fr">

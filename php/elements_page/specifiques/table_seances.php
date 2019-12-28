@@ -53,7 +53,7 @@
       echo '<div class="container-fluid" style="padding:0px;"><table class="table table-hover">';
       echo '<thead><tr><th></th>';
       foreach ($this->activite_site->creneaux_activite as $creneau) {
-        echo '<th>', $creneau->format('H:i'), '</th>';
+        echo '<th>', $creneau->heure_texte(), '</th>';
       }
       echo '</tr></thead><tbody>';
     }
@@ -68,8 +68,6 @@
     }
     
     protected function afficher_corps() {
-      $cal = calendrier::obtenir();
-      
       $presentation_nom = new Afficheur_Nom();
       
       if (!isset($this->activite_site->site->supports_activite)) return; // on ne sait jamais...

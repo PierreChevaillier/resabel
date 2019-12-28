@@ -41,8 +41,8 @@
   // --------------------------------------------------------------------------
   class Activite_Journaliere {
     
-    private $jour = null; // Instant
-    public function jour() { return $this->jour; }
+    //private $jour = null; // Instant
+    //public function jour() { return $this->jour; }
     
     private $date_jour = null; // DateTimeImmutable
     public function date_jour() { return $this->date_jour; }
@@ -76,19 +76,16 @@
     }
     
     protected function definir_jour() {
-      $cal = Calendrier::obtenir();
-      $this->jour = isset($_GET['j']) ? new Instant($_GET['j']): $cal->aujourdhui();
-      $d = new DateTime("now", $this->club->fuseau_horaire());
-      $d->setTimestamp($this->jour->timestamp());
-      $this->date_jour = DateTimeImmutable::createFromMutable($d);
+      $this->date_jour = isset($_GET['j']) ? Calendrier::creer_Instant($_GET['j']): Calendrier::aujourdhui();
     }
     
     protected function collecter_info_permanence() {
       //Permanence::cette_semaine($this->permanence);
-      $cal = Calendrier::obtenir();
+      //$cal = Calendrier::obtenir();
       //$this->permanence = new Permanence($cal->numero_semaine($this->jour()), $cal->annee_semaine($this->jour()));
-      $sem = $cal->numero_semaine($this->jour());
-      $annee = $cal->annee_semaine($this->jour());
+      $sem = $this->date_jour()->format("W");
+      //$cal->numero_semaine($this->jour());
+      $annee = Calendrier::annee_semaine($this->date_jour());
       $this->permanence = new Permanence($sem, $annee);
       $this->enregistrement_permanence = new Enregistrement_Permanence();
       $this->enregistrement_permanence->def_permanence($this->permanence);
@@ -119,8 +116,7 @@
     public $activite_journaliere = null;
     public $site = null;
    
-    protected function jour() { return $this->activite_journaliere->jour(); }
-    protected function fuseau_horaire() { return $this->activite_journaliere->club->fuseau_horaire(); }
+    protected function jour() { return $this->activite_journaliere->date_jour(); }
     protected function latitude() { return $this->site->latitude; }
     protected function longitude() { return $this->site->longitude; }
     
@@ -154,14 +150,13 @@
     }
     
     protected function definir_creneaux_activite() {
-      $this->creneaux_activite = $this->site->regime_ouverture->definir_creneaux($this->jour()->timestamp(),
-                                                                                 $this->fuseau_horaire(),
+      $this->creneaux_activite = $this->site->regime_ouverture->definir_creneaux($this->jour(),
                                                                                  $this->latitude(),
                                                                                  $this->longitude());
     }
     
     protected function collecter_info_marees() {
-      $this->marees = Enregistrement_Maree::recherche_marees_jour($this->site->code(), $this->activite_journaliere->jour());
+      $this->marees = Enregistrement_Maree::recherche_marees_jour($this->site->code(), $this->jour());
     }
     
     protected function collecter_info_supports_actifs() {

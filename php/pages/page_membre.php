@@ -5,7 +5,7 @@
   //               Informations sur un membre du club
   // copyright (c) 2018 AMP. Tous droits reserves.
   // --------------------------------------------------------------------------
-  // utilisation : php - require_once <nom_-fichier.php'
+  // utilisation : php - require_once <nom_fichier.php>
   // dependances :
   // teste avec : PHP 7.1 sur Mac OS 10.14 ; PHP 7.0 sur hebergeur web
   // --------------------------------------------------------------------------
@@ -23,17 +23,12 @@
   // ==========================================================================
 
   // --- Classes utilisees
+  require_once 'php/elements_page/specifiques/page_menu.php';
   require_once 'php/elements_page/generiques/element.php';
   require_once 'php/elements_page/generiques/entete_contenu_page.php';
-  require_once 'php/elements_page/specifiques/page_menu.php';
-  require_once 'php/elements_page/specifiques/formulaire_membre.php';
-
+  
   require_once 'php/metier/membre.php';
-  
-  // --------------------------------------------------------------------------
-  // --- connection a la base de donnees
-  //include 'php/bdd/base_donnees.php';
-  
+  require_once 'php/elements_page/specifiques/formulaire_membre.php';
   require_once 'php/bdd/enregistrement_membre.php';
   
   // --------------------------------------------------------------------------
