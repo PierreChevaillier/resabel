@@ -7,20 +7,23 @@
     <?php
       // ======================================================================
       // contexte : Resabel - systeme de REServation de Bateaux En Ligne
-      // description : page web "vide" pour remplacer une page pas encore faite
-      // copyright (c) 2018-2019 AMP. Tous droits reserves.
+      // description : formulaire pour la recherche de disponibilite de
+      //   support d'activite en vue de l'inscription d'un groupe de personnes.
+      // copyright (c) 2018-2020 AMP. Tous droits reserves.
       // ----------------------------------------------------------------------
-      // utilisation : navigateur web - test - bouchon
-      // dependances :
+      // utilisation : navigateur web
+      // dependances : (cf. require_once) - valeur variables $_SESSION
       // teste avec : PHP 7.1 sur macOS 10.14 ; PHP 7.3 sur hebergeur web
       // ----------------------------------------------------------------------
-      // creation : 14-oct-2018 pchevaillier@gmail.com
-      // revision : 26-dec-2019 pchevaillier@gmail.com test calendrier
+      // creation : 30-dec-2019 pchevaillier@gmail.com
+      // revision :
       // ----------------------------------------------------------------------
       // commentaires :
-      //  -
+      //  - En construction
       // attention :
+      //  - pas operationnel
       // a faire :
+      //  - completer les fonctionnalites
       // ======================================================================
       
       set_include_path('./');
@@ -39,6 +42,7 @@
 
       // --- Classes des elements de la page
       require_once 'php/elements_page/generiques/element.php';
+      require_once 'php/elements_page/generiques/entete_contenu_page.php';
       require_once 'php/metier/calendrier.php';
       
       // ----------------------------------------------------------------------
@@ -46,18 +50,31 @@
       $feuilles_style = array();
       $feuilles_style[] = "css/resabel_ecran.css";
       $nom_site = Site_Web::accede()->sigle() . " Resabel";
-      $page = new Page_Menu($nom_site, "temporaire", $feuilles_style);
+      $page = new Page_Menu($nom_site, "inscription équipage", $feuilles_style);
       
+      $element = new Entete_Contenu_Page();
+      $element->def_titre("Inscription équipage");
+      $page->ajoute_element_haut($element);
+      
+      // --- Contenu temporaire
       $info = new Element_Code();
-      $code_html = "<div class=\"alert alert-info\" role=\"alert\">Page temporaire</div>" . PHP_EOL;
-      
-      // En guise de test pour la gestion des dates et heures.
+      $code_html = '<div>' . PHP_EOL;
+
       $maintenant = Calendrier::maintenant();
       $aujourdhui = $maintenant->jour();
-      $code_html = $code_html . '<div><p>Nous sommes le ' . $aujourdhui->date_texte() . '<br />';
-      $code_html = $code_html . 'Cette page a été générée le ' . $maintenant->date_texte_abbr() . ' à ' . $maintenant->heure_texte() . '</p></div>' . PHP_EOL;
+      $code_html = $code_html . '<p>Nous sommes le ' . $aujourdhui->date_texte() . '</p>' . PHP_EOL;
+      $code_html = $code_html . '</div>' . PHP_EOL;
       $info->def_code($code_html);
       $page->ajoute_contenu($info);
+      
+      // --- Explications sur ce qu'il y aura sur la page
+      $doc = new Element_Code();
+      $code_html = '<div>' . PHP_EOL;
+      $code_html = $code_html . '<p>Cette page affiche un formulaire pour la recherche des supports d\'activité dispinibles en vue de l\'inscription d\'un groupe de personnes (typiquement un équipage sur un bateau pour une sortie en mer). </p>' . PHP_EOL;
+      $code_html = $code_html . '<p>Elle donne accès au formulaire d\'inscription d\'un équipage (très similaire à celui pour une inscription individuelle)</p>' . PHP_EOL;
+      $code_html = $code_html . '</div>' . PHP_EOL;
+      $doc->def_code($code_html);
+      $page->ajoute_contenu($doc);
       
       // --- Affichage de la page
       $page->initialiser();

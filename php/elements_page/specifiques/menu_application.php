@@ -17,6 +17,7 @@
   // revision : 23-mai-2019 pchevaillier@gmail.com + afficher_menu_club
   // revision : 10-jun-2019 pchevaillier@gmail.com + menu_indisponibilites
   // revision : 25-dec-2019 pchevaillier@gmail.com impact refonte calendrier
+  // revision : 29-dec-2019 pchevaillier@gmail.com reorganisation items menu
   // --------------------------------------------------------------------------
   // commentaires :
   // attention :
@@ -45,17 +46,21 @@
       $this->session_club = ! $this->session_pers;
       $this->membre_actif = $this->session_pers && isset($_SESSION['usr']) && isset($_SESSION['act']);
       
-      //$cal = Calendrier::obtenir();
       $this->jour = isset($GET['j']) ? new Instant($GET['j']): Calendrier::aujourdhui();
     }
     
     private function afficher_menu_club() {
-      
       echo ' <li class="nav-item dropdown">';
       echo '<a class="nav-link dropdown-toggle" href="#" id="mnu_club" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Club</a>';
       echo ' <div class="dropdown-menu" aria-labelledby="mnu-club">';
-      echo '<a class="dropdown-item" href="page_temporaire.php">Info club</a>';
-      echo '<a class="dropdown-item" href="composantes.php">Composantes</a>';
+      echo '<a class="dropdown-item" href="club.php">Info club</a>';
+      echo '<a class="dropdown-item" href="permanences.php">Permanences</a>';
+      if ($this->session_admin) {
+        echo '<a class="dropdown-item" href="equipe_permanence.php">Equipe permanence</a>';
+        echo '<a class="dropdown-item" href="sites_activite.php">Sites d\'activité</a>';
+      }
+      echo '<a class="dropdown-item" href="fermetures_sites.php">Fermetures sites</a>';
+      echo '<a class="dropdown-item" href="composantes.php">Composantes club</a>';
       echo '</div></li>';
     }
     
@@ -64,24 +69,53 @@
       echo '<a class="nav-link dropdown-toggle" href="#" id="mnu_inscr" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Inscriptions</a>';
       echo ' <div class="dropdown-menu" aria-labelledby="mnu-inscr">';
       if ($this->membre_actif)
-          echo '<a class="dropdown-item" href="inscription_individuelle.php?a=ii">Individuelle</a>';
-      
-      echo '<a class="dropdown-item" href="page_temporaire.php">Equipage</a>';
+        echo '<a class="dropdown-item" href="inscription_individuelle.php?a=ii">Inscription individuelle</a>';
+      echo '<a class="dropdown-item" href="inscription_equipage.php">Inscription équipage</a>';
+      echo '<a class="dropdown-item" href="agendas.php">Agendas</a>';
       echo '</div></li>';
     }
     
-    private function afficher_menu_indisponibilites() {
+    private function afficher_menu_supports_activite() {
       echo ' <li class="nav-item dropdown">';
-      echo '<a class="nav-link dropdown-toggle" href="#" id="mnu_indisp" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Indisponibilités</a>';
-      echo ' <div class="dropdown-menu" aria-labelledby="mnu_indisp">';
+      echo '<a class="nav-link dropdown-toggle" href="#" id="mnu_support" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Supports activités</a>';
+      echo ' <div class="dropdown-menu" aria-labelledby="mnu_support">';
       echo '<a class="dropdown-item" href="indisponibilites.php">Indisponibilités supports</a>';
-      echo '<a class="dropdown-item" href="fermetures_sites.php">Fermetures de site</a>';
+      echo '<a class="dropdown-item" href="https://docs.google.com/spreadsheets/d/14zDfgiiELgDnSE4GkX0tpoB2RK1tlmWS3hywiklecFc/edit#gid=795898690">Signalements anomalie</a>';
+     /* if ($this->session_admin) {
+        echo '<a class="dropdown-item" href="motifs_indispo_support.php">Motifs indisponibilités</a>';
+      }
+      */
+      echo '<a class="dropdown-item" href="supports_activite.php">Supports activités</a>';
+      /*
       if ($this->session_admin) {
-       echo '<a class="dropdown-item" href="page_temporaire.php">Motifs</a>';
+        echo '<a class="dropdown-item" href="page_temporaire.php">Types de support d\'activité</a>';
+      }
+       */
+      echo '</div></li>';
+    }
+    
+    private function afficher_menu_personnes() {
+      echo ' <li class="nav-item dropdown">';
+      echo '<a class="nav-link dropdown-toggle" href="#" id="mnu_prs" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Personnes</a>';
+      echo ' <div class="dropdown-menu" aria-labelledby="mnu_prs">';
+      echo '<a class="dropdown-item" href="personnes.php?a=l&act=1&cnx=1">Liste personnes</a>';
+      if ($this->session_club || $this->session_admin) {
+        /*
+         * Acces au formulaire pour l'enregistrement d'un nouveau membre du club
+         * a = c :
+         *   action de creation d'un nouveau membre
+         * o = n :
+         *   objet de l'action est un nouveau membre (pas encore cree a ce stade)
+         */
+        echo '<a class="dropdown-item" href="membre.php?a=c&o=n">Enregistrement nouveau</a>';
+      }
+      if ($this->session_admin) {
+        echo '<a class="dropdown-item" href="debutants.php">Débutants > Confirmés</a>';
+        //echo '<a class="dropdown-item" href="page_temporaire.php">Listes visiteurs</a>';
       }
       echo '</div></li>';
     }
-    
+      
     private function afficher_menu_administration() {
       echo ' <li class="nav-item dropdown">';
       echo '<a class="nav-link dropdown-toggle" href="#" id="mnu_admin" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Administration</a>';
@@ -93,40 +127,25 @@
     }
     
     protected function afficher_corps() {
-    
-      echo '<li class="nav-item"><a class="nav-link" href="page_temporaire.php">Accueil</a></li>';
-      $this->afficher_menu_club();
+      if ($this->membre_actif)
+        echo '<li class="nav-item"><a class="nav-link" href="accueil_perso.php">Accueil</a></li>';
+      else if ($this->session_club)
+        echo '<li class="nav-item"><a class="nav-link" href="accueil_club.php">Accueil</a></li>';
+        
+      echo '<li class="nav-item"><a class="nav-link" href="activites.php?a=l&j=' . $this->jour->valeur_cle_date() . '">Sorties</a></li>';
       
       //if (!isset($_SESSION['prs']) || (isset($_SESSION['prs']) && isset($_SESSION['act'])))
       if ($this->session_club || $this->membre_actif)
-          $this->afficher_menu_inscription();
+        $this->afficher_menu_inscription();
 
-      echo '<li class="nav-item"><a class="nav-link" href="activites.php?a=l&j=' . $this->jour->getTimestamp() . '">Sorties</a></li>';
-      
-      echo '<li class="nav-item"><a class="nav-link" href="agendas.php">Agendas</a></li>';
-      echo '<li class="nav-item"><a class="nav-link" href="permanences.php">Permanences</a></li>';
-      
-      $this->afficher_menu_indisponibilites();
-      //echo '<li class="nav-item"><a class="nav-link" href="#">Indisponibilités</a></li>';
-      
-      echo '<li class="nav-item"><a class="nav-link" href="personnes.php?a=l&act=1&cnx=1">Personnes</a></li>';
-      echo '<li class="nav-item"><a class="nav-link" href="#">Bateaux</a></li>';
-      
-      if ($this->session_club || $this->session_admin) {
-        /*
-         * Acces au formulaire pour l'enregistrement d'un nouveau membre du club
-         * a = c :
-         *   action de creation d'un nouveau membre
-         * o = n :
-         *   objet de l'action est un nouveau membre (pas encore cree a ce stade)
-         */
-        echo '<li class="nav-item"><a class="nav-link" href="membre.php?a=c&o=n">Nouveau</a></li>';
-      }
-    
+      $this->afficher_menu_club();
+      $this->afficher_menu_personnes();
+      $this->afficher_menu_supports_activite();
+      /*
       if ($this->session_admin) {
           $this->afficher_menu_administration();
       }
-      
+      */
       if ($this->session_pers) {
         /*
          * Acces au formulaire pour la modification de ses donnees personnelles

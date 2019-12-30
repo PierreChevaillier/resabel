@@ -103,7 +103,7 @@
     
     protected function afficher_item($date_jour) {
       $texte_jour = $date_jour->date_texte_court();
-      $valeur_jour =  $date_jour->getTimestamp();
+      $valeur_jour =  $date_jour->date_html(); //getTimestamp();
       $code_param_url = "?j=" . $valeur_jour . $this->code_html_parametres;
       echo "\n<a class=\"flex-sm-fill text-sm-center nav-link active\" href=\"", $this->page_cible, $code_param_url, "\">", $texte_jour, "</a>\n";
       
@@ -144,10 +144,12 @@
         echo "<input type=\"hidden\" name=\"" . $cle . "\" value=\"", $valeur, "\">\n";
       }
       
-      echo "<input type=\"hidden\" id=\"j\" name=\"j\">"; // id pour javascript et name pour GET
+      //echo "<input type=\"hidden\" id=\"j\" name=\"j\">"; // id pour javascript et name pour GET
       echo "<div class=\"form-row row\">\n";
       //echo "<label class=\"col-form-label col-sm-1\" for=\"date_sel\">Date</label>";
-      echo "<div class=\"col-md-10\">\n<input class=\"form-control\" type=\"date\" id=\"ds\" onchange=\" return convertir_date_timestamp('ds', 'j'); \" name=\"ds\" value=\"" . $this->valeur_initiale . "\" />";
+      //echo "<div class=\"col-md-10\">\n<input class=\"form-control\" type=\"date\" id=\"ds\" onchange=\" return convertir_date_timestamp('ds', 'j'); \" name=\"ds\" value=\"" . $this->valeur_initiale . "\" />";
+      echo "<div class=\"col-md-10\">\n<input class=\"form-control\" type=\"date\" id=\"j\" \" name=\"j\" value=\"" . $this->valeur_initiale . "\" />";
+      
       echo "</div>\n";
       echo "<div class=\"col-md-2\">";
       //echo '<div class="form-group form-btn col-sm-2" >'; //<div class="col-sm-offset-2 col-sm-10">';

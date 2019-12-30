@@ -8,7 +8,7 @@
       // ======================================================================
       // contexte : Resabel - systeme de REServation de Bateaux En Ligne
       // description : page affichage - gestion
-      //               des eventuelles indisponibilites de supports d'activite
+      //               des eventuellesfermetures de sites d'activite
       // copyright (c) 2018-2019 AMP. Tous droits reserves.
       // ----------------------------------------------------------------------
       // utilisation : navigateur web
@@ -19,6 +19,8 @@
       // revision :
       // ----------------------------------------------------------------------
       // commentaires :
+      //  - fontionnalité très similaire à la gestion des indisponibilites
+      //    des supports d'activite. Parametrage du type d'indisponibilite. 
       // attention :
       // a faire :
       // ======================================================================

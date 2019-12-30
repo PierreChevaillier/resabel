@@ -113,7 +113,7 @@
                                                                      $site->longitude);
       $possibilites = array();
       foreach ($creneaux_activite as $creneau) {
-        $cle = $creneau->getTimestamp();
+        $cle = $creneau->valeur_cle(); //$creneau->getTimestamp();
         $label = $creneau->format("H:i");
         $possibilites[$cle] = $label;
       }

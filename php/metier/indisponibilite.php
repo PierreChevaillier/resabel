@@ -6,11 +6,11 @@
   // --------------------------------------------------------------------------
   // utilisation : php - require_once <chemin_vers_ce_fichier.php>
   // dependances : 
-  // teste avec : PHP 7.1 sur Mac OS 10.14 ;
+  // teste avec : PHP 7.1 sur MacOS 10.14 ;
   //              PHP 7.0 sur hebergeur web
   // --------------------------------------------------------------------------
   // creation : 09-jun-2019 pchevaillier@gmail.com
-  // revision :
+  // revision : 29-jun-2019 pchevaillier@gmail.com
   // --------------------------------------------------------------------------
   // commentaires :
   // -
@@ -25,15 +25,16 @@
   
   // --------------------------------------------------------------------------
   class Indisponibilite {
-    public $periode = null;
+    public $debut = null;
+    public $fin = null;
     public $motif;
  
-    public $createur; // personne ou annonyme (code = 0)
-    public $instant_creation;
+    public $createur; // personne ou anonyme (code = 0)
+    public $instant_creation = null;
     
     private $information = "";
     public function information() { return $this->information; }
-    public function def_information($valeur) { $this->information = $valeur; }
+    public function def_information(string $valeur) { $this->information = $valeur; }
     
     private $code = 0;
     public function code() { return $this->code; }
@@ -42,10 +43,8 @@
     public function __construct($code) { $this->code = $code; }
     
     public function formatter_periode() {
-      $code_html = "";
-      $cal = calendrier::obtenir();
-      $code_html = "du " . $cal->date_texte_court($this->periode->debut()) . " " . $cal->heures_minutes_texte($this->periode->debut());
-      $code_html = $code_html . " au " . $cal->date_texte_court($this->periode->fin()) . " " . $cal->heures_minutes_texte($this->periode->fin());
+      $code_html = "du " . $this->debut->date_texte_court() . " à " . $this->debut->heure_texte();
+      $code_html = $code_html . " au " . $this->fin->date_texte_court() . " à " . $this->fin->heure_texte();
       return $code_html;
     }
     

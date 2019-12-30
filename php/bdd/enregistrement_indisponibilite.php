@@ -24,11 +24,13 @@
   require_once 'php/metier/calendrier.php';
   require_once 'php/metier/membre.php';
   require_once 'php/metier/support_activite.php';
-   require_once 'php/metier/site_activite.php';
+  require_once 'php/metier/site_activite.php';
   // ==========================================================================
   class Enregistrement_Indisponibilite {
     private $indisponibilite = null;
-    public function def_indisponibilite($indisponibilite) { $this->indisponibilite = $indisponibilite; }
+    public function def_indisponibilite(Indisponibilite $indisponibilite) {
+      $this->indisponibilite = $indisponibilite;
+    }
     
     static function source() {
       return Base_Donnees::$prefix_table . 'indisponibilites';
@@ -37,10 +39,11 @@
     static function collecter($critere_selection, $critere_tri, & $indisponibilites) {
       $status = false;
       $indisponibilites = array();
+      /*
       $cal = Calendrier::obtenir();
       $debut = $cal->aujourdhui();
       $debut_sql = $cal->formatter_date_heure_sql($debut);
-      
+      */
       $selection = (strlen($critere_selection) > 0) ? " WHERE " . $critere_selection . " " : "";
       $tri = (strlen($critere_tri) > 0) ? " ORDER BY " . $critere_tri . " " : " ORDER BY indisp.code_objet, indisp.date_debut ";
       try {
@@ -63,13 +66,13 @@
           $indisponibilite->def_information($donnee->information);
           
           // -- Information sur la creation
-          $indisponibilite->instant_creation = $cal->def_depuis_timestamp_sql($donnee->date_creation);
+          $indisponibilite->instant_creation = new Instant($donnee->date_creation);
           $indisponibilite->createur = new Membre($donnee->code_createur);
           
           // Periode d'indisponibilite
-          $debut = $cal->def_depuis_timestamp_sql($donnee->date_debut);
-          $fin = $cal->def_depuis_timestamp_sql($donnee->date_fin);
-          $indisponibilite->periode = new Intervalle_Temporel($debut, $fin);
+          $indisponibilite->debut = new Instant($donnee->date_debut);
+          $indisponibilite->fin = new Instant($donnee->date_fin);
+          //$indisponibilite->periode = new Intervalle_Temporel($debut, $fin);
           
           // Motif d'indisponibilite
           $indisponibilite->motif = new Motif_Indisponibilite($donnee->code_motif);

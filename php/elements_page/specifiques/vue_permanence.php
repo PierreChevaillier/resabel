@@ -41,8 +41,7 @@
     }
     
     protected function afficher_jour() {
-      $cal = calendrier::obtenir();
-      echo "<p>semaine " . $this->permanence->semaine() .  "<br /> " . $cal->date_texte($this->permanence->jour());
+      echo "<p>semaine " . $this->permanence->semaine() .  "<br /> " . $this->permanence->jour_texte();
     }
     
     protected function afficher_responsable() {

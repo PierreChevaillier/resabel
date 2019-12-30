@@ -33,7 +33,6 @@
   // ==========================================================================
 
   require_once 'php/metier/membre.php';
-
   require_once 'php/metier/calendrier.php';
   
   class Erreur_Membre_Introuvable extends Exception { }
@@ -63,8 +62,8 @@
             return $identification_ok;
           } else {
             $this->membre->def_code($membre->code);
-            $this->membre->prenom = utf8_encode($membre->prenom);
-            $this->membre->nom = utf8_encode($membre->nom);
+            $this->membre->prenom = $membre->prenom; // stocke en utf-8 dans la base
+            $this->membre->nom = $membre->nom; // stocke en utf-8 dans la base
             $this->membre->def_autorise_connecter($membre->connexion);
             $this->membre->def_chef_de_bord($membre->cdb);
             $this->membre->def_actif($membre->actif);

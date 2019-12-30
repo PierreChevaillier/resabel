@@ -76,7 +76,7 @@
     }
     
     protected function definir_jour() {
-      $this->date_jour = isset($_GET['j']) ? Calendrier::creer_Instant($_GET['j']): Calendrier::aujourdhui();
+      $this->date_jour = isset($_GET['j']) ? new Instant($_GET['j']): Calendrier::aujourdhui();
     }
     
     protected function collecter_info_permanence() {

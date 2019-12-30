@@ -63,14 +63,13 @@
     protected function afficher_menu_actions($item) {
       if (isset($this->menu_action)) {
         // il n'y a pas necessairement de menu (depend du contexte)
-        $this->menu_action->personne = $item;
+        // TODO $this->menu_action-> = $item;
         $this->menu_action->initialiser();
         $this->menu_action->afficher();
       }
     }
     
     protected function afficher_corps() {
-      $cal = calendrier::obtenir();
       
       $presentation_nom = new Afficheur_Nom();
       
@@ -96,7 +95,7 @@
         echo '<td>' . $item->information() . '</td>';
        
         if ($this->affiche_creation) {
-          $creation = "saisie le " . $cal->date_texte_court($item->instant_creation);
+          $creation = "saisie le " . $item->instant_creation->date_texte_court();
           echo '<td>' . $creation . '</td>';
         
           $createur = '';

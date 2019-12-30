@@ -10,7 +10,7 @@
   //              PHP 7.0 sur hebergeur web
   // --------------------------------------------------------------------------
   // creation : 28-mai-2019 pchevaillier@gmail.com
-  // revision :
+  // revision : 28-dec-2019 pchevaillier@gmail.com impact refonte Calendrier
   // --------------------------------------------------------------------------
   // commentaires :
   // attention :
@@ -48,9 +48,8 @@
      * Creation de la permanence pour le semaine en cours
      */
     public static function cette_semaine(& $permanence) {
-      $cal = Calendrier::obtenir();
-      $ce_jour = $cal->aujourdhui();
-      $permanence = new Permanence($cal->numero_semaine($ce_jour), $cal->annee_semaine($ce_jour));
+      $j = Calendrier::aujourdhui();
+      $permanence = new Permanence($j->numero_semaine(), Calendrier::annee_semaine($j));
       return;
     }
     
@@ -59,14 +58,11 @@
     }
     
     public function jour() {
-      $cal = Calendrier::obtenir();
-      return $cal->date_jour_semaine(6, $this->semaine, $this->annee);
+      return Calendrier::date_jour_semaine(6, $this->semaine, $this->annee);
     }
     
     public function jour_texte() {
-      $jour = $this->jour();
-      $cal = Calendrier::obtenir();
-      return $cal->date_texte($jour);
+      return $this->jour()->date_texte();
     }
   }
   

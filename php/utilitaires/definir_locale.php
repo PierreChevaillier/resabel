@@ -20,6 +20,6 @@
   // a faire :
   // ==========================================================================
   date_default_timezone_set('Europe/Paris'); // peut etre change ailleurs
-  setlocale(LC_ALL, 'fr_FR', 'french');
+  setlocale(LC_ALL, 'fr_FR.utf-8', 'french');
   // ==========================================================================
 ?>

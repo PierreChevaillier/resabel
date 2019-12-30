@@ -11,7 +11,7 @@
   // teste avec : PHP 7.1 sur Mac OS 10.14 ; PHP 7.0 sur hebergeur web
   // --------------------------------------------------------------------------
   // creation : 10-jun-2019 pchevaillier@gmail.com
-  // revision :
+  // revision : 29-dec-2019 pchevaillier@gmail.com impact refonte Calendrier
   // --------------------------------------------------------------------------
   // commentaires :
   // attention :
@@ -55,10 +55,8 @@
       else
         $this->entete->def_titre("Fermetures sites d'activité");
       
-      $cal = Calendrier::obtenir();
-      $debut = $cal->aujourdhui();
-      $debut_sql = $cal->formatter_date_heure_sql($debut);
-      $critere_selection = " code_type = " . $this->code_type_indisponibilite . " AND date_fin >= '" . $debut_sql . "'";
+      $debut = Calendrier::aujourdhui();
+      $critere_selection = " code_type = " . $this->code_type_indisponibilite . " AND date_fin >= '" . $debut->date_sql() . "'";
       $indisponibilites = null;
       $this->enregistrement_indisponibilite->collecter("$critere_selection", "", $indisponibilites);
       $this->table->def_elements($indisponibilites);

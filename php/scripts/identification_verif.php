@@ -1,9 +1,9 @@
 <?php
-  // ===========================================================================
+  // ==========================================================================
+  // contexte : Resabel - systeme de REServation de Bateaux En Ligne
   // description: verifie les informations de connexion
   //              - identification de l'utilisateur pour la session
-  // contexte   : resabel
-  // copyright (c) 2014-2019 AMP. All rights reserved
+  // copyright (c) 2014-2020 AMP. Tous droits reserves.
   // ---------------------------------------------------------------------------
   // creation: 01-oct-2014 pchevaillier@gmail.com
   // revision: 08-dec-2014 pchevaillier@gmail.com verification Id utilisateur
@@ -18,6 +18,7 @@
   // revision: 25-jul-2017 pchevaillier@gmail.com version 2 - utilisation PDO
   // revision: 06-oct-2018 pchevaillier@gmail.com reorganisation + nveau formulaire
   // revision: 10-mar-2019 pchevaillier@gmail.com logique identification club
+  // revision: 30-dec-2019 pchevaillier@gmail.com liens vers pages d'accueil
   // ---------------------------------------------------------------------------
   // commentaires :
   // - en chantier V2 - pas completement teste
@@ -128,10 +129,10 @@
   if ($session_club) {
     if (!isset($_GET['clb'])) {
       $_SESSION['clb'] = $club->code();
-      $_SESSION['n_clb'] = utf8_encode($club->nom());
+      $_SESSION['n_clb'] = $club->nom();
     }
     //header("location: ../../page_tableau_journalier_sorties.php?ta=os");
-    header("location: ../../agendas.php");
+    header("location: ../../accueil_club.php");
     exit();
   }
   
@@ -197,16 +198,18 @@
   elseif ($erreur_mot_passe)
     header("location: ../../connexion.php?err=mdp&c=" . $code_club . "&s=" . $code_site);
   elseif (!$_SESSION['act']) {
-    header("location: ../../page_temporaire.php");
+    header("location: ../../acceuil_perso.php");
    // header("location: ../../page_tableau_journalier_sorties.php?ta=os&d=" . Jour::aujourdhui()->jour);
   } elseif ($permanence) {
+    header("location: ../../acceuil_perso.php");
+    /*
     $j0 = date("N");
     $j = max(6, $j0);
     $jperm = mktime(0, 0, 0, date("m"), date("d") + $j - $j0, date("Y"));
     header("location: ../../page_tableau_journalier_sorties.php?ta=os&d=" . $jperm);
+     */
   } else {
-//    header("location: ../../page_inscription_individuelle.php");
-    header("location: ../../page_temporaire.php");
+    header("location: ../../accueil_perso.php");
   }
   exit();
   // ==========================================================================
