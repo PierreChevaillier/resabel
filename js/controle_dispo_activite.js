@@ -3,12 +3,13 @@
  * description : modifications contextuelle des options des champs 'select'
  *               du formulaire de recherche des disponibilités pour
  *               inscription a une activite
- * copyright (c) 2018-2019 AMP. Tous droits reserves.
+ * copyright (c) 2018-2020 AMP. Tous droits reserves.
  * --------------------------------------------------------------------------
  * utilisation : javascript (formulaire)
  * dependences : formulaire_dispo_activite.php (champs du formualire)
  * creation: 22-jul-2019 pchevaillier@gmail.com
  * revision: 08-sep-2019 pchevaillier@gmail.com logique MaJ contectuelle champs saisie
+ * revision: 05-jan-2020 pchevaillier@gmail.com creneaux, type support
  * ----------------------------------------------------------------------------
  * commentaires : 
  * attention : 
@@ -19,40 +20,54 @@
 function chercher_info_site(champ_date, champ_site, champ_prem_creneau, champ_dern_creneau, champ_type_support, champ_support) {
   var est_correct = false;
   var x = champ_site.value;
-  envoi = {'sa': champ_site.value, 'j': champ_date.value}
-  
-  alert('site ' + x + ' supports ' + champ_support.options);
+  var y = champ_type_support.value;
+  envoi = {'sa': champ_site.value, 'j': champ_date.value, 'ts': champ_type_support.value};
+
+  //alert('champ_type_support ' + y);
 
   champ_type_support.options.length = 0;
   champ_type_support.add(new Option("Tous", 0));
 
   champ_support.options.length = 0;
-  champ_support.add(new Option("Tous", 0));
-  
+  champ_prem_creneau.options.length = 0;
+  champ_dern_creneau.options.length = 0;
+
   var jqxhr = $.getJSON("php/scripts/site_activites_info_obtenir.php?", envoi, function(retour) {
                         console.log( "success" );
                         code_html = "<div>";
                         var items = [];
                         $.each( retour, function(cle, valeur) {
                                switch (cle) {
-                               /*
+                               
                                case 'pc':
-                               champ_prem_creneau  = valeur;
-                               case 'dc':
-                               champ_dern_creneau = valeur;
-                                */
+                                choix = JSON.parse(valeur);
+                                $.each(choix, function(code, libelle) {
+                                      champ_prem_creneau.add(new Option(libelle, code));
+                                      })
+                                break;
+                               
+                                case 'dc':
+                                choix = JSON.parse(valeur);
+                                $.each(choix, function(code, libelle) {
+                                       champ_dern_creneau.add(new Option(libelle, code));
+                                       })
+                                break;
                                case 'ts':
                                choix = JSON.parse(valeur);
                                $.each(choix, function(code, libelle) {
                                       champ_type_support.add(new Option(libelle, code));
                                       })
-
+                               champ_type_support.value = y;
+                              break;
                                case 's':
-                               choix_supports = JSON.parse(valeur);
-                               $.each(choix_supports, function(code_support, libelle_support) {
-                                      champ_support.add(new Option(libelle_support, code_support));
+                               if (y == 0)
+                                  champ_support.add(new Option("Tous", 0));
+                               choix = JSON.parse(valeur);
+                               $.each(choix, function(code, libelle) {
+                                      champ_support.add(new Option(libelle, code));
                                       })
-                               
+                               break;
+                            
                                default:
                                items.push( "<p>" + cle + ": " + valeur + "</p>" );
                                }
@@ -95,6 +110,8 @@ function creer_gestionnaire_evenement(id_date, id_site, id_prem_creneau, id_dern
   var champ_support = document.getElementById(id_support);
   //alert("Chargement site " + champ_site.value)
   champ_site.addEventListener("change", function() { chercher_info_site(champ_date, champ_site, champ_prem_creneau, champ_dern_creneau, champ_type_support, champ_support); });
+  champ_type_support.addEventListener("change", function() { chercher_info_site(champ_date, champ_site, champ_prem_creneau, champ_dern_creneau, champ_type_support, champ_support); });
+  
   //champ_site.addEventListener("change", function() { tutu(champ_site); });
   return true;
   

@@ -34,7 +34,7 @@
       $regime = null;
       try {
         $bdd = Base_Donnees::accede();
-        $code_sql = "SELECT code, code_type, nom, heure_ouverture, heure_fermeture, duree_seance, decalage_heure_hiver FROM " . self::source() . " WHERE code = "  . $code . " ORDER BY code, jour_semaine";
+        $code_sql = "SELECT code, code_type, nom, heure_ouverture, heure_fermeture, duree_seance, de_jour_uniquement, decalage_heure_hiver FROM " . self::source() . " WHERE code = "  . $code . " ORDER BY code, jour_semaine";
         //echo '<p>', $code_sql, '</p>';
         $requete = $bdd->query($code_sql);
         while ($donnee = $requete->fetch(PDO::FETCH_OBJ)) {

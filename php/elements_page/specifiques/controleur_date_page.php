@@ -135,6 +135,25 @@
     protected function afficher_corps() {
       // pour avoir un datepicker avec safari et ...
       echo "\n<script type=\"text/javascript\">";
+       echo "$(function() {
+       $( \"#j\" ).datepicker({
+           altField: \"#j\",
+           closeText: 'Fermer',
+           prevText: 'Précédent',
+           nextText: 'Suivant',
+           currentText: 'Aujourd\'hui',
+           firstDay: 1 ,
+           monthNames: ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'],
+           monthNamesShort: ['Janv.', 'Févr.', 'Mars', 'Avril', 'Mai', 'Juin', 'Juil.', 'Août', 'Sept.', 'Oct.', 'Nov.', 'Déc.'],
+           dayNames: ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'],
+           dayNamesShort: ['Dim.', 'Lun.', 'Mar.', 'Mer.', 'Jeu.', 'Ven.', 'Sam.'],
+           dayNamesMin: ['D', 'L', 'M', 'M', 'J', 'V', 'S'],
+           weekHeader: 'Sem.',
+           dateFormat: 'yy-mm-dd'
+           });
+       });";
+       echo "</script>\n";
+      echo "\n<script type=\"text/javascript\">";
       echo "$(function() { if ($('[type=\"date\"]').prop('type') != 'date' ) { $('[type=\"date\"]').datepicker(); }});\n";
       echo "</script>\n";
       

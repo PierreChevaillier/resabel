@@ -44,6 +44,9 @@
       require_once 'php/elements_page/generiques/entete_contenu_page.php';
       require_once 'php/metier/calendrier.php';
       
+      // Pour tests
+      require_once 'php/bdd/enregistrement_site_activite.php';
+       require_once 'php/bdd/enregistrement_regime_ouverture.php';
       // ----------------------------------------------------------------------
       // --- Creation dynamique de la page
       $feuilles_style = array();
@@ -66,10 +69,20 @@
       $info->def_code($code_html);
       $page->ajoute_contenu($info);
       
+      // -- Test
+      $site = Enregistrement_Site_Activite::creer(1);
+      $regime_ouverture = Enregistrement_Regime_ouverture::creer($site->code_regime_ouverture());
+      $date_ref = Calendrier::aujourdhui();
+      $creneaux = $regime_ouverture->definir_creneaux($date_ref, $site->latitude, $site->longitude);
+      
       // --- Explications sur ce qu'il y aura sur la page
       $doc = new Element_Code();
       $code_html = '<div>' . PHP_EOL;
       $code_html = $code_html . '<p>Cette page affiche la liste des sites d\'activités du club.</p>' . PHP_EOL;
+      /*
+      foreach ($creneaux as $creneau)
+        $code_html = $code_html . '<p>' . $creneau->valeur_cle() . ' = ' . $creneau->format("H:i") . '</p>';
+      */
       $code_html = $code_html . '<p>Si l\'utilisateur est administrateur, il peut la modifier.</p>' . PHP_EOL;
       $code_html = $code_html . '<p>Remarque : cette fonctionnalité pourrait être assurée par la page donnant les informations sur le club. </p>' . PHP_EOL;
       $code_html = $code_html . '</div>' . PHP_EOL;

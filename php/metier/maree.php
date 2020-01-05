@@ -101,7 +101,7 @@
       $this->jour = $jour;
     }
     
-    public function ajouter_dans_marees($maree) {
+    public function ajouter(Maree $maree) {
       $this->marees[] = $maree;
     }
     
@@ -208,15 +208,17 @@
     
     static public function recherche_marees_jour($lieu, $jour) {
       $bdd = Base_Donnees::accede();
+      $marees = null;
       $horaires = array();
       $coefficients = array();
+      
+      /*
       $n = self::recherche_horaires($bdd,
                                $lieu,
                                $jour->date_heure_sql(),
                                $jour->lendemain()->date_heure_sql(),
                                $horaires,
                                $coefficients);
-      $marees = null;
       if ($n > 0) {
         $marees = new Marees_Jour($lieu, $jour);
         $i = 0;
@@ -229,6 +231,33 @@
           $j++;
         }
       }
+       */
+      // pour avoir les marees qui se termine le lendemain (avant midi a priori)
+      $fin = $jour->add(new DateInterval('P1DT12H'));
+      $n = self::recherche_horaires($bdd,
+                               $lieu,
+                               $jour->date_heure_sql(),
+                               $fin->date_heure_sql(),
+                               $horaires,
+                               $coefficients);
+      if ($n > 0) {
+        $marees = new Marees_Jour($lieu, $jour);
+        $i = 0;
+        $j = 0;
+        while ($i < $n-1) {
+          // teste si debut ou fin maree est ce jour
+          $j1 = $horaires[$i]->heure()->jour();
+          $j2 = $horaires[$i+1]->heure()->jour();
+          if (($j1 == $jour) || ($j2 == $jour)) {
+            $m = new Maree($horaires[$i],$horaires[$i+1]);
+            $m->def_coefficient($coefficients[$j]);
+            $marees->ajouter($m);
+          }
+          $i += 2;
+          $j++;
+        }
+      }
+      
       return $marees;
     }
     

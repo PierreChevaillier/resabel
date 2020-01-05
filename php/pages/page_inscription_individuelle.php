@@ -56,10 +56,12 @@
         return;
       }
       // Ceation du formulaire pour la modification des informations
+      
       $mode =  $_GET['a'];
       $formulaire = new Formulaire_Disponibilite_Activite($this, $mode, $site_selectionne);
       $this->ajoute_contenu($formulaire);
       $this->form = $formulaire;
+      
     }
     
     public function initialiser() {

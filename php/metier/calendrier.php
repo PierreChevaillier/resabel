@@ -6,13 +6,15 @@
   //               voir resabel/php/utilitaires/definir_locale.php
   // teste avec  : PHP 7.1 sur MacOS 10.14
   // contexte    : Applications WEB
-  // Copyright (c) 2017-2019 AMP
+  // Copyright (c) 2017-2020 AMP
   // --------------------------------------------------------------------------
   // creation : 11-nov-2017 pchevaillier@gmail.com
   // revision : 08-jan-2018 pchevaillier@gmail.com Intervalle temporel (debut)
   // revision : 18-fev-2018 pchevaillier@gmail.com Calendrier::date_html
   // revision : 10-jun-2019 pchevaillier@gmail.com
   // revision : 26-dec-2019 pchevaillier@gmail.com refonte, gros impact / utilisation
+  // revision : 30-dec-2019 pchevaillier@gmail.com Calendrier::annee_semaine
+  // revision : 05-jan-2020 pchevaillier@gmail.com Instant::valeur_cle_horaire
   // --------------------------------------------------------------------------
   // commentaires :
   // - utilisation des classes DateTime et associees
@@ -40,17 +42,30 @@
       return $this->format('Y-m-d');
     }
     
+    public function valeur_cle_horaire() {
+      $cle = 'PT' . $this->format('H') . 'H' . $this->format('i') . 'M';
+      return $cle;
+    }
+    
     public function lendemain() {
       return $this->add(new DateInterval('P1D'));
     }
     
+    public function veille() {
+      return $this->sub(new DateInterval('P1D'));
+    }
+
     public function jour() {
       $valeur = $this->format('Y-m-d') . " 00:00:00";
       return new Instant($valeur);
     }
     
     public function numero_semaine() {
-      return $this->format("W");
+      return $this->format("W"); // ISO-8601 week number of year, weeks starting on Monday
+    }
+    
+    public function annee_semaine() {
+      return $this->format("o"); // ISO-8601 week-numbering year.
     }
     
     public function heure_hiver() {
@@ -238,6 +253,8 @@
     
     public static function annee_semaine(DateTimeImmutable $jour) {
       $j = $jour->getTimestamp();
+      return date("o", $j); // PCh 30-dec-2019 : ISO-8601 week-numbering year.
+      /*
       $jourDeLAn = mktime(0, 0, 0, 1, 1, date("Y", $j));
       $jour_semaine_jourDeLAn = date("N", $jourDeLAn);
       // On est le jour de l'an et c'est un dimanche : derniere semaine de l'annee qui se termine.
@@ -248,7 +265,8 @@
         return (date("Y", $j) - 1);
       else
         return date("Y", $j);
-       }
+       */
+    }
     
   }
   /* Version avant dec-2019

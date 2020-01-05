@@ -7,16 +7,17 @@
   // utilisation : php - require_once <chemin_fichier.php>
   // dependances :
   // teste avec : PHP 7.1 sur Mac OS 10.14 ;
-  //              PHP 7.0 sur hebergeur web
+  //              PHP 7.3 sur hebergeur web
   // --------------------------------------------------------------------------
   // creation : 10-jul-2019 pchevaillier@gmail.com
   // revision :
   // --------------------------------------------------------------------------
   // commentaires :
-  // -
+  // - pas complet
   // attention :
   // - 
   // a faire :
+  // - cas ou un seul site actif.
   // ==========================================================================
 
   // --- Classes utilisees
@@ -62,7 +63,7 @@
     }
     
     protected function collecter_info_club() {
-      $code_club = isset($_SESSION['clb']) ? $_SESSION['clb'] : 0;
+      $code_club = isset($_SESSION['clb']) ? $_SESSION['clb'] : 1;
       $this->club = new Club($code_club);
       $enreg = new Enregistrement_Club();
       $enreg->def_club($this->club);
@@ -113,7 +114,7 @@
                                                                      $site->longitude);
       $possibilites = array();
       foreach ($creneaux_activite as $creneau) {
-        $cle = $creneau->valeur_cle(); //$creneau->getTimestamp();
+        $cle = $creneau->valeur_cle_horaire(); //$creneau->getTimestamp();
         $label = $creneau->format("H:i");
         $possibilites[$cle] = $label;
       }
@@ -122,10 +123,15 @@
     }
       
     private function initialiser_sites($id_champ) {
-      $possibilites = array();
-      foreach ($this->sites as $site)
-        $possibilites[$site->code()] = $site->nom();
-      $this->champ($id_champ)->options = $possibilites;
+      if (count($this->sites) == 1) {
+        foreach ($this->sites as $code => $dummy)
+          $this->champ($id_champ)->def_valeur($code);
+      } else {
+        $possibilites = array();
+        foreach ($this->sites as $site)
+          $possibilites[$site->code()] = $site->nom();
+        $this->champ($id_champ)->options = $possibilites;
+      }
     }
     
     private function initialiser_types_support($id_champ) {
@@ -134,6 +140,7 @@
       foreach ($this->supports_activite as $support)
         $possibilites[$support->type->code()] = $support->type->nom();
       $this->champ($id_champ)->options = $possibilites;
+      $this->champ($id_champ)->def_valeur(0); // tous
     }
     
     private function initialiser_supports($id_champ) {
@@ -143,6 +150,7 @@
       foreach ($this->supports_activite as $support)
           $possibilites[$support->code()] = $support->identite_texte(); //$support->numero() . ' ' . $support->nom() . ' (' .  $support->type->nom() . ')';
       $this->champ($id_champ)->options = $possibilites;
+      $this->champ($id_champ)->def_valeur(0); // tous
     }
     
     public function initialiser() {
@@ -151,23 +159,29 @@
       $script = "\n<script>window.onload = function() {creer_gestionnaire_evenement('j', 'sa', 'pc', 'dc', 'ts', 's'); };</script>\n";
       $code_chargement->def_code($script);
       $this->page->ajoute_contenu($code_chargement);
-      
       try {
+        // Date du jour (parmi valeurs possibles)
         $id = 'j';
         $item = new Champ_Selection($id);
         $item->def_titre("Date");
         $item->valeurs_multiples = false;
         $this->ajouter_champ($item);
         
-        if (count($this->sites) > 1) {
-          $id = 'sa';
+        // Site d'activite
+        $id = 'sa';
+        if (isset($this->sites) && (count($this->sites) > 1)) {
+          // Plusieurs sites sont actifs : on pose donc la question
           $item = new Champ_Selection($id);
           $item->def_titre("Site");
-          $item->def_valeur($this->code_site_selectionne);
           $item->valeurs_multiples = false;
-          $this->ajouter_champ($item);
+        } else {
+          // Un seul site : on ne pose pas la question
+          $item = new Champ_Cache($id);
         }
+        $item->def_valeur($this->code_site_selectionne);
+        $this->ajouter_champ($item);
         
+        // Creneaux horaires (premier creneau - dernier creneau)
         $id = 'pc';
         $item = new Champ_Selection($id);
         $item->def_titre("Premier créneau");
@@ -179,7 +193,7 @@
         $item->def_titre("Dernier créneau");
         $item->valeurs_multiples = false;
         $this->ajouter_champ($item);
-
+        
         $id = 'ts';
         $item = new Champ_Selection($id);
         $item->def_titre("Type de support");
@@ -198,7 +212,6 @@
         //  $item->options[$code] = $elem->nom();
         //if (isset($_POST[$id]))
         //  $item->def_valeur($_POST[$id]);
-      
         parent::initialiser();
       } catch(Exception $e) {
         die('Exception dans la methode initialiser de la classe Formulaire_Disponibilite_Activite : ' . $e->getMessage());
@@ -208,12 +221,16 @@
     protected function afficher_corps() {
       parent::afficher_corps();
       /*
+       Ca ne marche pas tel quel : il faudrait un script specifique
+       a la place de raz_valeurs_formulaire.
+       Pas certain que ce soit necessaire.
       echo '<div class="form-group form-btn" id="btn_raz" >';
       echo '<input type="button" class="btn btn-large btn-outline-secondary"';
       echo ' onclick="return raz_valeurs_formulaire(' . $this->id() . ')"';
       echo ' value="Supprimer les critères de sélection" >';
       echo '</div>';
-      */
+       */
+      
     }
   }
   // ==========================================================================

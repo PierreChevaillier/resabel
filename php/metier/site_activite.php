@@ -71,7 +71,6 @@
   
   // --------------------------------------------------------------------------
   class Salle_Sport extends Site_Activite {
-   
     
     public function est_creneau_possible($intervalle_temporel) {
       $possible = true;

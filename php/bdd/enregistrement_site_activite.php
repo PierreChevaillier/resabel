@@ -2,25 +2,25 @@
   // ==========================================================================
   // contexte : Resabel - systeme de REServAtion de Bateau En Ligne
   // description : classe Enregistrement_Site_Activite
-  //               acces a la base de donnees
-  // copyright (c) 2018-2019 AMP. Tous droits reserves.
+  //               acces a la table dans la base de donnees SQL
+  // copyright (c) 2018-2020 AMP. Tous droits reserves.
   // --------------------------------------------------------------------------
   // utilisation : php - require_once <chemin_vers_ce_fichier.php>
   // dependances : cf. require_once + classe Base_Donnees + structure table
   //               code_type pour instantiation objet
   //               de la bonne sous-classe de site_activite
   // teste avec : PHP 7.1 sur Mac OS 10.14 ;
-  //              PHP 7.0 sur hebergeur web
+  //              PHP 7.3 sur hebergeur web
   // --------------------------------------------------------------------------
   // creation : 10-jun-2019 pchevaillier@gmail.com
-  // revision :
+  // revision : 04-jan-2020 pchevaillier@gmail.com fonction creer
   // --------------------------------------------------------------------------
   // commentaires :
   // -
   // attention :
-  // - non teste
+  // - correspondance des types de site dans le nase de donnees et classes metier
   // a faire :
-  // - collecter  : tester le type comme dans lire
+  // - 
   // ==========================================================================
   
   require_once 'php/metier/site_activite.php';
@@ -45,7 +45,7 @@
       try {
         $bdd = Base_Donnees::accede();
         
-        $code_sql = "SELECT site.code AS code, site.nom AS nom_site, site.code_type AS code_type site.code_regime AS code_regime FROM rsbl_sites_activite AS site INNER JOIN rsbl_types_site_activite as type ON site.code_type = type.code WHERE site.code = :code_site_activite LIMIT 1";
+        $code_sql = "SELECT site.code AS code, site.nom AS nom_site, site.code_type AS code_type, site.code_regime AS code_regime FROM rsbl_sites_activite AS site INNER JOIN rsbl_types_site_activite as type ON site.code_type = type.code WHERE site.code = :code_site_activite LIMIT 1";
         
         $requete= $bdd->prepare($code_sql);
         $code = $this->site_activite->code();
@@ -71,6 +71,45 @@
         Base_Donnees::sortir_sur_exception(self::source(), $e);
       }
       return $trouve;
+    }
+    
+    /*
+     Creer un nouveau Site_Activite
+     (une des classes derivees en fonction du code_type)
+      et initialise tous les attributs
+     */
+    public static function creer(int $code_site) {
+      $site = null;
+      try {
+        $bdd = Base_Donnees::accede();
+        $code_sql = "SELECT site.code AS code, site.nom AS nom_site, site.nom_court AS nom_court, longitude, latitude, hauteur_maree_min, hauteur_maree_max, site.code_type AS code_type, site.code_regime AS code_regime FROM rsbl_sites_activite AS site INNER JOIN rsbl_types_site_activite as type ON site.code_type = type.code WHERE site.code = :code_site_activite LIMIT 1";
+        $requete= $bdd->prepare($code_sql);
+        $requete->bindParam(':code_site_activite', $code_site, PDO::PARAM_INT);
+        $requete->execute();
+         
+        if ($donnee = $requete->fetch(PDO::FETCH_OBJ)) {
+          // Il faut trouver le type de l'objet a instancier
+          if ($donnee->code_type == 1) {
+            $site = new Site_Activite_Mer($code_site);
+            $site->hauteur_maree_min = $donnee->hauteur_maree_min;
+            $site->hauteur_maree_max = $donnee->hauteur_maree_max;
+          } elseif ($donnee->code_type == 2) {
+            $site = new Salle_Sport($code_site);
+          } else {
+            throw new Erreur_Type_Site_Activite();
+          }
+          $site->def_code_regime_ouverture($donnee->code_regime);
+          $site->def_nom($donnee->nom_site);
+          $site->def_nom_court($donnee->nom_court);
+          $site->longitude = $donnee->longitude;
+          $site->latitude = $donnee->latitude;
+        } else {
+           throw new Erreur_site_activite_Introuvable();
+        }
+      } catch (PDOexception $e) {
+        Base_Donnees::sortir_sur_exception(self::source(), $e);
+      }
+      return $site;
     }
     
     static function collecter($critere_selection, $critere_tri, & $sites_activite) {

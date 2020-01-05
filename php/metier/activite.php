@@ -18,7 +18,7 @@
   // - En chantier...
   // - non stabilise
   // a faire :
-  // -
+  // - recuperation des donnees $GET ou $POST : a faire ailleurs.
   // ==========================================================================
 
   require_once 'php/metier/calendrier.php';
@@ -46,6 +46,13 @@
     
     private $date_jour = null; // DateTimeImmutable
     public function date_jour() { return $this->date_jour; }
+    public function def_date_jour(Instant $jour) { $this->date_jour = $jour;}
+    
+    public $filtre_site = 0;
+    public $filtre_type_sypport = 0;
+    public $filtre_support = 0;
+    public $debut_plage_horaire = null;
+    public $fin_plage_horaire = null;
     
     public $club = null;
     public $activite_sites = array();
@@ -57,8 +64,7 @@
 
     public function collecter_informations() {
       $this->collecter_info_club(); // pour le fuseau horaire
-      $this->definir_jour(); // apres collecter_info_club car necessite le fuseau horaire
- 
+    
       $this->collecter_info_permanence();
       
       $this->collecter_info_sites();  // renseigne les infos pour chaque activite_site
@@ -73,10 +79,6 @@
       $enreg = new Enregistrement_Club();
       $enreg->def_club($this->club);
       $enreg->lire();
-    }
-    
-    protected function definir_jour() {
-      $this->date_jour = isset($_GET['j']) ? new Instant($_GET['j']): Calendrier::aujourdhui();
     }
     
     protected function collecter_info_permanence() {
@@ -95,9 +97,11 @@
     protected function collecter_info_sites() {
       Enregistrement_Site_Activite::collecter("", " code_type ",  $this->sites);
       foreach ($this->sites as $site) {
-        $activite_site = new Activite_Site($this, $site);
-        $this->activite_sites[$site->code()] = $activite_site;
-        $activite_site->collecter_informations();
+        if (($this->filtre_site == 0) || ($site->code() == $this->filtre_site)) {
+          $activite_site = new Activite_Site($this, $site);
+          $this->activite_sites[$site->code()] = $activite_site;
+          $activite_site->collecter_informations();
+        }
       }
     }
     

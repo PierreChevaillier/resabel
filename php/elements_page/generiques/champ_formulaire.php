@@ -7,19 +7,19 @@
   // dependances : classe Formulaire, scripts javascripts, JQuery UI
   // teste avec : PHP 5.5.3 sur Mac OS 10.11 ;
   //              PHP 7.1 sur Mac OS 10.14  (depuis 14-oct-2018)
-  //              PHP 7.0 sur hebergeur web
-  // Copyright (c) 2017-2019 AMP. Tous droits reserves.
+  //              PHP 7.3 sur hebergeur web
+  // Copyright (c) 2017-2020 AMP. Tous droits reserves.
   // ------------------------------------------------------------------------
   // creation : 21-oct-2017 pchevaillier@gmail.com
   // revision : 04-fev-2018 pchevaillier@gmail.com mise en forme, champ montant
   // revision : 10-fev-2018 pchevaillier@gmail.com autres champs
-  // revision : 11-fev-2018 pchevaillier@gmail.com valeur, obligatoire
   // revision : 26-aug-2018 pchevaillier@gmail.com Resabel V2 element -> page (web)
   // revision : 14-oct-2018 pchevaillier@gmail.com class Champ_Mot_Passe
   //            id dans Element ; suppression utlisation grille bootstrap
   // revision : 29-dec-2018 pchevaillier@gmail.com gestion erreurs Champ_Nom
   // revision : 30-avr-2019 pchevaillier@gmail.com Choix, Groupe_Choix
   // revision : 11-mai-2019 pchevaillier@gmail.com portabilite Champ_Date
+  // revision : 04-jan-2020 pchevaillier@gmail.com Champ de type hidden
   // ------------------------------------------------------------------------
   // commentaires :
   // attention :
@@ -58,6 +58,11 @@
     public $script_controle = "";
     public $fonction_controle_saisie = "";
     
+    // Champ 'hidden'
+    private $cache = False;
+    public function cache() { return $this->cache; }
+    public function def_cache($valeur = True) { $this->cache = $valeur; }
+    
     //  --- Constructeurs
     public function __construct($id, $script = "", $fonction = "") {
       $this->def_id($id);
@@ -72,19 +77,25 @@
     }
     
     protected function afficher_debut() {
-      $marque = ($this->obligatoire())? "*": "";
-      //echo "\n" . '<div class="form-group"><label class="control-label col-sm-2" for="' . $this->id() . '">' . $this->titre() . ' ' . $marque . '</label><div class="col-sm-10">';
-      echo "\n" . '<div class="form-group"><label class="control-label" for="' . $this->id() . '">' . $this->titre() . ' ' . $marque . '</label><div>';
+      if (!$this->cache()) {
+        $marque = ($this->obligatoire())? "*": "";
+        //echo "\n" . '<div class="form-group"><label class="control-label col-sm-2" for="' . $this->id() . '">' . $this->titre() . ' ' . $marque . '</label><div class="col-sm-10">';
+     
+        echo "\n" . '<div class="form-group"><label class="control-label" for="' . $this->id() . '">' . $this->titre() . ' ' . $marque . '</label><div>';
+      }
     }
  
     protected function afficher_ouverture_commune() {
-      echo "\n<" .  $this->balise . ' class="form-control" ';
+      echo "\n<" .  $this->balise;
+      if (!$this->cache()) echo ' class="form-control" ';
       echo ' id="' . $this->id() . '" name="' . $this->id() . '" ';
-      if ($this->obligatoire()) echo 'required ';
+      if  (!$this->cache() && $this->obligatoire())
+        echo 'required ';
     }
     
     protected function afficher_fin () {
-      echo "</div></div>\n";
+      if (!$this->cache())
+        echo "</div></div>\n";
     }
     
   }
@@ -92,6 +103,18 @@
   // --------------------------------------------------------------------------
   // Champs de type ou role particulier
 
+  class Champ_Cache extends Champ_Formulaire {
+    public function __construct($id, $script = "", $fonction = "") {
+      $this->def_cache(True);
+      parent::__construct($id, $script, $fonction);
+    }
+    
+    protected function afficher_corps () {
+      $this->afficher_ouverture_commune();
+      echo ' type="hidden" value="' . $this->valeur() . '" />' . PHP_EOL;
+    }
+  }
+  
   // --------------------------------------------------------------------------
   class Champ_Selection extends Champ_Formulaire {
     

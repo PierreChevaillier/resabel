@@ -49,6 +49,24 @@
    
     public function __construct($nom_site_web, $nom_page, $liste_feuilles_style = null) {
       $this->activite_journaliere = new Activite_Journaliere();
+      
+      $jour = isset($_GET['j']) ? new Instant($_GET['j']): Calendrier::aujourdhui();
+      $this->activite_journaliere->def_date_jour($jour);
+      
+      $this->activite_journaliere->filtre_site = (isset($_GET['sa'])) ? $_GET['sa'] : 0;
+      $this->activite_journaliere->filtre_type_support = (isset($_GET['ts'])) ? $_GET['ts'] : 0;
+      $this->activite_journaliere->filtre_support = (isset($_GET['s'])) ? $_GET['s'] : 0;
+      
+      $premier_creneau = (isset($_GET['pc'])) ? new DateInterval($_GET['pc']) : new DateInterval('PT0H');
+      $debut_plage_horaire = $jour->add($premier_creneau);
+      $this->activite_journaliere->debut_plage_horaire = $debut_plage_horaire;
+      
+      $dernier_creneau = (isset($_GET['dc'])) ? new DateInterval($_GET['dc']) : new DateInterval('PT0H');
+      $fin_plage_horaire = $jour->add($dernier_creneau);
+      if ($fin_plage_horaire < $debut_plage_horaire)
+        $fin_plage_horaire = $debut_plage_horaire;
+      $this->activite_journaliere->fin_plage_horaire = $fin_plage_horaire;
+      
       $this->activite_journaliere->collecter_informations();
       parent::__construct($nom_site_web, $nom_page, $liste_feuilles_style);
     }
