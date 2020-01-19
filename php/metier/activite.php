@@ -2,7 +2,7 @@
   // ==========================================================================
   // contexte : Resabel - systeme de REServAtion de Bateau En Ligne
   // description : Classes pour information et planification activite journaliere
-  // copyright (c) 2018-2019 AMP. Tous droits reserves.
+  // copyright (c) 2018-2020 AMP. Tous droits reserves.
   // --------------------------------------------------------------------------
   // utilisation : php - require_once <chemin_vers_ce_fichier.php>
   // dependances : 
@@ -10,7 +10,7 @@
   //              PHP 7.0 sur hebergeur web
   // --------------------------------------------------------------------------
   // creation : 09-jun-2019 pchevaillier@gmail.com
-  // revision :
+  // revision : 11-jan-2020 pchevaillier@gmail.com fermeture site et indispo supports
   // --------------------------------------------------------------------------
   // commentaires :
   // - Uniquement 'logique metier': pas d'IHM
@@ -37,6 +37,9 @@
   
   require_once 'php/metier/support_activite.php';
   require_once 'php/bdd/enregistrement_support_activite.php';
+  
+  require_once 'php/metier/indisponibilite.php';
+  require_once 'php/bdd/enregistrement_indisponibilite.php';
   
   // --------------------------------------------------------------------------
   class Activite_Journaliere {
@@ -127,11 +130,10 @@
     public $creneaux_activite = array();
     public $fermetures_site = array(); // fermetures incluant le jour
     public $supports_actifs = array(); // dans site ? cle : code_support ; valeur : support activite
-    public $indisponibilites_support_jour = array(); // cle : code_support ; valeurs : indispos sur toute la journee
-    public $indisponibilites_support_creneaux = array(); // cle : creneau horaire ; valeurs : indispos sopport sur le creneau
-
+    public $indisponibilites_support = array(); // cle : code_support ; valeurs : indispos
+   
     public $seances_creneaux; // cle : creneau horaire ; valeurs : seances programmes
-    public $seances_support = array(); // cle : coe_support ; valeurs : seances programmes
+    public $seances_support = array(); // cle : code_support ; valeurs : seances programmes
 
     public $marees = array();
     
@@ -141,12 +143,41 @@
     }
     
     public function collecter_informations() {
+    
       $this->collecter_info_regime_ouverture();
       $this->definir_creneaux_activite(); // en premier car on a ensuite besoin des creneaux
-      //$this->collecter_info_fermetures_site();
+      $this->collecter_info_fermetures_site();
       $this->collecter_info_supports_actifs();
-      //$this->collecter_info_indispo_supports();
+      $this->collecter_info_indispo_supports();
       $this->collecter_info_marees();
+    }
+    
+    protected function collecter_info_fermetures_site() {
+      $critere_selection = " date_debut <= '" . $this->jour()->lendemain()->date_sql() . "' AND  date_fin >= '" . $this->jour()->date_sql() . "'";
+      Enregistrement_Indisponibilite::collecter($this->site,
+                                                2,
+                                                $critere_selection,
+                                                "",
+                                                $this->fermetures_site);
+    }
+    
+    protected function collecter_info_indispo_supports() {
+      $critere_selection = " date_debut <= '" . $this->jour()->lendemain()->date_sql() . "' AND  date_fin >= '" . $this->jour()->date_sql() . "'";
+      $indispo = array();
+      Enregistrement_Indisponibilite::collecter($this->site,
+                                                1,
+                                                $critere_selection,
+                                                "",
+                                                $indispo);
+      foreach ($indispo as $x) {
+        $i = $x->support->code();
+        if (!array_key_exists($i, $this->indisponibilites_support)) {
+          $this->indisponibilites_support[$i] = array();
+        }
+        $this->indisponibilites_support[$i][] = $x;
+        //echo $i, $x->information();
+      }
+
     }
     
     protected function collecter_info_regime_ouverture() {
@@ -167,6 +198,44 @@
       $supports = null;
       Enregistrement_Support_Activite::collecter("code_site_base = " . $this->site->code() . " AND actif = 1 ", " type DESC, code ASC", $supports);
       $this->site->supports_activite =  $supports;
+    }
+    
+    public function site_ferme() {
+      $d = $this->creneaux_activite[0]->debut();
+      $f = $this->creneaux_activite[count( $this->creneaux_activite)-1]->fin();
+      $creneau_activite = new Intervalle_temporel($d, $f);
+      $condition = false;
+      foreach ($this->fermetures_site as $ferm) {
+        $creneau_fermeture = new Intervalle_temporel($ferm->debut, $ferm->fin);
+        $condition = $creneau_fermeture->couvre($creneau_activite);
+        if ($condition) break;
+      }
+      return $condition;
+    }
+    
+    public function site_ferme_creneau(Instant $debut, Instant $fin) {
+      $creneau = new Intervalle_temporel($debut, $fin);
+      $condition = false;
+      foreach ($this->fermetures_site as $ferm) {
+        $creneau_fermeture = new Intervalle_temporel($ferm->debut, $ferm->fin);
+        $condition = $creneau->chevauche($creneau_fermeture);
+        if ($condition) break;
+      }
+      return $condition;
+    }
+    
+    public function support_indisponible_creneau(Support_Activite $support, Instant $debut, Instant $fin) {
+      $condition = array_key_exists($support->code(), $this->indisponibilites_support);
+      if ($condition) {
+        $creneau = new Intervalle_temporel($debut, $fin);
+        $indispos = $this->indisponibilites_support[$support->code()];
+        foreach ($indispos as $indispo) {
+          $creneau_indispo = new Intervalle_temporel($indispo->debut, $indispo->fin);
+          $condition = $creneau->chevauche($creneau_indispo);
+          if ($condition) break;
+        }
+      }
+      return $condition;
     }
   }
   

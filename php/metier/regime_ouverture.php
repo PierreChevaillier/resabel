@@ -94,7 +94,7 @@
       
       while ($fin_creneau <= $fin) {
         if (($debut_creneau > $lever) && ($fin_creneau < $coucher))
-          $creneaux[] = $debut_creneau;
+          $creneaux[] = new Intervalle_Temporel($debut_creneau, $fin_creneau);
         $debut_creneau = $debut_creneau->add($this->duree_seance);
         $fin_creneau = $fin_creneau->add($this->duree_seance);
       }

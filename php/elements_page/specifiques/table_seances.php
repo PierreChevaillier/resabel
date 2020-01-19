@@ -2,29 +2,26 @@
   // ==========================================================================
   // contexte : Resabel - systeme de REServAtion de Bateau En Ligne
   // description : Affichage des seances d'activite, par support et par creneau horaire
-  // copyright (c) 2018-2019 AMP. Tous droits reserves.
+  // copyright (c) 2018-2020 AMP. Tous droits reserves.
   // --------------------------------------------------------------------------
   // utilisation : php - require_once <chemin_vers_ce_fichier.php>
-  // dependances : bootstrap 4.x
+  // dependances : bootstrap 4.x, resabel_ecran.css
   // teste avec : PHP 7.1 sur Mac OS 10.14 ;
   //              PHP 7.0 sur hebergeur web
   // --------------------------------------------------------------------------
   // creation : 15-jun-2019 pchevaillier@gmail.com
-  // revision :
+  // revision : 11-jan-2020 pchevaillier@gmail.com fermeture site et indispo supports
   // --------------------------------------------------------------------------
   // commentaires :
+  // - en evolution
   // attention :
+  //  - incomplet
   // a faire :
   // ==========================================================================
 
-  //require_once 'php/metier/activite.php';
   require_once 'php/metier/calendrier.php';
-  
   require_once 'php/metier/support_activite.php';
-  require_once 'php/bdd/enregistrement_support_activite.php';
-  
   require_once 'php/metier/site_activite.php';
-  require_once 'php/bdd/enregistrement_site_activite.php';
   
   // --------------------------------------------------------------------------
   class Table_Seances extends Element {
@@ -53,7 +50,14 @@
       echo '<div class="container-fluid" style="padding:0px;"><table class="table table-hover">';
       echo '<thead><tr><th></th>';
       foreach ($this->activite_site->creneaux_activite as $creneau) {
-        echo '<th>', $creneau->heure_texte(), '</th>';
+        $classe = '';
+        $info = '';
+        if ($this->activite_site->site_ferme_creneau($creneau->debut(), $creneau->fin())) {
+          $classe = ' class="indispo"';
+          $info = '<br />fermé';
+        }
+            
+        echo '<th ', $classe, 'style="text-align:center;">', $creneau->debut()->heure_texte(), '<br />', $creneau->fin()->heure_texte(), $info, '</th>';
       }
       echo '</tr></thead><tbody>';
     }
@@ -74,9 +78,19 @@
       foreach ($this->activite_site->site->supports_activite as $code => $support) {
         echo '<tr>';
         if (is_a($support, 'Bateau')) {
-          echo '<td class="cel_bateau compet"><div class="num_bateau">'. $support->numero() . '</div><div class="nom_bateau">' .  $support->nom() . '</div></td>';
+          $sous_classe = '';
+          if ($support->est_pour_competition()) $sous_classe = 'compet';
+          elseif ($support->est_pour_loisir()) $sous_classe = 'loisir';
+          echo '<td class="cel_bateau ' . $sous_classe . '"><div class="num_bateau">'. $support->numero() . '</div><div class="nom_bateau">' .  $support->nom() . '</div></td>';
         } elseif (is_a($support, 'Plateau_Ergo'))  {
           echo '<td>' . $support->nom() . '</td>';
+        }
+        foreach ($this->activite_site->creneaux_activite as $creneau) {
+          $classe = '';
+          $info = '';
+          if ($this->activite_site->site_ferme_creneau($creneau->debut(), $creneau->fin()) || $this->activite_site->support_indisponible_creneau($support, $creneau->debut(), $creneau->fin()))
+            $classe = ' class="indispo"';
+            echo '<td', $classe, '>', $info, '</td>';
         }
 //        echo '<td>';
 //        $this->afficher_menu_actions($item);

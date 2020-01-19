@@ -3,18 +3,22 @@
   // contexte : Resabel - systeme de REServAtion de Bateaux En Ligne
   // description : Definition de la classe Page_Activites
   //               Gestion des informations sur les seances de la journee
-  // copyright (c) 2018-2019 AMP. Tous droits reserves.
+  // copyright (c) 2018-2020 AMP. Tous droits reserves.
   // --------------------------------------------------------------------------
   // utilisation : php - require_once <chemin-fichier.php'
-  // dependances :
+  // dependances : bootstrap 4.x, $_GET[]
   // teste avec : PHP 7.1 sur Mac OS 10.14 ; PHP 7.0 sur hebergeur web
   // --------------------------------------------------------------------------
   // creation : 10-jun-2019 pchevaillier@gmail.com
-  // revision :
+  // revision : 08-jan-2020 pchevaillier@gmail.com affichage fermeture site (debut)
   // --------------------------------------------------------------------------
   // commentaires :
+  // - en evolution
   // attention :
+  // - pas complet
   // a faire :
+  // - traiter le cas des fermetures partielles (que une partie de la journee)
+  // - (pas urgent) suppirmer dependance / bootstratp (Element a creer)
   // ==========================================================================
 
   // --- Classes utilisees
@@ -37,8 +41,6 @@
   require_once 'php/elements_page/specifiques/vue_regime_ouverture.php';
   require_once 'php/elements_page/specifiques/table_seances.php';
   
-  //require_once 'php/elements_page/specifiques/table_indisponibilites.php';
-
   // --------------------------------------------------------------------------
   class Page_Activites extends Page_Menu {
     private $activite_journaliere = null;
@@ -137,14 +139,29 @@
           $this->definir_affichage_marees($activite_site, $onglet);
           //$this->definir_affichage_horaires($site, $onglet); // pour debug (a garder ?)
         } elseif  (is_a($site, 'Salle_Sport')){
-          $entete = new entete_Section();
+          $entete = new Entete_Section();
           $entete->def_titre("Séances entrainement à terre");
           //$this->definir_affichage_horaires($site, $onglet);
           $onglet->elements[] = $entete;
         }
         $onglets->elements[] = $onglet;
-        $tableau = new Table_Seances($this, $activite_site);
-        $onglet->elements[] = $tableau;
+        
+        $ouvert = !$activite_site->site_ferme();
+        if ($ouvert) {
+          $tableau = new Table_Seances($this, $activite_site);
+          $onglet->elements[] = $tableau;
+        } else {
+          $message = new Element_code();
+          $texte = '<div class="alert alert-warning" role="alert" align="center"><p class="lead"> Le site est fermé : <br />' . PHP_EOL;
+          foreach ($activite_site->fermetures_site as $x) {
+            $texte = $texte . $x->motif->nom() . ' '
+                      . $x->formatter_periode() . ' : '
+                      . $x->information() . '<br />'. PHP_EOL;
+          }
+          $texte = $texte . '</p></div>' . PHP_EOL;
+          $message->def_code($texte);
+          $onglet->elements[] = $message;
+        }
       }
       $this->ajoute_contenu($onglets);
     }

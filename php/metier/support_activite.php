@@ -45,8 +45,8 @@
     public function __construct($code) { $this->code = $code; }
     
     public function nom_type() { return $this->type->nom(); }
-    public function est_pour_loisir() { return $pour_loisir; }
-    public function est_pour_competition() { return $pour_comeptition; }
+    public function est_pour_loisir() { return $this->pour_loisir; }
+    public function est_pour_competition() { return $this->pour_competition; }
     
     public function identite_texte() { return $this->nom() .  ' (' .  $this->nom_type() . ')'; }
     
@@ -72,7 +72,7 @@
   class Type_Support_Activite {
     public $type_site = null; // Type de site auquel est destine ce type de support
     public $nombre_personnes_min; // pour l'aviron: min = max
-    public $nombre_personnes_max; // pour ergo, on ne pet rien
+    public $nombre_personnes_max; // pour ergo, on ne met rien
     public $chef_de_bord_requis;
     
     private $code = 0;

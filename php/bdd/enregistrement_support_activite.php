@@ -3,7 +3,7 @@
   // contexte : Resabel - systeme de REServAtion de Bateau En Ligne
   // description : classe Enregistrement_Support_Activite
   //               acces a la base de donnees
-  // copyright (c) 2018-2019 AMP. Tous droits reserves.
+  // copyright (c) 2018-2020 AMP. Tous droits reserves.
   // --------------------------------------------------------------------------
   // utilisation : php - require_once <chemin_vers_ce_fichier.php>
   // dependances : cf. require_once + classe Base_Donnees + structure table
@@ -13,10 +13,10 @@
   //              PHP 7.0 sur hebergeur web
   // --------------------------------------------------------------------------
   // creation : 10-jun-2019 pchevaillier@gmail.com
-  // revision :
+  // revision : 11-jan-2020 pchevaillier@gmail.com champs loisir, competition
   // --------------------------------------------------------------------------
   // commentaires :
-  // -
+  // - En evolution
   // attention :
   // - non teste
   // a faire :
@@ -82,7 +82,7 @@
       $tri = (strlen($critere_tri) > 0) ? " ORDER BY " . $critere_tri . " " : "";
       try {
         $bdd = Base_Donnees::accede();
-        $requete = "SELECT support.code AS code, numero, support.nom AS nom, type.nom_court AS nom_type, type.code AS type, type.code_type AS code_type FROM rsbl_supports AS support INNER JOIN rsbl_types_support AS type ON support.code_type_support = type.code " . $selection . $tri;
+        $requete = "SELECT support.code AS code, numero, competition, loisir, support.nom AS nom, type.nom_court AS nom_type, type.code AS type, type.code_type AS code_type FROM rsbl_supports AS support INNER JOIN rsbl_types_support AS type ON support.code_type_support = type.code " . $selection . $tri;
         //echo "<p>" . $requete . "</p>";
         $resultat = $bdd->query($requete);
         while ($donnee = $resultat->fetch(PDO::FETCH_OBJ)) {
@@ -92,6 +92,8 @@
           } elseif ($donnee->code_type == 2) {
            $support_activite = new Plateau_Ergo($donnee->code);
           }
+          $support_activite->pour_competition = $donnee->competition;
+          $support_activite->pour_loisir = $donnee->loisir;
           $support_activite->def_nom($donnee->nom);
           $support_activite->type = new Type_Support_Activite($donnee->type);
           $support_activite->type->def_nom($donnee->nom_type);

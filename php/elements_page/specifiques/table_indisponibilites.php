@@ -21,10 +21,10 @@
   require_once 'php/metier/calendrier.php';
   
   require_once 'php/metier/support_activite.php';
-  require_once 'php/bdd/enregistrement_support_activite.php';
+  //require_once 'php/bdd/enregistrement_support_activite.php';
   
   require_once 'php/metier/site_activite.php';
-  require_once 'php/bdd/enregistrement_site_activite.php';
+  //require_once 'php/bdd/enregistrement_site_activite.php';
   
   require_once 'php/metier/membre.php';
   require_once 'php/bdd/enregistrement_membre.php';
@@ -77,17 +77,24 @@
       foreach ($this->elements as $item) {
         echo '<tr>';
         if (is_a($item, 'Indisponibilite_Support')) {
+          /*
           $enreg = new Enregistrement_Support_Activite();
           $enreg->def_support_activite($item->support);
           $enreg->lire_identite();
           echo '<td>'. $enreg->support_activite()->numero() . '</td>';
           echo '<td>'. $enreg->support_activite()->nom() . '</td>';
           echo '<td>'. $enreg->support_activite()->nom_type() . '</td>';
+           */
+         
+          echo '<td>'. $item->support->identite_texte() . '</td>';
         } elseif (is_a($item, 'Fermeture_Site'))  {
+          /*
           $enreg_site = new Enregistrement_Site_Activite();
           $enreg_site->def_site_activite($item->site_activite);
           $enreg_site->lire_identite();
           echo '<td>' . $enreg_site->site_activite()->nom() . '</td>';
+           */
+          echo '<td>' . $item->site_activite->nom() . '</td>';
         }
    
         echo '<td>' . $item->motif->nom() . '</td>';

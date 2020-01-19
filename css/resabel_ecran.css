@@ -153,6 +153,14 @@ div.marnage_maree {
   -webkit-align-content: center;
 }
 
+th.indispo {
+  background-color: rgb(128,128,128);
+}
+
+td.indispo {
+  background-color: rgb(128,128,128);
+}
+
 td.cel_bateau {
    text-align:center;
 }

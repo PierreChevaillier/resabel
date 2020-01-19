@@ -43,7 +43,6 @@
       $this->entete = new Entete_Contenu_Page();
       $this->ajoute_element_haut($this->entete);
     
-      $this->enregistrement_indisponibilite  = new Enregistrement_Indisponibilite ();
       $this->table = new Table_Indisponibilites($this);
       $this->ajoute_contenu($this->table);
   
@@ -55,10 +54,20 @@
       else
         $this->entete->def_titre("Fermetures sites d'activité");
       
+      // --- Recherche des indispobilites
       $debut = Calendrier::aujourdhui();
-      $critere_selection = " code_type = " . $this->code_type_indisponibilite . " AND date_fin >= '" . $debut->date_sql() . "'";
-      $indisponibilites = null;
-      $this->enregistrement_indisponibilite->collecter("$critere_selection", "", $indisponibilites);
+      $critere_selection = " date_fin >= '" . $debut->date_sql() . "'";
+      
+      $indisponibilites = array();
+      try {
+        $ok = Enregistrement_Indisponibilite::collecter(NULL,
+                                                        $this->code_type_indisponibilite,
+                                                        $critere_selection,
+                                                        " date_debut ",
+                                                        $indisponibilites);
+      } catch (Erreur_Type_Indisponibilite $e) {
+        echo "<p>Attention type d'indispo invalide</p>";
+      }
       $this->table->def_elements($indisponibilites);
       
       parent::initialiser();

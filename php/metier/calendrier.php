@@ -15,6 +15,7 @@
   // revision : 26-dec-2019 pchevaillier@gmail.com refonte, gros impact / utilisation
   // revision : 30-dec-2019 pchevaillier@gmail.com Calendrier::annee_semaine
   // revision : 05-jan-2020 pchevaillier@gmail.com Instant::valeur_cle_horaire
+  // revision : 11-jan-2020 pchevaillier@gmail.com Interval_Temporel
   // --------------------------------------------------------------------------
   // commentaires :
   // - utilisation des classes DateTime et associees
@@ -72,6 +73,14 @@
       return (1 - date('I', $this->getTimestamp()));
     }
     
+    public function est_apres(Instant $autre_instant) {
+      return $this->getTimestamp() >= $autre_instant->getTimestamp();
+    }
+    
+    public function est_avant(Instant $autre_instant) {
+         return $this->getTimestamp() <= $autre_instant->getTimestamp();
+       }
+    
     public function date_html() {
       return $this->format('Y-m-d');
     }
@@ -101,6 +110,45 @@
     }
   }
   
+  // --------------------------------------------------------------------------
+  class Intervalle_Temporel {
+     public static function origine() {
+       return Calendrier::creer_instant(0);
+     }
+     
+     public static function fin_des_temps() {
+       return Calendrier::creer_instant(PHP_MAX_INT);
+     }
+     
+     private $debut;
+     public function debut() { return $this->debut; }
+     
+     private $fin;
+     public function fin() { return $this->fin; }
+     
+     public function __construct(Instant $debut, Instant $fin) {
+       if (is_null($debut))
+         throw new InvalidArgumentException("Le debut de l'intervalle temporel n'est pas specifiee (null)");
+       elseif (is_null($fin))
+         throw new InvalidArgumentException("La fin de l'intervalle temporel n'est pas specifiee (null)");
+       elseif ($debut->est_apres($fin))
+         throw new RangeException("La date de debut de l'intervalle doit etre avant celle de sa fin");
+       else {
+         $this->debut = $debut;
+         $this->fin = $fin;
+       }
+     }
+    
+    public function chevauche(Intervalle_Temporel $autre_intervalle) {
+      $condition = ($autre_intervalle->fin()->est_avant($this->debut()) || $autre_intervalle->debut()->est_apres($this->fin()));
+      return !$condition;
+    }
+    
+    public function couvre(Intervalle_Temporel $autre_intervalle) {
+      return ($this->debut()->est_avant($autre_intervalle->debut()) && $this->fin()->est_apres($autre_intervalle->fin()));
+    }
+  }
+   
   /* version avant dec-2019
   class Instant {
     private $valeur = 0;

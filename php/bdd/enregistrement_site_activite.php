@@ -16,11 +16,13 @@
   // revision : 04-jan-2020 pchevaillier@gmail.com fonction creer
   // --------------------------------------------------------------------------
   // commentaires :
-  // -
+  // - En evolution
   // attention :
   // - correspondance des types de site dans le nase de donnees et classes metier
   // a faire :
-  // - 
+  // - creation avec juste les infos du site : creer_identite
+  // - creation avec les informations associes : creer_avec_regime
+  // - remarque: idem pour collecter
   // ==========================================================================
   
   require_once 'php/metier/site_activite.php';

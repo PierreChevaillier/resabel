@@ -51,7 +51,6 @@
       $nom_site = Site_Web::accede()->sigle() . " Resabel";
       $page = new Page_Indisponibilites($nom_site, "Fermetures sites d'activité", $feuilles_style);
       $page->code_type_indisponibilite = 2;
-      $page->def_id("pg_ferm");
       
       // --- Affichage de la page
       $page->initialiser();
