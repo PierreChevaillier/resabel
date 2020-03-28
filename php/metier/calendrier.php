@@ -73,13 +73,17 @@
       return (1 - date('I', $this->getTimestamp()));
     }
     
+    public function est_egal(Instant $autre_instant) {
+      return $this->getTimestamp() == $autre_instant->getTimestamp();
+    }
+    
     public function est_apres(Instant $autre_instant) {
       return $this->getTimestamp() >= $autre_instant->getTimestamp();
     }
     
     public function est_avant(Instant $autre_instant) {
          return $this->getTimestamp() <= $autre_instant->getTimestamp();
-       }
+    }
     
     public function date_html() {
       return $this->format('Y-m-d');

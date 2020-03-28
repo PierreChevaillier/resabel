@@ -11,6 +11,7 @@
   // --------------------------------------------------------------------------
   // creation : 09-jun-2019 pchevaillier@gmail.com
   // revision : 18-jan-2020 pchevaillier@gmail.com
+  // revision : 08-mar-2020 pchevaillier@gmail.com a_comme_responsable
   // --------------------------------------------------------------------------
   // commentaires :
   // -
@@ -20,31 +21,68 @@
   // -
   // ==========================================================================
 
+  require_once 'php/metier/calendrier.php';
+  
+  // ==========================================================================
   class Seance_activite {
-    $site;
-    $support;
-    $intervalle_programme;
+    
+    public $site;
+    
+    public $support;
+    public function code_support() { return $this->support->code(); }
+    
+    public $code = 0;
+    public function code() { return $this->code; }
+    public function def_code($code) { $this->code = $code; }
+    
+    public $plage_horaire;
+    public function debut() {
+      return $this->plage_horaire->debut();
+    }
+    public function fin() {
+      return $this->plage_horaire->fin();
+    }
+    
     //$intervalle_realise;
+    
     public function responsable_requis() {
-      return $this->support->type->$chef_de_bord_requis;
+      return $this->support->type->chef_de_bord_requis;
     }
     
-    $responsable = null; // si sortie en mer :  resp = chef de bord
-    
-    $inscriptions = array();
-    $etat = '';
-    
-    public function __construct(boolean $requiert_responsable = false) {
-      $this->requiert_responsable = $requiert_responsable;
+    public $responsable = null; // si sortie en mer :  resp = chef de bord
+    public function a_un_responsable() {
+      return (!is_null($this->responsable));
     }
     
-    public function ajouter_participant(Membre $personne, boolean $est_responsable = false) {
-      $inscription = new Participation_Activite($this, $personne);
-      $this->inscription[] = $inscription;
-      if ($est_responable) $this->responsable = $personne;
+    public $inscriptions = array();
+    public $etat = '';
+        
+    public function creer_participation(Membre $personne,
+                                        bool $est_responsable) {
+      $participation = new Participation_Activite($this, $personne);
+      $this->inscriptions[] = $participation;
+      if ($est_responsable) $this->responsable = $personne;
+      return $participation;
     }
     
-    public function nombre_participants() { return count($this->inscriptions); }
+    public function definir_horaire(Instant $debut, Instant $fin) {
+      $this->plage_horaire = new Intervalle_Temporel($debut, $fin);
+    }
+    
+    public function a_comme_responsable($personne) {
+      return ($this->a_un_responsable() && ($this->responsable->code() == $personne->code()));
+    }
+    
+    public function nombre_participants() {
+      return count($this->inscriptions);
+    }
+    
+    public function nombre_places_disponibles() {
+      // TODO  - attention a la gestion du responsable dans decompte
+      // capacite du support - nombre de participants
+      return $this->support->capacite() - $this->nombre_participants();
+    }
+    
   }
   
   // classes : sortie en mer, seance ergo, regate, randonnee, seance_stage...
@@ -60,12 +98,12 @@
       $this->participant = $personne;
     }
     
-    $seance = null;
-    $participant = null;
-    $informations = "";
-    $programme = "";
-    $forme = "";
-    $condition_pratique = "";
+    private $seance = null;
+    public $participant = null;
+    public $informations = "";
+    //$programme = "";
+    //$forme = "";
+    //$condition_pratique = "";
   }
   // ==========================================================================
 ?>

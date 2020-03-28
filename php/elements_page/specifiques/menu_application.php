@@ -128,7 +128,7 @@
     
     protected function afficher_corps() {
       if ($this->membre_actif)
-        echo '<li class="nav-item"><a class="nav-link" href="accueil_perso.php">Accueil</a></li>';
+        echo '<li class="nav-item"><a class="nav-link" href="accueil_perso.php"><img src="../../assets/icons/house-fill.svg" alt="" width="24" height="24" title="accueil">Accueil</a></li>';
       else if ($this->session_club)
         echo '<li class="nav-item"><a class="nav-link" href="accueil_club.php">Accueil</a></li>';
         

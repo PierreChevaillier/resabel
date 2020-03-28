@@ -25,6 +25,7 @@
   // --------------------------------------------------------------------------
   class Element_Modal extends Element {
     //public $id_modal_body = '';
+    public $corps = '<p>YYYYYYYYY</p>';
     
     public function initialiser() {
     }
@@ -44,13 +45,13 @@
     
     protected function afficher_corps_contenu() {
       echo "\n<div class=\"modal-body\" id=\"" . $this->id() . "_corps\">\n";
-      echo '<p>  </p>';
+      echo $this->corps;
       echo "\n</div>\n";
     }
     
     protected function afficher_pied_contenu() {
       echo '<div class="modal-footer">';
-      echo '<button type="button" class="btn" id="' . $this->id() . '_btn" data-dismiss="modal">Fermer</button>';
+      echo '<button type="button" role="button" class="btn" id="' . $this->id() . '_btn" data-dismiss="modal">Fermer</button>';
       echo '</div>';
     }
     

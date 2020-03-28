@@ -11,6 +11,7 @@
   // --------------------------------------------------------------------------
   // creation : 09-jun-2019 pchevaillier@gmail.com
   // revision : 11-jan-2020 pchevaillier@gmail.com fermeture site et indispo supports
+  // revision : 02-mar-2020 pchevaillier@gmail.com collecte infos sur seances
   // --------------------------------------------------------------------------
   // commentaires :
   // - Uniquement 'logique metier': pas d'IHM
@@ -25,6 +26,9 @@
   
   require_once 'php/metier/club.php';
   require_once 'php/bdd/enregistrement_club.php';
+  
+  require_once 'php/metier/membre.php';
+  require_once 'php/bdd/enregistrement_membre.php';
   
   require_once 'php/metier/permanence.php';
   require_once 'php/bdd/enregistrement_permanence.php';
@@ -41,6 +45,9 @@
   require_once 'php/metier/indisponibilite.php';
   require_once 'php/bdd/enregistrement_indisponibilite.php';
   
+  require_once 'php/metier/seance_activite.php';
+  require_once 'php/bdd/enregistrement_seance_activite.php';
+   
   // --------------------------------------------------------------------------
   class Activite_Journaliere {
     
@@ -68,12 +75,13 @@
     public function collecter_informations() {
       $this->collecter_info_club(); // pour le fuseau horaire
     
+      $this->collecter_info_personnes_actives();
+      
       $this->collecter_info_permanence();
       
       $this->collecter_info_sites();  // renseigne les infos pour chaque activite_site
       
-      $this->collecter_info_personnes_actives();
-      $this->collecter_info_seances_activite(); // renseigne $seances_xxxx, y compris dans activite_sites
+     
     }
     
     protected function collecter_info_club() {
@@ -109,13 +117,20 @@
     }
     
     protected function collecter_info_personnes_actives() {
+      $personnes = null;
+      $criteres = array();
+      //$criteres['act'] = 1;
+      Enregistrement_Membre::collecter($criteres, '', '', $personnes);
+      $this->personnes_actives = $personnes;
+      //echo '>>>>>', count( $this->personnes_actives);
       return false;
     }
 
+    /*
     protected function collecter_info_seances_activite() {
       return false;
     }
-
+*/
   }
   
    // --------------------------------------------------------------------------
@@ -133,8 +148,9 @@
     public $indisponibilites_support = array(); // cle : code_support ; valeurs : indispos
    
     public $seances_creneaux; // cle : creneau horaire ; valeurs : seances programmes
-    public $seances_support = array(); // cle : code_support ; valeurs : seances programmes
-
+    public $seances_support = array(); // cle : code_support ; valeurs : listes des seances programmees / creneau horaire
+    public $seances_personne = array(); // cle : creneau ; valeurs : codes des personnes participant a une activite sur ce creneau
+    
     public $marees = array();
     
     public function __construct(Activite_Journaliere $contexte, Site_Activite $site) {
@@ -149,6 +165,7 @@
       $this->collecter_info_fermetures_site();
       $this->collecter_info_supports_actifs();
       $this->collecter_info_indispo_supports();
+      $this->collecter_info_seances_activite();
       $this->collecter_info_marees();
     }
     
@@ -185,9 +202,15 @@
     }
     
     protected function definir_creneaux_activite() {
-      $this->creneaux_activite = $this->site->regime_ouverture->definir_creneaux($this->jour(),
-                                                                                 $this->latitude(),
-                                                                                 $this->longitude());
+      $creneaux_site = $this->site->regime_ouverture->definir_creneaux($this->jour(),
+                                                                      $this->latitude(),
+                                                                      $this->longitude());
+      foreach ($creneaux_site as $creneau) {
+        if ($creneau->debut()->est_apres($this->activite_journaliere->debut_plage_horaire)
+             && $creneau->debut()->est_avant($this->activite_journaliere->fin_plage_horaire))
+          $this->creneaux_activite[] = $creneau;
+      }
+     
     }
     
     protected function collecter_info_marees() {
@@ -196,8 +219,76 @@
     
     protected function collecter_info_supports_actifs() {
       $supports = null;
-      Enregistrement_Support_Activite::collecter("code_site_base = " . $this->site->code() . " AND actif = 1 ", " type DESC, code ASC", $supports);
+      $filtre = "code_site_base = " . $this->site->code() . " AND actif = 1 ";
+      if ($this->activite_journaliere->filtre_type_support > 0)
+        $filtre = $filtre . " AND support.code_type_support = " . $this->activite_journaliere->filtre_type_support;
+      if ($this->activite_journaliere->filtre_support > 0)
+        $filtre = $filtre . " AND support.code = " . $this->activite_journaliere->filtre_support;
+      
+      Enregistrement_Support_Activite::collecter($filtre, " type DESC, code ASC", $supports);
       $this->site->supports_activite =  $supports;
+    }
+    
+    protected function collecter_info_seances_activite() {
+      $seances = array();
+      $critere_selection = "code_site = " . $this->site->code() . " AND date_debut <= '" . $this->jour()->lendemain()->date_sql() . "' AND date_fin >= '" . $this->jour()->date_sql() . "'";
+      $critere_tri =  " code_support ASC, date_debut ASC ";
+      Enregistrement_Seance_Activite::collecter($this->site,
+                                                $critere_selection,
+                                                $critere_tri,
+                                                $seances);
+      
+      // rangement des seances par support et par plage horaire
+      $code_support = 0;
+      foreach ($seances as $seance) {
+        $i = $seance->support->code();
+        if (key_exists($i, $this->site->supports_activite)) {
+          $seance->support = $this->site->supports_activite[$i];
+          //echo '<p>Support', $seance->support->nom(), '</p>';
+          if (!key_exists($i, $this->seances_support))
+            $this->seances_support[$i] = array();
+        }
+        // seances par creneau
+        $trouve = false;
+        for ($c = 0; ((!$trouve) && ($c < count($this->creneaux_activite))); $c++) {
+          //echo '<p>', $c, ' ', $this->creneaux_activite[$c]->debut()->heure_texte(), ' ', $seance->debut()->heure_texte(), '</p>';
+          if ($seance->debut()->est_egal($this->creneaux_activite[$c]->debut())) {
+            // il y a une seance
+            if ($seance->a_un_responsable()) {
+              $code_personne = $seance->responsable->code();
+              $seance->responsable = $this->activite_journaliere->personnes_actives[$code_personne];
+              if (!key_exists($code_personne, $this->seances_personne))
+                $this->seances_personne[$code_personne] = array();
+              $this->seances_personne[$code_personne][$c] = $seance;
+//                $seance->responsable = $this->activite_journaliere->personnes_actives[$seance->responsable->code()];
+            }
+             foreach ($seance->inscriptions as $participation) {
+               $code_personne = $participation->participant->code();
+               $participation->participant = $this->activite_journaliere->personnes_actives[$code_personne];
+               if (!key_exists($code_personne, $this->seances_personne))
+                 $this->seances_personne[$code_personne] = array();
+               $this->seances_personne[$code_personne][$c] = $seance;
+             }
+            $this->seances_support[$i][$c] = $seance;
+            $trouve = true;
+          }
+        }
+                
+      }
+      
+      // Definition des informations sur les participants
+      //echo 'n actives', count($this->activite_journaliere->personnes_actives);
+      /*
+      foreach ($seances as $seance) {
+        // identite du responsable
+        if (!is_null($seance->responsable)) {
+          $i = $seance->responsable->code();
+          echo $i, ' ';
+          $seance->reponsable = $this->activite_journaliere->personnes_actives[$i];
+        }
+      }
+       */
+      //echo '<p>', count($this->seances_support), '</p>', PHP_EOL;
     }
     
     public function site_ferme() {
@@ -237,6 +328,27 @@
       }
       return $condition;
     }
+    
+    
+    public function seance_programmee($code_support, $index_creneau) {
+      $seance = null;
+      if (key_exists($code_support, $this->seances_support) && key_exists($index_creneau, $this->seances_support[$code_support]))
+        $seance = $this->seances_support[$code_support][$index_creneau];
+      return $seance;
+    }
+    
+    public function participe_activite_creneau(Membre $personne, Intervalle_Temporel $creneau) {
+      $code_personne = $personne->code();
+      if (array_key_exists($code_personne, $this->seances_personne)) {
+        foreach ($this->seances_personne[$code_personne] as $seance) {
+          if ($seance->debut()->est_egal($creneau->debut())) {
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+    
   }
   
   /*

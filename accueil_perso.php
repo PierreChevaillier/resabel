@@ -7,7 +7,7 @@
     <?php
       // ======================================================================
       // contexte : Resabel - systeme de REServation de Bateaux En Ligne
-      // description : page d'accueil personnelle
+      // description : page d'accueil personnelle (sorte de portail)
       //               recap info personne + acces inscription
       // copyright (c) 2018-2020 AMP. Tous droits reserves.
       // ----------------------------------------------------------------------
@@ -16,14 +16,11 @@
       // teste avec : PHP 7.1 sur macOS 10.14 ; PHP 7.3 sur hebergeur web
       // ----------------------------------------------------------------------
       // creation : 29-dec-2019 pchevaillier@gmail.com
-      // revision :
+      // revision : 04-mar-2020 pchevaillier@gmail.com utilise Page_Accueil_Perso
       // ----------------------------------------------------------------------
       // commentaires :
-      //  - En construction
       // attention :
-      //  - pas completement operationnel
       // a faire :
-      //  - completer les fonctionnalites
       // ======================================================================
       
       set_include_path('./');
@@ -38,45 +35,16 @@
         new Enregistrement_site_web($_SESSION['swb']);
 
       // --- Classe definissant la page a afficher
-      require_once 'php/elements_page/specifiques/page_menu.php';
+      require_once 'php/pages/page_accueil_perso.php';
 
       // --- Classes des elements de la page
-      require_once 'php/elements_page/generiques/element.php';
-      require_once 'php/elements_page/generiques/entete_contenu_page.php';
-      require_once 'php/metier/calendrier.php';
       
       // ----------------------------------------------------------------------
       // --- Creation dynamique de la page
       $feuilles_style = array();
       $feuilles_style[] = "css/resabel_ecran.css";
       $nom_site = Site_Web::accede()->sigle() . " Resabel";
-      $page = new Page_Menu($nom_site, "accueil - personne", $feuilles_style);
-      
-      $element = new Entete_Contenu_Page();
-      $element->def_titre("Page personnelle " . $_SESSION['n_usr']);
-      $page->ajoute_element_haut($element);
-      
-      // --- Contenu temporaire
-      $info = new Element_Code();
-      $code_html = '<div>' . PHP_EOL;
-
-      $maintenant = Calendrier::maintenant();
-      $aujourdhui = $maintenant->jour();
-      $code_html = $code_html . '<p>Nous sommes le ' . $aujourdhui->date_texte() . '</p>' . PHP_EOL;
-      $code_html = $code_html . '</div>' . PHP_EOL;
-      $info->def_code($code_html);
-      $page->ajoute_contenu($info);
-      
-      // --- Explications sur ce qu'il y aura sur la page
-      $doc = new Element_Code();
-      $code_html = '<div>' . PHP_EOL;
-      $code_html = $code_html . '<p>Cette page donne les informations sur <ul><li>date - lever - coucher soleil</li><li>heures marées</li><li>les éventuelles fermetures de site</li><li>Les  inscritions futures à des activités (sorties en mer, séance ergo)</li></ul></p>' . PHP_EOL;
-      $code_html = $code_html . '<p>Elle donne accès au formulaire d\'inscription individuelle et équipage (idem menu inscription)</p>' . PHP_EOL;
-      $code_html = $code_html . '<p>Si la personne est de permanence, cela est indiqué.</p>' . PHP_EOL;
-      $code_html = $code_html . '<p>Si la personne doit renouveler prochainement sa licence, cela est indiqué.</p>' . PHP_EOL;
-      $code_html = $code_html . '</div>' . PHP_EOL;
-      $doc->def_code($code_html);
-      $page->ajoute_contenu($doc);
+      $page = new Page_Accueil_Perso($nom_site, "accueil - personne", $feuilles_style);
       
       // --- Affichage de la page
       $page->initialiser();

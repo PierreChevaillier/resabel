@@ -2,7 +2,7 @@
   // ==========================================================================
   // contexte : Resabel - systeme de REServAtion de Bateau En Ligne
   // description : formulaire pour recherche disponibilite support activite
-  // copyright (c) 2018-2019 AMP. Tous droits reserves.
+  // copyright (c) 2018-2020 AMP. Tous droits reserves.
   // --------------------------------------------------------------------------
   // utilisation : php - require_once <chemin_fichier.php>
   // dependances :
@@ -10,7 +10,7 @@
   //              PHP 7.3 sur hebergeur web
   // --------------------------------------------------------------------------
   // creation : 10-jul-2019 pchevaillier@gmail.com
-  // revision :
+  // revision : 21-mar-2020 pchevaillier@gmail.com val. defaut creneaux horaires
   // --------------------------------------------------------------------------
   // commentaires :
   // - pas complet
@@ -113,11 +113,21 @@
                                                                      $site->latitude,
                                                                      $site->longitude);
       $possibilites = array();
+      $rang = 0;
+      // valeurs par defaut : 1er et 2e creneau
       foreach ($creneaux_activite as $creneau) {
-        $cle = $creneau->valeur_cle_horaire(); //$creneau->getTimestamp();
-        $label = $creneau->format("H:i");
+        $cle = $creneau->debut()->valeur_cle_horaire(); //$creneau->getTimestamp();
+        $label = $creneau->debut()->format("H:i");
+        if ($rang == 0)
+          $this->champ($id_premier)->def_valeur($cle);
+        elseif ($rang == 1)
+          $this->champ($id_dernier)->def_valeur($cle);
         $possibilites[$cle] = $label;
+        $rang += 1;
       }
+      if ($rang == 1)
+        $this->champ($id_dernier)->def_valeur($this->champ($id_premier)->valeur());
+
       $this->champ($id_premier)->options = $possibilites;
       $this->champ($id_dernier)->options = $possibilites;
     }

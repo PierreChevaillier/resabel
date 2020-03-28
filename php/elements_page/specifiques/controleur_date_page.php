@@ -167,7 +167,7 @@
       echo "<div class=\"form-row row\">\n";
       //echo "<label class=\"col-form-label col-sm-1\" for=\"date_sel\">Date</label>";
       //echo "<div class=\"col-md-10\">\n<input class=\"form-control\" type=\"date\" id=\"ds\" onchange=\" return convertir_date_timestamp('ds', 'j'); \" name=\"ds\" value=\"" . $this->valeur_initiale . "\" />";
-      echo "<div class=\"col-md-10\">\n<input class=\"form-control\" type=\"date\" id=\"j\" \" name=\"j\" value=\"" . $this->valeur_initiale . "\" />";
+      echo "<div class=\"col-md-10\">\n<input class=\"form-control\" type=\"date\" id=\"j\" name=\"j\" value=\"" . $this->valeur_initiale . "\" />";
       
       echo "</div>\n";
       echo "<div class=\"col-md-2\">";

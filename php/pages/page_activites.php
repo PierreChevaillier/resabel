@@ -18,7 +18,7 @@
   // - pas complet
   // a faire :
   // - traiter le cas des fermetures partielles (que une partie de la journee)
-  // - (pas urgent) suppirmer dependance / bootstratp (Element a creer)
+  // - (pas urgent) supprimer dependance / bootstrap (Element a creer)
   // ==========================================================================
 
   // --- Classes utilisees
@@ -45,9 +45,17 @@
   class Page_Activites extends Page_Menu {
     private $activite_journaliere = null;
     
+    private $contexte_action = null;
+    public function contexte_action() { return $this->contexte_action; }
+    public function def_contexte_action($contexte) {
+      $this->contexte_action = $contexte;
+    }
+    
     protected function jour() { return $this->activite_journaliere->date_jour(); }
     
     private $entete;
+    
+    public $afficheur_action = null; // ajout 23-fev-2020: afficheur modal / resultat actions
    
     public function __construct($nom_site_web, $nom_page, $liste_feuilles_style = null) {
       $this->activite_journaliere = new Activite_Journaliere();
@@ -63,7 +71,7 @@
       $debut_plage_horaire = $jour->add($premier_creneau);
       $this->activite_journaliere->debut_plage_horaire = $debut_plage_horaire;
       
-      $dernier_creneau = (isset($_GET['dc'])) ? new DateInterval($_GET['dc']) : new DateInterval('PT0H');
+      $dernier_creneau = (isset($_GET['dc'])) ? new DateInterval($_GET['dc']) : new DateInterval('PT23H');
       $fin_plage_horaire = $jour->add($dernier_creneau);
       if ($fin_plage_horaire < $debut_plage_horaire)
         $fin_plage_horaire = $debut_plage_horaire;
@@ -87,7 +95,14 @@
     protected function definir_affichage_navigateur_dates() {
       $url = "activites.php";
       $params = array();
-      $params['a'] = 'l';
+      foreach ($_GET as $cle => $valeur)
+        $params[$cle] = $valeur;
+      /*
+      if (is_null($this->contexte_action))
+        $params['a'] = 'l';
+      else
+        $params['a'] = $this->contexte_action->action(); // 'l';
+       */
       $date_ref = $this->activite_journaliere->date_jour();
       
       $grille = new Cadre_Controleur_Date();
@@ -148,6 +163,11 @@
         
         $ouvert = !$activite_site->site_ferme();
         if ($ouvert) {
+          $this->afficheur_action = new Element_Modal();
+          $this->afficheur_action->def_id('aff_act_' . $site->code());
+          $this->afficheur_action->def_titre('Action effectuée');
+          $this->ajoute_contenu($this->afficheur_action);
+          
           $tableau = new Table_Seances($this, $activite_site);
           $onglet->elements[] = $tableau;
         } else {

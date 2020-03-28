@@ -166,9 +166,10 @@ td.cel_bateau {
 }
 
 div.num_bateau {
+  padding: 2px;
   width: 92px;
-  height: 64px;
-  line-height: 64px;
+  height: 48px;
+  line-height: 48px;
   font-size: x-large;
   color: black;
   background-color: rgb(242,203,0);
@@ -177,10 +178,12 @@ div.num_bateau {
 
 
 td.cel_bateau.compet {
+  padding: 4px;
   background-color: PapayaWhip;
 }
 
 td.cel_bateau.loisir {
+  padding: 4px;
   background-color: PowderBlue;
 }
 */

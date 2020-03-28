@@ -45,6 +45,9 @@
     public function __construct($code) { $this->code = $code; }
     
     public function nom_type() { return $this->type->nom(); }
+    
+    public function capacite() { return 0; }
+    
     public function est_pour_loisir() { return $this->pour_loisir; }
     public function est_pour_competition() { return $this->pour_competition; }
     
@@ -61,12 +64,16 @@
     public $immatriculation;
     public $categorie_navigation;
     
+    public function capacite() { return $this->type->nombre_personnes_max; }
+    
     public function identite_texte() { return $this->numero() . ' ' . $this->nom() .  ' (' .  $this->nom_type() . ')'; }
     
   }
   
   class Plateau_Ergo extends Support_Activite {
     public $nombre_postes; // Peut differe d'un plateau a l'autre, contrairement aux bateaux
+    
+    public function capacite() { return $this->nombre_postes; }
   }
   
   class Type_Support_Activite {

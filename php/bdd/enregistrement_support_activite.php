@@ -14,6 +14,7 @@
   // --------------------------------------------------------------------------
   // creation : 10-jun-2019 pchevaillier@gmail.com
   // revision : 11-jan-2020 pchevaillier@gmail.com champs loisir, competition
+  // revision : 23-jan-2020 pchevaillier@gmail.com champs nb_pers (type support)
   // --------------------------------------------------------------------------
   // commentaires :
   // - En evolution
@@ -82,7 +83,10 @@
       $tri = (strlen($critere_tri) > 0) ? " ORDER BY " . $critere_tri . " " : "";
       try {
         $bdd = Base_Donnees::accede();
-        $requete = "SELECT support.code AS code, numero, competition, loisir, support.nom AS nom, type.nom_court AS nom_type, type.code AS type, type.code_type AS code_type FROM rsbl_supports AS support INNER JOIN rsbl_types_support AS type ON support.code_type_support = type.code " . $selection . $tri;
+        //$requete = "SELECT support.code AS code, numero, competition, loisir, support.nom AS nom, support.nombre_postes AS nb_postes, type.nom_court AS nom_type, type.code AS type, type.code_type AS code_type, type.nb_pers_min AS pers_min, type.nb_pers_max AS pers_max, type.cdb_requis AS cdb_requis FROM rsbl_supports AS support INNER JOIN rsbl_types_support AS type ON support.code_type_support = type.code " . $selection . $tri;
+        
+        $requete = "SELECT support.code AS code, numero, competition, loisir, support.nom AS nom, support.nombre_postes AS nb_postes, type_support.nom_court AS nom_type, type_support.code AS type, type_support.code_type AS code_type, type_support.nb_pers_min AS pers_min, type_support.nb_pers_max AS pers_max, type_support.cdb_requis AS cdb_requis FROM rsbl_supports AS support INNER JOIN rsbl_types_support AS type_support ON (support.code_type_support = type_support.code)" . $selection . $tri;
+        
         //echo "<p>" . $requete . "</p>";
         $resultat = $bdd->query($requete);
         while ($donnee = $resultat->fetch(PDO::FETCH_OBJ)) {
@@ -91,13 +95,16 @@
             $support_activite->def_numero($donnee->numero);
           } elseif ($donnee->code_type == 2) {
            $support_activite = new Plateau_Ergo($donnee->code);
+            $support_activite->nombre_postes = $donnee->nb_postes;
           }
           $support_activite->pour_competition = $donnee->competition;
           $support_activite->pour_loisir = $donnee->loisir;
           $support_activite->def_nom($donnee->nom);
           $support_activite->type = new Type_Support_Activite($donnee->type);
           $support_activite->type->def_nom($donnee->nom_type);
-          
+          $support_activite->type->nombre_personnes_min = $donnee->pers_min;
+          $support_activite->type->nombre_personnes_max = $donnee->pers_max;
+          $support_activite->type->chef_de_bord_requis = ($donnee->cdb_requis == '1');
           $support_activites[$support_activite->code()] = $support_activite;
         }
       } catch (PDOException $e) {

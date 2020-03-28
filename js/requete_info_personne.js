@@ -1,13 +1,13 @@
 // ============================================================================
 // contexte    : Resabel V2
-// description : requete ajax pour obtenir les informations sur une personne
+// description : Affichage requete ajax pour obtenir les informations sur une personne
 // utilisation : javascript - controleur action element page web
-// teste avec  : firefox, safari sur Mac OS 10.14,
+// teste avec  : firefox, safari sur Mac OS 10.14
 //               jQuery 3.3.1
 // dependances : JQuery
-// Copyright (c) 2017-2019 AMP. Tous droits reserves
+// Copyright (c) 2017-2020 AMP. Tous droits reserves.
 // ----------------------------------------------------------------------------
-// creation : 27-avr-2019 pchevaillier@gmail.com depios essai_ajax.js
+// creation : 27-avr-2019 pchevaillier@gmail.com
 // revision :
 // ----------------------------------------------------------------------------
 // commentaires :
@@ -44,5 +44,6 @@ function requete_info_personne(code_membre, modal_id) {
           console.log( "complete" );
           });
 }
+
 
 // ============================================================================

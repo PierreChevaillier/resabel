@@ -13,6 +13,7 @@
   // --------------------------------------------------------------------------
   // creation : 07-sep-2019 pchevaillier@gmail.com
   // revision : 05-jan-2020 pchevaillier@gmail.com
+  // revision : 11-mar-2020 pchevaillier@gmail.com correction erreurs
   // --------------------------------------------------------------------------
   // commentaires :
   // attention :
@@ -41,7 +42,7 @@
   
   // Champs json de la requete :
   $code_site = (isset($_GET['sa']))? $_GET['sa']: 0;
-  $valeur_jour = (isset($_GET['j']))? $_GET['j']: '';
+  $valeur_jour = (isset($_GET['j']))? $_GET['j']: calendrier::aujourdhui()->date_sql();
   $filtre_type_support = (isset($_GET['ts']))? $_GET['ts']: 0;
   
   // --- Recherche des supports d'activite
@@ -49,12 +50,13 @@
   Enregistrement_Support_Activite::collecter("code_site_base = " . $code_site . " AND actif = 1 ", " type DESC, code ASC", $supports);
   
   $choix_type_support = array();
+  
   foreach ($supports as $support) {
     $choix_type_support[$support->type->code()] = $support->type->nom();
   }
   $types_support_json = json_encode($choix_type_support);
-  
   $choix_support = array();
+  
   foreach ($supports as $support) {
     if (($filtre_type_support == 0) || ($support->type->code() == $filtre_type_support))
       $choix_support[$support->code()] = $support->identite_texte();
@@ -62,13 +64,14 @@
   $supports_json = json_encode($choix_support);
   
   // --- Recherche des creneaux d'activite pour le site selectionne
+  $choix_creneaux = array();
   $site = Enregistrement_Site_Activite::creer($code_site);
   $regime_ouverture = Enregistrement_Regime_ouverture::creer($site->code_regime_ouverture());
   $date_ref = new Instant($valeur_jour);
   $creneaux = $regime_ouverture->definir_creneaux($date_ref, $site->latitude, $site->longitude);
-  $choix_creneaux = array();
-  foreach ($creneaux as $creneau)
-    $choix_creneaux[$creneau->valeur_cle_horaire()] = $creneau->format("H:i");
+  foreach ($creneaux as $creneau) {
+     $choix_creneaux[$creneau->debut()->valeur_cle_horaire()] = $creneau->debut()->heure_texte();
+  }
   $creneaux_json = json_encode($choix_creneaux);
    
   $donnees = array('s' => $supports_json, 'ts' => $types_support_json, 'pc' => $creneaux_json, 'dc' => $creneaux_json);

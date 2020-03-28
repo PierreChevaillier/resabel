@@ -282,7 +282,7 @@
     protected function afficher_corps () {
       $this->afficher_ouverture_commune();
       if (strlen($this->fonction_controle_saisie) > 0)
-        echo 'onchange="' . $this->fonction_controle_saisie . '(this)" ';
+        echo ' onchange="' . $this->fonction_controle_saisie . '(this)" ';
       echo ' type="date" ';
       $affiche = ($this->valeur_definie())? 'value="' . $this->valeur() . '" ' : '';
       echo $affiche . ' />';

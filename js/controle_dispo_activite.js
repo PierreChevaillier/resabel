@@ -10,6 +10,8 @@
  * creation: 22-jul-2019 pchevaillier@gmail.com
  * revision: 08-sep-2019 pchevaillier@gmail.com logique MaJ contectuelle champs saisie
  * revision: 05-jan-2020 pchevaillier@gmail.com creneaux, type support
+ * revision: 11-mar-2020 pchevaillier@gmail.com type support - supports
+ * revision: 21-mar-2020 pchevaillier@gmail.com creneaux horaires
  * ----------------------------------------------------------------------------
  * commentaires : 
  * attention : 
@@ -20,10 +22,19 @@
 function chercher_info_site(champ_date, champ_site, champ_prem_creneau, champ_dern_creneau, champ_type_support, champ_support) {
   var est_correct = false;
   var x = champ_site.value;
-  var y = champ_type_support.value;
+  var y = 0;
+  if (champ_type_support.value.length > 0)
+    y = champ_type_support.value;
+  var pc = "";
+  if (champ_prem_creneau.value.length > 0)
+     pc = champ_prem_creneau.value;
+  var dc = "";
+  if (champ_prem_creneau.value.length > 0)
+    dc = champ_dern_creneau.value;
+  
   envoi = {'sa': champ_site.value, 'j': champ_date.value, 'ts': champ_type_support.value};
 
-  //alert('champ_type_support ' + y);
+  //alert( "Site act : " + x + " type_support : " + y + " jour : " + champ_date.value + " pc " + pc + " dc : " + dc);
 
   champ_type_support.options.length = 0;
   champ_type_support.add(new Option("Tous", 0));
@@ -41,26 +52,56 @@ function chercher_info_site(champ_date, champ_site, champ_prem_creneau, champ_de
                                
                                case 'pc':
                                 choix = JSON.parse(valeur);
+                                prem_creneau = "";
+                                choix_possible = false;
                                 $.each(choix, function(code, libelle) {
-                                      champ_prem_creneau.add(new Option(libelle, code));
+                                       champ_prem_creneau.add(new Option(libelle, code));
+                                       if (prem_creneau.length == 0)
+                                        prem_creneau = code;
+                                       if (!choix_possible && code == pc)
+                                        choix_possible = true;
                                       })
+                                if (choix_possible)
+                                  champ_prem_creneau.value = pc;
+                                else
+                                  champ_prem_creneau.value = prem_creneau;
                                 break;
                                
                                 case 'dc':
                                 choix = JSON.parse(valeur);
+                                dern_creneau = "";
+                                choix_possible = false;
+                                rang = 0;
                                 $.each(choix, function(code, libelle) {
                                        champ_dern_creneau.add(new Option(libelle, code));
+                                       if (!choix_possible && code == dc)
+                                        choix_possible = true;
+                                       if (rang < 2)
+                                        dern_creneau = code;
+                                       rang += 1;
                                        })
+                                if (choix_possible)
+                                  champ_dern_creneau.value = dc;
+                                else
+                                  champ_dern_creneau.value = dern_creneau;
                                 break;
+                               
                                case 'ts':
                                choix = JSON.parse(valeur);
+                               choix_possible = false;
                                $.each(choix, function(code, libelle) {
                                       champ_type_support.add(new Option(libelle, code));
+                                      if (!choix_possible && code == y)
+                                        choix_possible = true;
+                                      console.log("code" + code + "libele " + libelle);
                                       })
-                               champ_type_support.value = y;
+                               if (choix_possible)
+                                champ_type_support.value = y;
+                               else
+                                champ_type_support.value = 0;
                               break;
                                case 's':
-                               if (y == 0)
+                               //if (y == 0)
                                   champ_support.add(new Option("Tous", 0));
                                choix = JSON.parse(valeur);
                                $.each(choix, function(code, libelle) {

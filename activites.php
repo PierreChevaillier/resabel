@@ -37,7 +37,7 @@
       // --- Classe definissant la page a afficher
       require_once 'php/pages/page_activites.php';
 
-      require_once 'php/pages/page_inscription_individuelle.php';
+      require_once 'php/elements_page/specifiques/vue_seance_activite.php';
 
       // --- Classes des elements de la page
 
@@ -47,6 +47,10 @@
       $feuilles_style[] = "css/resabel_ecran.css";
       $nom_site = Site_Web::accede()->sigle() . " Resabel";
       $page = new Page_Activites($nom_site, "Séances du jour", $feuilles_style);
+      
+      $contexte = new Contexte_Action_Seance($page);
+      $contexte->initialiser();
+      $page->def_contexte_action($contexte);
       
       // --- Affichage de la page
       $page->initialiser();
