@@ -51,6 +51,7 @@
       . $tel[2] . $bon_separateur
       . $tel[3] . $bon_separateur
       . $tel[4];
+      $resultat = '<a href="tel:' . $resultat . '">' . $resultat . '</a>';
       return $resultat;
     }
   }

@@ -96,7 +96,8 @@
       $url = "activites.php";
       $params = array();
       foreach ($_GET as $cle => $valeur)
-        $params[$cle] = $valeur;
+        if ($cle != 'j') // traite dans tous les cas
+          $params[$cle] = $valeur;
       /*
       if (is_null($this->contexte_action))
         $params['a'] = 'l';

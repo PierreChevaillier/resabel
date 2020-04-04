@@ -6,14 +6,15 @@
   // dependances : bootstrap 4.x, jquery, popper
   // teste avec  : PHP 7.1 sur Mac OS 10.14
   // contexte    : Elements generique d'un site web
-  // copyright (c) 2017-2019 AMP. Tous droits reserves.
+  // copyright (c) 2017-2020 AMP. Tous droits reserves.
   // --------------------------------------------------------------------------
   // creation: 04-jun-2017 pchevaillier@gmail.com
   // revision: 17-jun-2018 pchevaillier@gmail.com adaptation resabel V2
   // revision: 20-aug-2018 pchevaillier@gmail.com ajout feuilles de style
   // revision: 02-mar-2019 pchevaillier@gmail.com version 4.1.3 de bootstrap
   // revision: 05-avr-2019 pchevaillier@gmail.com version 4.3.1 de bootstrap
-  // revision: 11-ami-2019 pchevaillier@gmail.com jquery UI 
+  // revision: 11-mai-2019 pchevaillier@gmail.com jquery UI
+  // revision: 28-mar-2020 pchevaillier@gmail.com script / activation tooltips Bootstrap
   // --------------------------------------------------------------------------
   // commentaires :
   // - https://getbootstrap.com/docs/4.1/getting-started/introduction/
@@ -125,7 +126,7 @@
     // Jquery
     echo "      <script src=\"https://code.jquery.com/jquery-3.3.1.min.js\" integrity=\"sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=\" crossorigin=\"anonymous\"></script>\n";
     /*
-     // semble incompatible avec jquiery-3.3.1.min.js
+     // semble incompatible avec jquery-3.3.1.min.js
     echo "      <script src=\"https://code.jquery.com/jquery-3.3.1.slim.min.js\" integrity=\"sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo\" crossorigin=\"anonymous\"></script>\n";
   */
     // Popper (requis pour bootstrap modal)
@@ -143,11 +144,14 @@
     foreach ($this->elements_entete as $e)
       echo $e;
     $this->afficher_titre();
+    // Activation des tooltips Bootstrap pour les elements de la classe rsbl-tooltip
+    echo "      <script> $(function () { $('.rsbl-tooltip').tooltip() })</script>" . PHP_EOL;
+    
     echo "    </head>\n    <body>\n";
   }
 
   protected function afficher_fin() {
-  	echo "      </body>\n";
+  	echo "    </body>\n";
   }
 
   abstract protected function definir_elements();

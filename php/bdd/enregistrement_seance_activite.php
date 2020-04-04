@@ -13,6 +13,7 @@
   // --------------------------------------------------------------------------
   // creation : 18-jan-2020 pchevaillier@gmail.com
   // revision : 08-mar-2020 pchevaillier@gmail.com (suppression participation)
+  // revision : 29-mar-2020 pchevaillier@gmail.com erreur code_site
   // --------------------------------------------------------------------------
   // commentaires :
   // - en evolution
@@ -69,9 +70,9 @@
               $seances[] = $seance;
               
               if ($donnee->code_type_site == 1) {
-                $seance->site = new Site_Activite_Mer($donnee->code_type_site);
-              } elseif ($donnee->code_type == 2) {
-                $seance->site_activite = new Salle_Sport($donnee->code_type_site);
+                $seance->site = new Site_Activite_Mer($donnee->code_site);
+              } elseif ($donnee->code_type_site == 2) {
+                $seance->site = new Salle_Sport($donnee->code_site);
               }
     
               $seance->support = new Support_activite($donnee->code_support);

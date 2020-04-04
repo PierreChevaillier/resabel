@@ -35,7 +35,7 @@ class Pied_Page extends Element {
     *
     */
   protected function afficher_debut() {
-    echo '<footer>';
+    echo '        <footer>';
   }
   
   protected function afficher_corps() {

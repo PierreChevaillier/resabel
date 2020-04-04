@@ -25,9 +25,10 @@
   // --------------------------------------------------------------------------
   class Element_Modal extends Element {
     //public $id_modal_body = '';
-    public $corps = '<p>YYYYYYYYY</p>';
+    public $corps = '';
     
     public function initialiser() {
+      $this->corps = '<p>YYYYYYYYY - ' . $this->id() . '</p>';
     }
     
     protected function afficher_debut() {

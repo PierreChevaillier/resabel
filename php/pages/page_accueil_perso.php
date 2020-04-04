@@ -10,14 +10,16 @@
   // teste avec : PHP 7.1 sur Mac OS 10.14 ; PHP 7.0 sur hebergeur web
   // --------------------------------------------------------------------------
   // creation : 04-mar-2020 pchevaillier@gmail.com
-  // revision :
+  // revision : 29-mar-2020 pchevaillier@gmail.com ameliorerations + marees
   // --------------------------------------------------------------------------
   // commentaires :
-  // - initie
+  // - en cours d'evolution
   // attention :
   // - pas complet
+  // - $code_site = 1; EN DUR (suppose etre un site pour lequel il a des marees)
+  //    et etre le site de base du club
   // a faire :
-  // - tout
+  // - pas completement teste, a completer
   // ==========================================================================
 
   // --- Classes utilisees
@@ -47,12 +49,9 @@
   require_once 'php/bdd/enregistrement_permanence.php';
   require_once 'php/elements_page/specifiques/vue_permanence.php';
  
-  
+  // affichage des marees
   require_once 'php/elements_page/generiques/conteneur_repliable.php';
-  //require_once 'php/metier/maree.php';
-  
-  //require_once 'php/elements_page/specifiques/vue_regime_ouverture.php';
-  //require_once 'php/elements_page/specifiques/table_seances.php';
+  require_once 'php/metier/maree.php';
   
   // --------------------------------------------------------------------------
   class Page_Accueil_Perso extends Page_Menu {
@@ -162,7 +161,7 @@
       $element->def_titre("Page personnelle " . $_SESSION['n_usr']);
       $this->ajoute_element_haut($element);
       
-      
+      /*
       $info = new Element_Code();
       $code_html = '<div>' . PHP_EOL;
       $maintenant = Calendrier::maintenant();
@@ -171,12 +170,20 @@
       $code_html = $code_html . '</div>' . PHP_EOL;
       $info->def_code($code_html);
       $this->ajoute_contenu($info);
+      */
+      
+      $element = new Entete_Section();
+      $maintenant = Calendrier::maintenant();
+      $aujourdhui = $maintenant->jour();
+      $element->def_titre($aujourdhui->date_texte());
+      $this->ajoute_contenu($element);
       
       $this->definir_affichage_permanence();
       $this->definir_affichage_marees();
       
        // --- Contenu temporaire
       // --- Explications sur ce qu'il y aura sur la page
+      /*
       $doc = new Element_Code();
       $code_html = '<div>' . PHP_EOL;
       $code_html = $code_html . 'Cette page donne aussi des informations sur <ul><li>date - lever - coucher soleil</li><li>les éventuelles fermetures de site</li></ul>' . PHP_EOL;
@@ -186,7 +193,7 @@
       $code_html = $code_html . '</div>' . PHP_EOL;
       $doc->def_code($code_html);
       $this->ajoute_contenu($doc);
-    
+    */
       $element = new Entete_Section();
       $element->def_titre("Participations à des séances d'activité");
       $this->ajoute_contenu($element);
@@ -235,11 +242,12 @@
           $details = $details . " " . $aff_tel->formatter($p->telephone);
           $aff_mail->def_personne($p);
           $details = $details . " " . $aff_mail->formatter("Je te contacte ", $sujet);
+          $details = $details . "<br />";
         }
         $details = htmlspecialchars($details); // indispensable car il ya des " dans $details
         $modal_id = "aff_act";
         $code_menu = $code_menu . '<a class="dropdown-item" data-toggle="modal" data-target="#aff_act" onclick="return afficher_info_seance(\'aff_act\', \''
-            . $entete . '\', \''. $details . '\');">Afficher informations</a>';
+            . $entete . '\', \'' . $details . '\');">Afficher informations</a>';
 
         $code_action = "di";
         $params = '\'' . $modal_id . '\', '
@@ -285,8 +293,11 @@
       $cadre->def_titre("Marées");
       
       $this->ajoute_contenu($cadre);
-      //$table_marees = new Table_Marees_jour($activite_site->marees);
-      //$cadre->ajouter_element($table_marees);
+      $code_site = 1;
+      $maintenant = Calendrier::maintenant();
+      $marees = Enregistrement_Maree::recherche_marees_jour($code_site,  $maintenant->jour());
+      $table_marees = new Table_Marees_jour($marees);
+      $cadre->ajouter_element($table_marees);
     }
     
     

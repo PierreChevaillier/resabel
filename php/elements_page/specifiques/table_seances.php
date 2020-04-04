@@ -101,7 +101,7 @@
           $classe = '';
           $code_html = '';
           if ($this->activite_site->site_ferme_creneau($creneau->debut(), $creneau->fin()) || $this->activite_site->support_indisponible_creneau($support, $creneau->debut(), $creneau->fin()))
-            $classe = ' class="indispo"';
+            $classe = ' class="indispo" ';
           
           //$aff = new Afficheur_Vertical_Seance($this->page, );
           $seance = $this->activite_site->seance_programmee($code, $i);
@@ -124,7 +124,7 @@
           
           $code_html = $aff->formater();
 
-          echo '<td', $classe, ' style="padding:1px; text-align:center;">', $code_html;
+          echo '<td', $classe, ' style="padding:1px;text-align:center;">', $code_html;
           $this->afficher_menu_actions($seance);
           echo '</td>';
         }

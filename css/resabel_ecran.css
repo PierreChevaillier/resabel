@@ -140,7 +140,7 @@ div.coef_maree {
 }
 
 div.marnage_maree {
-  text-align:center;
+  text-align: center;
   color: rgb(16,32,80); /* var(--coul-text-accen); */
   min-height: 60px;
   
@@ -173,17 +173,19 @@ div.num_bateau {
   font-size: x-large;
   color: black;
   background-color: rgb(242,203,0);
-  text-align:center;
+  text-align: center;
 }
 
 
 td.cel_bateau.compet {
   padding: 4px;
+  text-align: center;
   background-color: PapayaWhip;
 }
 
 td.cel_bateau.loisir {
   padding: 4px;
+  text-align: center;
   background-color: PowderBlue;
+  align-content: center;
 }
-*/

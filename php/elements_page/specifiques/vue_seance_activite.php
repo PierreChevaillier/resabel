@@ -58,8 +58,8 @@
       }
       if (isset($_GET['a'])) $this->action = $_GET['a'];
 
-      if ($this->inscription_individuelle())
-        $this->page->javascripts[] = "js/requete_inscription_individuelle.js";
+      //if ($this->inscription_individuelle())
+      $this->page->javascripts[] = "js/requete_inscription_individuelle.js";
      }
     
     public function inscription_individuelle() {
@@ -147,28 +147,70 @@
       
       $couleur_texte = ($personne->est_debutant()) ?  $this->couleur_texte_debutant :  $this->couleur_texte_equipier;
       $couleur_texte = ($personne->est_chef_de_bord()) ?  $this->couleur_texte_cdb :  $couleur_texte;
-      
       $couleur_fond = ($personne->est_debutant()) ? $this->couleur_fond_debutant :  $this->couleur_fond_equipier;
       $str_participant = $personne->prenom . " " . $personne->nom;
-      $str_bouton = '';
-      //$this->formater_bouton_action() ;
       
-      $code_html = $code_html . "<td style =\"width:" . $this->largeur . "px;color:" . $couleur_texte . ";background-color:" . $couleur_fond . ";text-align:center;padding:1px\">" . $str_participant . ' ' . $str_bouton . "</td>";
+      // --- code de l'interacteur / particpation a la seance
+      $code_interacteur = utf8_encode('');
+      
+      //$modal_id = utf8_encode('');
+      if ($this->est_interactif) {
+        $modal_id = "aff_act_" . $this->seance->site->code();
+        $desinscription_possible = ($personne->code() == $this->contexte_action()->utilisateur->code());
+        if ($desinscription_possible) {
+          $code_action = "di";
+          $params = '\'' . $modal_id . '\', '
+                        . '\'' . $code_action . '\', '
+                        . $this->seance->code() . ', '
+                        . $this->seance->site->code() . ', '
+                        . $this->seance->code_support() . ', '
+                        . '\'' . $this->seance->debut()->date_heure_sql() . '\', '
+                        . '\'' . $this->seance->fin()->date_heure_sql() . '\'';
+          $resp = 0;
+          $params = $params . ', ' . $personne->code() . ', ' . $resp;
+          $code_interacteur = '&nbsp;<span><img src="../../assets/icons/x-square.svg" alt="X" width="24" height="24" class="rsbl-tooltip" data-toggle="modal" data-target="#' . $modal_id . '" title="Annulation inscription" onclick="requete_inscription_individuelle(' . $params . ');"></span>';
+        }
+      }
+      
+      $code_html = $code_html . "<td style =\"width:" . $this->largeur . "px;color:" . $couleur_texte . ";background-color:" . $couleur_fond . ";text-align:center;padding:1px\">" . $str_participant . ' ' . $code_interacteur . "</td>";
       return;
     }
     
     protected function formater_responsable(String & $code_html) {
       $str_resp = utf8_encode('&nbsp;');
       $code_interacteur = utf8_encode('');
+      $modal_id = utf8_encode('');
       if ($this->seance->a_un_responsable()) {
         $str_resp = $this->seance->responsable->prenom . " " . $this->seance->responsable->nom;
+        if ($this->est_interactif) {
+          $modal_id = "aff_act_" . $this->seance->site->code();
+          $desinscription_possible = $this->seance->responsable->code() == $this->contexte_action()->utilisateur->code();
+          if ($desinscription_possible) {
+            $code_action = "di";
+            $params = '\'' . $modal_id . '\', '
+                           . '\'' . $code_action . '\', '
+                           . $this->seance->code() . ', '
+                           . $this->seance->site->code() . ', '
+                           . $this->seance->code_support() . ', '
+                           . '\'' . $this->seance->debut()->date_heure_sql() . '\', '
+                           . '\'' . $this->seance->fin()->date_heure_sql() . '\'';
+            $resp = 1;
+            $params = $params . ', ' . $this->seance->responsable->code() . ', ' . $resp;
+            
+            $code_interacteur = '&nbsp;<img src="../../assets/icons/x-square.svg" alt="X" width="24" height="24" class="rsbl-tooltip" data-toggle="modal" data-target="#' . $modal_id . '" title="Annulation inscription" onclick="requete_inscription_individuelle(' . $params . ');">';
+          }
+        }
       } else {
         if ($this->est_interactif) {
+          $modal_id = "aff_act_" . $this->activite_site->site->code();
+          $creneau = $this->seance->plage_horaire;
           $inscription_possible = $this->contexte_action()->inscription_individuelle()
             && !$this->activite_site->participe_activite_creneau($this->contexte_action()->utilisateur, $this->seance->plage_horaire)
             && $this->contexte_action()->utilisateur_responsable();
+          $indispo = ($this->activite_site->site_ferme_creneau($creneau->debut(), $creneau->fin()) || $this->activite_site->support_indisponible_creneau($this->seance->support, $creneau->debut(), $creneau->fin()));
+          $inscription_possible =  $inscription_possible && !$indispo;
+          
           if ($inscription_possible) {
-            $modal_id = "aff_act_" . $this->activite_site->site->code();
             $params = '\'' . $modal_id . '\', '
                       . '\'' . $this->contexte_action()->code_action() . '\', '
                       . $this->seance->code() . ', '
@@ -177,7 +219,7 @@
                       . '\'' . $this->seance->debut()->date_heure_sql() . '\', '
                       . '\'' . $this->seance->fin()->date_heure_sql() . '\'';
             $params = $params . ', ' . $this->contexte_action()->utilisateur->code() . ', 1'; // 1: participation en tant que responsable (chef de bord)
-            $code_interacteur = '<img src="../../assets/icons/pencil.svg" alt="" width="24" height="24" data-toggle="modal" data-target="#' . $modal_id . '" title="inscription" onclick="requete_inscription_individuelle(' . $params . ');">';
+            $code_interacteur = '<img src="../../assets/icons/pencil-square.svg" alt="+" width="24" height="24" class="rsbl-tooltip" data-toggle="modal" data-target="#' . $modal_id . '" title="Inscription chef de bord" onclick="requete_inscription_individuelle(' . $params . ');">';
           }
         }
       }
@@ -194,6 +236,10 @@
       if ($this->est_interactif) {
         $inscription_possible = $this->contexte_action()->inscription_individuelle()
           && !$this->activite_site->participe_activite_creneau($this->contexte_action()->utilisateur, $this->seance->plage_horaire);
+        $creneau = $this->seance->plage_horaire;
+        $indispo = ($this->activite_site->site_ferme_creneau($creneau->debut(), $creneau->fin()) || $this->activite_site->support_indisponible_creneau($this->seance->support, $creneau->debut(), $creneau->fin()));
+        $inscription_possible =  $inscription_possible && !$indispo;
+        
         $code_interacteur = utf8_encode('');
         if ($inscription_possible && $this->pas_encore_controle_vide) {
           $modal_id = "aff_act_" . $this->activite_site->site->code();
@@ -205,7 +251,7 @@
                     . '\'' . $this->seance->debut()->date_heure_sql() . '\', '
                     . '\'' . $this->seance->fin()->date_heure_sql() . '\'';
           $params = $params . ', ' . $this->contexte_action()->utilisateur->code() . ', 0'; // 0 : participation pas en tant que responsable (chef de bord)
-          $code_interacteur = '<img src="../../assets/icons/pencil.svg" alt="" width="24" height="24" data-toggle="modal" data-target="#' . $modal_id . '" title="inscription" onclick="requete_inscription_individuelle(' . $params . ');">';
+          $code_interacteur = '<img src="../../assets/icons/pencil-square.svg" alt="" width="24" height="24" class="rsbl-tooltip" data-toggle="modal" data-target="#' . $modal_id . '" title="Inscription équipier" onclick="requete_inscription_individuelle(' . $params . ');">';
           
           $this->pas_encore_controle_vide = false;
         }

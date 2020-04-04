@@ -4,12 +4,13 @@
   // utilisation :
   // teste avec  : PHP 5.5.3 sur Mac OS 10.11 ; PHP 7 sur serveur OVH
   // contexte    : Applications WEB
-  // Copyright (c) 2017-2018 AMP
+  // Copyright (c) 2017-2020 AMP
   // ---------------------------------------------------------------------------
   // creation: 11-nov-2017 pchevaillier@gmail.com (version France 2018)
   // revision: 28-nov-2017 pchevaillier@gmail.com
   // revision: 08-jan-2018 pchevaillier@gmail.com calcul affichage duree
   // revision: 23-dec-2018 pchevaillier@gmail.com version Resabel V2
+  // revision: 23-dec-2018 pchevaillier@gmail.com cas ou pas de marees / table
   // ---------------------------------------------------------------------------
   // commentaires :
   // attention :
@@ -184,12 +185,14 @@
     }
     
     public function afficher_corps() {
-      $this->afficher_niveaux();
-      $this->afficher_coefficients();
-      $this->afficher_heures();
-      $this->afficher_hauteurs();
-      $this->afficher_marnages();
-      echo '<div style="clear: both;"></div>';
+      if (is_null($this->marees) || (count($this->marees) > 0)) {
+        $this->afficher_niveaux();
+        $this->afficher_coefficients();
+        $this->afficher_heures();
+        $this->afficher_hauteurs();
+        $this->afficher_marnages();
+        echo '<div style="clear: both;"></div>';
+      }
     }
     
     public function afficher_fin() {
