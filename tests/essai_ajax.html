@@ -12,10 +12,25 @@
       <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
       <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
       <script src="../js/tests/essai_ajax.js"></script>
+      <script src="../js/actions_seance_activite.js"></script>
+
       <title>Test Ajax</title>
     </head>
     <body>
       <div class="container-fluid" id="cont-ajax" style="text-align:center; ">
+        
+        <h1>Essai dropdow avec js</h1>
+        
+        <a href="#" onclick="alert('Hello World!'); return false;">Execute JavaScript</a>
+        
+        <div class="dropdown">
+          <button class="btn btn-outline-primary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">57 à 10:30</button>
+          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <a class="dropdown-item" href="javascript:alert('Hello');">Action</a>
+            <a class="dropdown-item" onclick="activer_formulaire(1, '10:00', 0); return false;">Another action</a>
+            <a class="dropdown-item" href="#">Something else here</a>
+          </div>
+        </div>
         
         <h1> Essai AJAX </h1>
         <button type="button" class="btn btn-outline-primary" id="test_ajax" onclick="return requete_ajax(this, 101, 12);">Primary</button>

@@ -3,7 +3,7 @@
   // contexte : Resabel - systeme de REServAtion de Bateaux En Ligne
   // description : Definition de la classe Page_Personnes
   //               Informations sur les personnes du club (membres...)
-  // copyright (c) 2018-2019 AMP. Tous droits reserves.
+  // copyright (c) 2018-2020 AMP. Tous droits reserves.
   // --------------------------------------------------------------------------
   // utilisation : php - require_once <chemin-fichier.php'
   // dependances :
@@ -11,6 +11,7 @@
   // --------------------------------------------------------------------------
   // creation : 16-mar-2018 pchevaillier@gmail.com
   // revision : 29-mar-2018 pchevaillier@gmail.com nettoyage du code
+  // revision : 15-apr-2020 pchevaillier@gmail.com re-encodage critere 'cdb'
   // --------------------------------------------------------------------------
   // commentaires :
   // attention :
@@ -55,6 +56,16 @@
       $personnes = null;
       $composante = '';
       $role = '';
+      // re-encodage valeur du critere 'cdb'
+      // 0 : tous ; 1 : oui ; 2 : non
+      if (array_key_exists('cdb', $this->criteres_selection)) {
+        $val = $this->criteres_selection['cdb'];
+        if ($val > 0)
+          $this->criteres_selection['cdb'] = ($val == 2) ? 0: 1;
+        else
+          unset($this->criteres_selection['cdb']); // tous
+      }
+      
       Enregistrement_Membre::collecter($this->criteres_selection, $composante, $role, $personnes);
       $this->table->def_personnes($personnes);
       parent::initialiser();

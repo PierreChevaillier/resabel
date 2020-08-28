@@ -71,8 +71,8 @@
       $this->maintenant = Calendrier::maintenant();
       
       $this->contexte = new Contexte_Action_Seance($this);
-      $this->javascripts[] = "js/afficher_infos_seance_activite.js";
-       $this->javascripts[] = "js/requete_inscription_individuelle.js";
+      $this->ajouter_script("js/afficher_infos_seance_activite.js");
+      $this->ajouter_script("js/requete_inscription_individuelle.js");
       
       $this->contexte->initialiser();
       
@@ -249,9 +249,7 @@
         $code_menu = $code_menu . '<a class="dropdown-item" data-toggle="modal" data-target="#aff_act" onclick="return afficher_info_seance(\'aff_act\', \''
             . $entete . '\', \'' . $details . '\');">Afficher informations</a>';
 
-        $code_action = "di";
         $params = '\'' . $modal_id . '\', '
-                           . '\'' . $code_action . '\', '
                            . $seance->code() . ', '
                            . $seance->site->code() . ', '
                            . $seance->code_support() . ', '
@@ -259,7 +257,8 @@
                            . '\'' . $seance->fin()->date_heure_sql() . '\'';
         $resp = $seance->a_comme_responsable($this->contexte->utilisateur) ? 1: 0;
         $params = $params . ', ' . $this->contexte->utilisateur->code() . ', ' . $resp; // 0 : participation pas en tant que responsable (chef de bord)
-        
+        $code_action = "di"; // annulation inscription individuelle
+        $params = $params . ', \'' . $code_action . '\'';
         $code_menu = $code_menu . '<a class="dropdown-item" data-toggle="modal" data-target="#aff_act" onclick="requete_inscription_individuelle(' . $params . ');">Annuler ma participation</a>';
         if ($seance->responsable_requis() && !$seance->a_un_responsable() && $this->contexte->utilisateur_responsable())
           $code_menu = $code_menu . '<a class="dropdown-item" onclick="return true;">Passer chef de bord</a>';

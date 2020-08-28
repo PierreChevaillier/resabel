@@ -66,22 +66,17 @@
       echo '</tr></thead><tbody>';
     }
     
-    protected function afficher_menu_actions($item) {
-      echo '<div class="dropdown"><button class="btn btn-sm btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>';
-      echo '<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">';
-      echo '<a class="dropdown-item" data-toggle="modal" data-target="#aff_mbr" href="#" onclick="return true;">Afficher</a>';
-       echo '</div></div>', PHP_EOL;
-      
-      /*
-      if (isset($this->menu_action)) {
-        // il n'y a pas necessairement de menu (depend du contexte)
-        $this->menu_action->seance = $item;
-        $this->menu_action->initialiser();
-        $this->menu_action->afficher();
-      }
-       */
-      
+    protected function afficher_seance(Seance_Activite $seance) {
+      $aff = new Afficheur_Vertical_Seance($this->page, $seance, $this->activite_site);
+      // Menu des actions possibles sur la seance
+      $ctrl = new Controleur_Action_Seance($aff);
+      echo $ctrl->formater_menu_action();
+
+      // Affichage des informations sur la seance
+      $code_html = $aff->formater();
+      echo $code_html;
     }
+    
     
     protected function afficher_corps() {
       // $this->page reference l'element modal qui permet d'afficher des informations sur les actions affectuees
@@ -101,35 +96,23 @@
           $classe = '';
           $code_html = '';
           if ($this->activite_site->site_ferme_creneau($creneau->debut(), $creneau->fin()) || $this->activite_site->support_indisponible_creneau($support, $creneau->debut(), $creneau->fin()))
-            $classe = ' class="indispo" ';
+            $classe = 'indispo';
           
-          //$aff = new Afficheur_Vertical_Seance($this->page, );
           $seance = $this->activite_site->seance_programmee($code, $i);
-          /*
-          if (!is_null($seance)) {
-            $aff->def_seance($seance);
-          } else {
-            $s = new Seance_Activite();
-            $s->support = $support;
-            $s->definir_horaire($creneau->debut(), $creneau->fin());
-            $aff->def_seance($s);
-          }
-           */
           if (is_null($seance)) {
             $seance = new Seance_Activite();
             $seance->support = $support;
+            $seance->site = $this->activite_site->site;
             $seance->definir_horaire($creneau->debut(), $creneau->fin());
           }
-          $aff = new Afficheur_Vertical_Seance($this->page, $seance, $this->activite_site);
-          
-          $code_html = $aff->formater();
-
-          echo '<td', $classe, ' style="padding:1px;text-align:center;">', $code_html;
-          $this->afficher_menu_actions($seance);
+          $id = $seance->support->code() . '_' . $seance->debut()->date_heure_sql();
+          $classe = $classe . ' cel_seance';
+          $classe = trim($classe); 
+          echo '<td id="', $id, '" class="', $classe, '" style="padding:1px;text-align:center;">';
+        
+          $this->afficher_seance($seance);
           echo '</td>';
         }
-//        echo '<td>';
-//        $this->afficher_menu_actions($item);
         echo '</tr>';
       }
     }

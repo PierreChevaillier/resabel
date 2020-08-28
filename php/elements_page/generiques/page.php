@@ -15,6 +15,7 @@
   // revision: 05-avr-2019 pchevaillier@gmail.com version 4.3.1 de bootstrap
   // revision: 11-mai-2019 pchevaillier@gmail.com jquery UI
   // revision: 28-mar-2020 pchevaillier@gmail.com script / activation tooltips Bootstrap
+  // revision: 13-avr-2020 pchevaillier@gmail.com ajouter_script pour eviter doublons
   // --------------------------------------------------------------------------
   // commentaires :
   // - https://getbootstrap.com/docs/4.1/getting-started/introduction/
@@ -34,6 +35,20 @@
   abstract class Page extends Element {
   
     public $javascripts = array();
+    public function ajouter_script(String $chemin_fichier) {
+      $existe = false;
+      foreach ($this->javascripts as $s) {
+        if (strcmp($s, $chemin_fichier) == 0) {
+          $existe = true;
+          break;
+        }
+      }
+      if (!$existe) {
+        $this->javascripts[] = $chemin_fichier;
+      }
+      return !$existe; // <=> ajout effectue
+    }
+    
     public $prive = true;
     
     // --- Elements (code_html) dans la section <head> de la page
@@ -144,9 +159,11 @@
     foreach ($this->elements_entete as $e)
       echo $e;
     $this->afficher_titre();
+    
     // Activation des tooltips Bootstrap pour les elements de la classe rsbl-tooltip
     echo "      <script> $(function () { $('.rsbl-tooltip').tooltip() })</script>" . PHP_EOL;
     
+    echo "      <script> $(function () { $('[data-toggle=\"popover\"]').popover(); var myDefaultWhiteList = $.fn.popover.Constructor.Default.whiteList; myDefaultWhiteList.div = ['class']; myDefaultWhiteList.a = ['target', 'href', 'title', 'rel', 'class']; })</script>" . PHP_EOL;
     echo "    </head>\n    <body>\n";
   }
 

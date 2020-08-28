@@ -377,10 +377,13 @@
       }
     }
     
-    static function collecter($criteres_selection, $composante, $role, & $personnes) {
+    static function collecter(array $criteres_selection,
+                              string $composante,
+                              string $role,
+                              array & $personnes = null) {
       $status = false;
       //$cal = new Calendrier();
-      $personnes = array();
+      if (is_null($personnes)) $personnes = array();
       
       // definition de la source des donnees
       $table_membres = self::source();
@@ -414,15 +417,14 @@
             $critere = $critere . $operateur . $table_membres . ".nom LIKE '" . $valeur . "%' ";
           elseif ($cle == 'cmn' && $valeur > 0)
             $critere = $critere . $operateur . " code_commune = '" . $valeur . "' ";
-          elseif ($cle == 'cdb' && $valeur > 0)
-            $critere = $critere . $operateur . " cdb = '" . (($valeur == 2) ? 0 : 1) . "' ";
+          elseif ($cle == 'cdb')
+            $critere = $critere . $operateur . " cdb = '" . $valeur . "' "; // PCh 15-apr-2020 . (($valeur == 2) ? 0 : 1) . "' ";
           elseif ($cle == 'niv' && $valeur > 0)
               $critere = $critere . $operateur . " niveau " . (($valeur >= 2) ? ">=" : "<") . "2 ";
           else
             echo $cle . ' ' . $valeur . '<br />';
         }
       }
-      
       $tri =  " ORDER BY " . $table_membres . ".prenom, " . $table_membres . ".nom ";
       try {
         $bdd = Base_Donnees::accede();
@@ -457,6 +459,7 @@
           $personne->num_licence = $donnee->num_licence;
           
           $personnes[$personne->code()] = $personne;
+          $status = true;
         }
       
       } catch (PDOException $e) {

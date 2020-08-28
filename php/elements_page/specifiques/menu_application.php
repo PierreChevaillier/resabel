@@ -70,7 +70,7 @@
       echo ' <div class="dropdown-menu" aria-labelledby="mnu-inscr">';
       if ($this->membre_actif)
         echo '<a class="dropdown-item" href="inscription_individuelle.php?a=ii">Inscription individuelle</a>';
-      echo '<a class="dropdown-item" href="inscription_equipage.php">Inscription équipage</a>';
+      echo '<a class="dropdown-item" href="inscription_individuelle.php?a=ie">Inscription équipage</a>';
       echo '<a class="dropdown-item" href="agendas.php">Agendas</a>';
       echo '</div></li>';
     }

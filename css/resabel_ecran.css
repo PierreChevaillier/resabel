@@ -162,7 +162,7 @@ td.indispo {
 }
 
 td.cel_bateau {
-   text-align:center;
+   text-align: center;
 }
 
 div.num_bateau {
@@ -179,12 +179,14 @@ div.num_bateau {
 
 td.cel_bateau.compet {
   padding: 4px;
+  width: 180px;
   text-align: center;
   background-color: PapayaWhip;
 }
 
 td.cel_bateau.loisir {
   padding: 4px;
+  width: 180px;
   text-align: center;
   background-color: PowderBlue;
   align-content: center;

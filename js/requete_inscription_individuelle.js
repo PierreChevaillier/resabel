@@ -23,12 +23,18 @@
 // - suppprimer les logs.
 // ----------------------------------------------------------------------------
 
-function requete_inscription_individuelle(modal_id, code_action, code_seance, code_site, code_support, debut, fin, code_personne, responsable) {
+//function requete_inscription_individuelle(modal_id, code_action, code_seance, code_site, code_support, debut, fin, code_personne, responsable) {
+function requete_inscription_individuelle(modal_id, code_seance, code_site, code_support, debut, fin, code_personne, responsable, code_action) {
   //alert("on est ici Modal : " + modal_id + " action : " + code_action + " support : " + code_support);
   envoi = {act: code_action, id: code_seance, sa: code_site, s: code_support, deb: debut, fin: fin, p: code_personne, resp: responsable};
   
   var jqxhr = $.getJSON("php/scripts/inscription_seance_activite_maj.php?", envoi, function(retour) {
-                        console.log( "success" );
+                        console.log( "success inscription_seance_activite_maj.php" );
+                        $.each( retour, function(cle, valeur) {
+                                                     status = JSON.parse(valeur);
+                                                      console.log(cle + " " + status);
+                                                      }
+                                                     )
                         if (code_action == "ii")
                           $("#" + modal_id + "_titre").html("Inscription à une séance");
                         else if (code_action == "di")
@@ -37,7 +43,7 @@ function requete_inscription_individuelle(modal_id, code_action, code_seance, co
                           $("#" + modal_id + "_titre").html("ERREUR : Type operation inconnu... ");
                         $("#" + modal_id + "_corps").html("<div><p>Opération réalisée avec succès</p></div>");
                         $("#" + modal_id + "_btn").html("Fermer");
-                        document.getElementById(modal_id + "_btn").addEventListener("click", function() { document.location.href="accueil_perso.php"});
+                        document.getElementById(modal_id + "_btn").addEventListener("click", function() { location.reload(); /*document.location.href="accueil_perso.php" */});
                         document.getElementById(modal_id + "_btn").classList.add("btn-success");
                         console.log("fin affichage");
                         })
@@ -52,6 +58,26 @@ function requete_inscription_individuelle(modal_id, code_action, code_seance, co
   .always(function(retour) {
           console.log( "complete" );
           });
+}
+
+// ----------------------------------------------------------------------------
+function requete_changement_role_seance(code_seance, code_personne, code_action) {
+  //alert("Passage équipier de " + code_personne + " séance " + code_seance + " action : " + code_action);
+  envoi = {act: code_action, id: code_seance,  p: code_personne};
+    
+  var jqxhr = $.getJSON("php/scripts/inscription_seance_activite_maj.php?", envoi, function(retour) {
+                          console.log( "success inscription_seance_activite_maj.php" );
+                          console.log("changement role seance : ok");
+                          location.reload(); // necessaire pour prendre en compte nouveau contexte
+                          return true;
+                          })
+                .fail(function(retour) {
+                      console.log("changement role seance : erreur");
+                      return false;
+                      })
+                ;
+    
+  return true;
 }
 
 // ============================================================================

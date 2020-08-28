@@ -83,6 +83,14 @@
       return $this->support->capacite() - $this->nombre_participants();
     }
     
+    public function a_comme_participant($personne) {
+      $resultat = false;
+      foreach ($this->inscriptions as $p) {
+        if (!is_null($p->participant) && $p->participant->code() == $personne->code())
+          return true;
+      }
+      return $resultat;
+    }
   }
   
   // classes : sortie en mer, seance ergo, regate, randonnee, seance_stage...

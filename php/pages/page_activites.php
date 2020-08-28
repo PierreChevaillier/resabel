@@ -41,6 +41,8 @@
   require_once 'php/elements_page/specifiques/vue_regime_ouverture.php';
   require_once 'php/elements_page/specifiques/table_seances.php';
   
+  require_once 'php/elements_page/specifiques/formulaire_dispo_activite.php';
+  
   // --------------------------------------------------------------------------
   class Page_Activites extends Page_Menu {
     private $activite_journaliere = null;
@@ -83,6 +85,7 @@
     
     public function definir_elements() {
       parent::definir_elements();
+          
       $this->entete = new Entete_Section(); //Contenu_Page();
       $this->ajoute_element_haut($this->entete);
       
@@ -90,8 +93,25 @@
       $this->definir_affichage_permanence();
      
       $this->definir_affichage_activite_sites();
+      
+      // script execute apres chargement de la page
+      /*
+          // tentative 20-apr-2020
+          $url = 'activites.php';
+          $params = '';
+          foreach ($_GET as $cle => $valeur)
+            $params = $params . '&' . $cle . '=' . $valeur;
+          $params[0] = '?';
+          $url = $url . $params;
+          //echo $url;
+          $code = '<script type="text/javascript">window.onload=creer_gestionnaire_evenement("' . $url . '"); </script>';
+          $element = new Element_Code();
+          $element->def_code($code);
+          $this->ajoute_element_bas($element);
+       */
     }
  
+    
     protected function definir_affichage_navigateur_dates() {
       $url = "activites.php";
       $params = array();
@@ -140,12 +160,24 @@
       }
     }
 
+    protected function definir_affichage_filtre() {
+      $cadre = new Conteneur_Repliable();
+      $cadre->def_id('cadre_filtre');
+      $cadre->def_titre("Filtre sélection");
+      $this->ajoute_contenu($cadre);
+      $mode = 'l';
+      $code_site_selectionne = 1;
+      $selecteur_activites = new Formulaire_Disponibilite_Activite($this,
+                                                                   $mode, $code_site_selectionne);
+      $cadre->ajouter_element($selecteur_activites);
+    }
+    
     protected function definir_affichage_activite_sites() {
       $onglets = new Zone_Onglets();
       $onglets->def_id('tabs_site');
       foreach ($this->activite_journaliere->activite_sites as $activite_site) {
         $onglet = new Conteneur_Elements();
-        $site =  $activite_site->site;
+        $site = $activite_site->site;
         $onglet->def_id('tab_site_' . $site->code());
         $onglet->def_titre($site->nom());
         if (is_a($site, 'Site_Activite_Mer')) {
@@ -160,6 +192,17 @@
           //$this->definir_affichage_horaires($site, $onglet);
           $onglet->elements[] = $entete;
         }
+        /*
+        $cadre_selection = new Conteneur_Repliable();
+        $cadre_selection->def_id('cadre_filtre');
+        $cadre_selection->def_titre("Filtre sélection");
+        $onglet->elements[] = $cadre_selection;
+        $mode = 'l';
+        $selecteur_activites = new Formulaire_Disponibilite_Activite($this,
+                                                                   $mode, $site->code());
+        $selecteur_activites->initialiser();
+        $cadre_selection->ajouter_element($selecteur_activites);
+        */
         $onglets->elements[] = $onglet;
         
         $ouvert = !$activite_site->site_ferme();

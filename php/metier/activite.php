@@ -241,6 +241,7 @@
       // rangement des seances par support et par plage horaire
       $code_support = 0;
       foreach ($seances as $seance) {
+        $seance->site = $this->site;
         $i = $seance->support->code();
         if (key_exists($i, $this->site->supports_activite)) {
           $seance->support = $this->site->supports_activite[$i];
