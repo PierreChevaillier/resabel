@@ -1,7 +1,7 @@
 <?php
   // ==========================================================================
   // contexte : Resabel - systeme de REServAtion de Bateau En Ligne
-  // description : verificaiton et mise a jour des informations sur un membre
+  // description : verification et mise a jour des informations sur un membre
   // copyright (c) 2018-2019 AMP. Tous droits reserves.
   // --------------------------------------------------------------------------
   // utilisation : php - require_once <chemin_vers_ce_fichier.php>

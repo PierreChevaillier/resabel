@@ -7,26 +7,26 @@
     <?php
       // ======================================================================
       // contexte : Resabel - systeme de REServation de Bateaux En Ligne
-      // description : page affichage / gestion des supports d'activite
-      // copyright (c) 2018-2020 AMP. Tous droits reserves.
+      // description : page pour l'ajout d'un support d'activite (bateau...)
+      //               ou la modification des informations
       // ----------------------------------------------------------------------
       // utilisation : navigateur web
-      // dependances : (cf. require_once) - valeur variables $_SESSION
-      // teste avec : PHP 7.1 sur macOS 10.14 ; PHP 7.3 sur hebergeur web
+      // dependances :
+      // teste avec : PHP 7.1 sur Mac OS 10.14 ; PHP 7.0 sur hebergeur web
+      // copyright (c) 2018 AMP. Tous droits réserves.
       // ----------------------------------------------------------------------
-      // creation : 30-dec-2019 pchevaillier@gmail.com
+      // creation : 30-aug-2020 pchevaillier@gmail.com
       // revision :
       // ----------------------------------------------------------------------
       // commentaires :
-      //  - En construction
+      //  -
       // attention :
-      //  - pas operationnel
       // a faire :
-      //  - completer les fonctionnalites
       // ======================================================================
       
       set_include_path('./');
       
+      // --------------------------------------------------------------------------
       // --- connection a la base de donnees
       include 'php/bdd/base_donnees.php';
       
@@ -35,25 +35,23 @@
       
       if (isset($_SESSION['swb']))
         new Enregistrement_site_web($_SESSION['swb']);
-
+      
       // --- Classe definissant la page a afficher
-      require_once 'php/pages/page_supports_activite.php';
+      require_once 'php/pages/page_support_activite.php';
 
       // --- Classes des elements de la page
-      
+      //require_once 'php/elements_page/generiques/element.php';
+
       // ----------------------------------------------------------------------
       // --- Creation dynamique de la page
-      
       $feuilles_style = array();
       $feuilles_style[] = "css/resabel_ecran.css";
       $nom_site = Site_Web::accede()->sigle() . " Resabel";
-      $page = new Page_Supports_Activite($nom_site, "Supports d'activité", $feuilles_style);
-      $page->def_id("pg_sup_act");
+      $page = new Page_Support_Activite($nom_site, "Information support d'activité", $feuilles_style);
       
       // --- Affichage de la page
       $page->initialiser();
       $page->afficher();
-      
       // ======================================================================
     ?>
   </html>

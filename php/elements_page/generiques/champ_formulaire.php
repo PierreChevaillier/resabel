@@ -20,6 +20,8 @@
   // revision : 30-avr-2019 pchevaillier@gmail.com Choix, Groupe_Choix
   // revision : 11-mai-2019 pchevaillier@gmail.com portabilite Champ_Date
   // revision : 04-jan-2020 pchevaillier@gmail.com Champ de type hidden
+  // revision : 13-sep-2020 pchevaillier@gmail.com Champ_Binaire (checked)
+  // revision : 19-sep-2020 pchevaillier@gmail.com code erreur, Champ_Entier_Naturel
   // ------------------------------------------------------------------------
   // commentaires :
   // attention :
@@ -186,9 +188,11 @@
       if (isset($_GET['r']) && isset($_GET['i']) && ($_GET['i'] == $this->id())) {
         $msg = "<p id=\"" . $this->id() . "_msg\" class=\"text-danger\">Erreur : ";
         if ($_GET['r'] == 1)
-          $msg = $msg . "ce " . $this->titre() . " est trop court";
+          $msg = $msg . "la valeur saisie est trop courte"; //"ce " . $this->titre() . " est trop court";
         elseif ($_GET['r'] == 2)
-          $msg = $msg . "ce " . $this->titre() . " contient des caractères non autorisés";
+          $msg = $msg . "la valeur saisie est trop longue"; //"ce " . $this->titre() . " est trop court";elseif ($_GET['r'] == 3)
+        elseif ($_GET['r'] == 3)
+        $msg = $msg . "la valeur saisie contient des caractères non autorisés"; // "ce " . $this->titre() . " contient des caractères non autorisés";
         else
           $msg = $msg . "saisie incorrecte";
         echo $msg . "</p>";
@@ -318,6 +322,24 @@
         . $this->valeur_min . '"/>';
     }
   }
+ 
+  class Champ_Entier_Naturel extends Champ_Formulaire {
+     public $valeur_min = 0;
+     public $valeur_max = PHP_INT_MAX;
+     protected function afficher_corps () {
+       $val = $this->valeur();
+       $val = max($this->valeur_min, $val);
+       $val = min($this->valeur_max, $val);
+       $this->def_valeur($val);
+       echo '<input class="form-control"';
+       echo ' id="' . $this->id() . '"  name="' . $this->id() . '"';
+       if (strlen($this->fonction_controle_saisie) > 0)
+         echo 'onchange="' . $this->fonction_controle_saisie . '(this)" ';
+       echo ' type="number" min="' . $this->valeur_min
+         . '" max="' . $this->valeur_max . '" value="'
+         . $this->valeur() . '"/>';
+     }
+   }
   
   // --------------------------------------------------------------------------
   class Champ_Binaire extends Champ_Formulaire {
@@ -326,7 +348,8 @@
       echo '<div class="checkbox">';
       echo '<input class="form-control" ';
       echo ' id="' . $this->id() . '" name="' . $this->id() . '" ';
-      echo ' type="checkbox" />' . $this->texte . '<br /></div>';
+      $checked = ($this->valeur() == 1) ? ' checked ' : ' ';
+      echo ' type="checkbox" value="' . $this->valeur() . '"' . $checked . '/>' . $this->texte . '<br /></div>';
     }
   }
 

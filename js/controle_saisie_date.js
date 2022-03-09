@@ -36,4 +36,21 @@ function verif_date(element) {
   return est_correct;
 }
 
+function verif_annee(element) {
+  var est_correct = false;
+  var x = element.value;
+  if (x == null || x == "") {
+    est_correct = true;
+  } else {
+    var i = parseInt(x);
+    est_correct = (i > 1900 && i < 2099);
+  }
+  if (est_correct) {
+     element.style.color = "black";
+  } else {
+    element.style.color = "red";
+  }
+   return est_correct;
+}
+
 // ========================================================================

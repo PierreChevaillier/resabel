@@ -1,14 +1,13 @@
 -- phpMyAdmin SQL Dump
--- version 4.7.9
+-- version OVH
 -- https://www.phpmyadmin.net/
 --
--- Hôte : localhost
--- Généré le :  lun. 01 juil. 2019 à 13:42
--- Version du serveur :  5.7.21
--- Version de PHP :  7.1.23
+-- Hôte : avironplsi183.mysql.db
+-- Généré le : mer. 09 mars 2022 à 18:00
+-- Version du serveur : 5.6.50-log
+-- Version de PHP : 7.4.25
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET AUTOCOMMIT = 0;
 START TRANSACTION;
 SET time_zone = "+00:00";
 
@@ -19,16 +18,17 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Base de données :  `resabel`
+-- Base de données : `avironplsi183` (serveur)
+-- Base de données : `resabel` (local dev.)
 --
 
 -- --------------------------------------------------------
+DROP TABLE IF EXISTS `rsbl_regimes_ouverture`;
 
 --
 -- Structure de la table `rsbl_regimes_ouverture`
 --
 
-DROP TABLE IF EXISTS `rsbl_regimes_ouverture`;
 CREATE TABLE `rsbl_regimes_ouverture` (
   `code` smallint(6) NOT NULL,
   `code_type` smallint(6) NOT NULL,

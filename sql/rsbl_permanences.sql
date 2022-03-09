@@ -1,14 +1,13 @@
 -- phpMyAdmin SQL Dump
--- version 4.7.9
+-- version OVH
 -- https://www.phpmyadmin.net/
 --
--- Hôte : localhost
--- Généré le :  lun. 27 mai 2019 à 19:15
--- Version du serveur :  5.7.21
--- Version de PHP :  7.1.23
+-- Hôte : avironplsi183.mysql.db
+-- Généré le : mer. 09 mars 2022 à 18:00
+-- Version du serveur : 5.6.50-log
+-- Version de PHP : 7.4.25
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET AUTOCOMMIT = 0;
 START TRANSACTION;
 SET time_zone = "+00:00";
 
@@ -19,16 +18,17 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Base de données :  `resabel`
+-- Base de données : `avironplsi183` (serveur)
+-- Base de données : `resabel` (local dev.)
 --
 
 -- --------------------------------------------------------
+DROP TABLE IF EXISTS `rsbl_permanences`;
 
 --
 -- Structure de la table `rsbl_permanences`
 --
 
-DROP TABLE IF EXISTS `rsbl_permanences`;
 CREATE TABLE `rsbl_permanences` (
   `annee` year(4) NOT NULL,
   `semaine` smallint(2) UNSIGNED NOT NULL,
@@ -276,8 +276,8 @@ INSERT INTO `rsbl_permanences` (`annee`, `semaine`, `code_membre`) VALUES
 (2019, 25, 50),
 (2019, 26, 12),
 (2019, 27, 6),
-(2019, 28, 11),
-(2019, 29, 60),
+(2019, 28, 60),
+(2019, 29, 11),
 (2019, 30, 74),
 (2019, 31, 68),
 (2019, 32, 82),
@@ -289,7 +289,47 @@ INSERT INTO `rsbl_permanences` (`annee`, `semaine`, `code_membre`) VALUES
 (2019, 38, 48),
 (2019, 39, 143),
 (2019, 40, 27),
-(2019, 41, 50);
+(2019, 41, 50),
+(2019, 42, 18),
+(2019, 43, 6),
+(2019, 44, 11),
+(2019, 45, 60),
+(2019, 46, 74),
+(2019, 47, 68),
+(2019, 48, 82),
+(2019, 49, 101),
+(2019, 50, 33),
+(2019, 51, 18),
+(2019, 52, 76),
+(2020, 1, 102),
+(2020, 2, 48),
+(2020, 3, 18),
+(2020, 4, 74),
+(2020, 5, 127),
+(2020, 6, 130),
+(2020, 7, 16013),
+(2020, 8, 9010),
+(2020, 9, 9001),
+(2020, 10, 9008),
+(2020, 11, 6),
+(2020, 12, 11),
+(2020, 13, 60),
+(2020, 14, 27),
+(2020, 15, 68),
+(2020, 16, 101),
+(2020, 17, 82),
+(2020, 18, 33),
+(2020, 19, 18),
+(2020, 20, 76),
+(2020, 21, 102),
+(2020, 22, 48),
+(2020, 23, 27),
+(2020, 24, 127),
+(2020, 25, 130),
+(2020, 26, 16013),
+(2020, 27, 9010),
+(2020, 28, 9001),
+(2020, 29, 9008);
 
 --
 -- Index pour les tables déchargées

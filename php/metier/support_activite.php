@@ -23,28 +23,40 @@
 
   // --------------------------------------------------------------------------
   class Support_Activite {
-    public static $code_type; // a voir...
+    //public static $code_type; // a voir...
     public $actif = true;
+    public function est_actif() { return $this->actif; }
+    
     public $type = null;
     public $site_base = null; // pourrait etre momentanement ailleurs (a voir)
     
-    public $nombre_initiation_min; // ca se defini par support et pas par type
-    public $nombre_initiation_max;
+    public $nombre_initiation_min = 0; // ca se definit par support et pas par type
+    public $nombre_initiation_max = 0;
 
-    private $pour_loisir = true; // peut etre a la fois pour loisir et competition
+    public $pour_loisir = true; // peut etre a la fois pour loisir et competition
     public $pour_competition = true; // pour l'instant pas de distinction au niveau des membres
     
-    private $code = 0;
+    private $code = 0; // identifiant interne non modifiable
     public function code() { return $this->code; }
     public function def_code($valeur) { $this->code = $valeur;}
+    
+    private $numero; // identifiant pour utilisateur
+    public function numero() { return $this->numero; }
+    public function def_numero($valeur) { $this->numero = $valeur;}
     
     private $nom = ""; // utf8
     public function nom() { return $this->nom; }
     public function def_nom($valeur) { $this->nom = $valeur; }
     
+    public $modele = "";
+    public $constructeur = "";
+    public $annee_construction = 2020;
+    
     public function __construct($code) { $this->code = $code; }
     
-    public function nom_type() { return $this->type->nom(); }
+    public function nom_type() {
+        return (is_null($this->type)) ? "Type non défini" : $this->type->nom();
+    }
     
     public function capacite() { return 0; }
     
@@ -57,11 +69,8 @@
   
   class Bateau extends Support_Activite {
     // A voir : est-ce utile ? Depend des services
-    private $numero;
-    public function numero() { return $this->numero; }
-    public function def_numero($valeur) { $this->numero = $valeur;}
     
-    public $immatriculation;
+    public $immatriculation = "";
     public $categorie_navigation;
     
     public function capacite() { return $this->type->nombre_personnes_max; }

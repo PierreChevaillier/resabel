@@ -23,36 +23,33 @@ SET time_zone = "+00:00";
 --
 
 -- --------------------------------------------------------
-DROP TABLE IF EXISTS `rsbl_site`;
+DROP TABLE IF EXISTS `rsbl_types_indisponibilite`;
 
 --
--- Structure de la table `rsbl_site`
+-- Structure de la table `rsbl_types_indisponibilite`
 --
 
-CREATE TABLE `rsbl_site` (
-  `code` tinyint(4) NOT NULL,
-  `code_club` tinyint(4) NOT NULL,
-  `sigle` varchar(10) COLLATE utf8_unicode_ci NOT NULL,
-  `adresse_racine` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
-  `courriel_contact` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
-  `fuseau_horaire` varchar(50) COLLATE utf8_unicode_ci NOT NULL
+CREATE TABLE `rsbl_types_indisponibilite` (
+  `code` smallint(4) NOT NULL,
+  `nom` varchar(50) COLLATE utf8_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- Déchargement des données de la table `rsbl_site`
+-- Déchargement des données de la table `rsbl_types_indisponibilite`
 --
 
-INSERT INTO `rsbl_site` (`code`, `code_club`, `sigle`, `adresse_racine`, `courriel_contact`, `fuseau_horaire`) VALUES
-(1, 1, 'AMP', 'https://avironplougonvelin.fr', 'contact@avironplougonvelin.fr', 'Europe/Paris');
+INSERT INTO `rsbl_types_indisponibilite` (`code`, `nom`) VALUES
+(1, 'Indisponibilité support activité'),
+(2, 'Fermeture site d\'activité');
 
 --
 -- Index pour les tables déchargées
 --
 
 --
--- Index pour la table `rsbl_site`
+-- Index pour la table `rsbl_types_indisponibilite`
 --
-ALTER TABLE `rsbl_site`
+ALTER TABLE `rsbl_types_indisponibilite`
   ADD PRIMARY KEY (`code`);
 
 --
@@ -60,10 +57,10 @@ ALTER TABLE `rsbl_site`
 --
 
 --
--- AUTO_INCREMENT pour la table `rsbl_site`
+-- AUTO_INCREMENT pour la table `rsbl_types_indisponibilite`
 --
-ALTER TABLE `rsbl_site`
-  MODIFY `code` tinyint(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+ALTER TABLE `rsbl_types_indisponibilite`
+  MODIFY `code` smallint(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

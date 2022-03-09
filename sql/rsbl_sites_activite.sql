@@ -1,14 +1,13 @@
 -- phpMyAdmin SQL Dump
--- version 4.7.9
+-- version OVH
 -- https://www.phpmyadmin.net/
 --
--- Hôte : localhost
--- Généré le :  lun. 10 juin 2019 à 13:10
--- Version du serveur :  5.7.21
--- Version de PHP :  7.1.23
+-- Hôte : avironplsi183.mysql.db
+-- Généré le : mer. 09 mars 2022 à 18:01
+-- Version du serveur : 5.6.50-log
+-- Version de PHP : 7.4.25
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET AUTOCOMMIT = 0;
 START TRANSACTION;
 SET time_zone = "+00:00";
 
@@ -19,23 +18,26 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Base de données :  `resabel`
+-- Base de données : `avironplsi183` (serveur)
+-- Base de données : `resabel` (local dev.)
 --
 
 -- --------------------------------------------------------
+DROP TABLE IF EXISTS `rsbl_sites_activite`;
 
 --
 -- Structure de la table `rsbl_sites_activite`
 --
 
-DROP TABLE IF EXISTS `rsbl_sites_activite`;
 CREATE TABLE `rsbl_sites_activite` (
   `code` smallint(4) NOT NULL,
-  `code_type_site` smallint(4) NOT NULL,
+  `actif` tinyint(4) NOT NULL DEFAULT '1',
+  `code_type` smallint(4) NOT NULL,
   `nom` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `nom_court` varchar(16) COLLATE utf8_unicode_ci NOT NULL,
   `latitude` float DEFAULT NULL,
   `longitude` float DEFAULT NULL,
+  `code_regime` smallint(4) NOT NULL,
   `hauteur_maree_min` float DEFAULT NULL,
   `hauteur_maree_max` float DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -44,9 +46,9 @@ CREATE TABLE `rsbl_sites_activite` (
 -- Déchargement des données de la table `rsbl_sites_activite`
 --
 
-INSERT INTO `rsbl_sites_activite` (`code`, `code_type_site`, `nom`, `nom_court`, `latitude`, `longitude`, `hauteur_maree_min`, `hauteur_maree_max`) VALUES
-(1, 1, 'Plage du Trez Hir', 'Trez Hir', 48.3489, -4.68248, 0.95, NULL),
-(2, 2, 'Installations à terre', 'A terre', NULL, NULL, NULL, NULL);
+INSERT INTO `rsbl_sites_activite` (`code`, `actif`, `code_type`, `nom`, `nom_court`, `latitude`, `longitude`, `code_regime`, `hauteur_maree_min`, `hauteur_maree_max`) VALUES
+(1, 1, 1, 'Plage du Trez Hir', 'Trez Hir', 48.3489, -4.68248, 1, 0.95, NULL),
+(2, 1, 2, 'Installations à terre', 'A terre', 48.3489, -4.68248, 1, NULL, NULL);
 
 --
 -- Index pour les tables déchargées

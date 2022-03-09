@@ -26,6 +26,7 @@
   require_once 'php/metier/membre.php';
   require_once 'php/elements_page/generiques/element.php';
   require_once 'php/elements_page/generiques/modal.php';
+ 
   
   class Afficheur_Telephone {
     
@@ -55,7 +56,7 @@
       return $resultat;
     }
   }
-  
+ 
   class Afficheur_Nom {
     private $personne = null;
     public function def_personne($p) {

@@ -1,14 +1,13 @@
 -- phpMyAdmin SQL Dump
--- version 4.7.9
+-- version OVH
 -- https://www.phpmyadmin.net/
 --
--- Hôte : localhost
--- Généré le :  sam. 28 déc. 2019 à 14:08
--- Version du serveur :  5.7.21
--- Version de PHP :  7.1.23
+-- Hôte : avironplsi183.mysql.db
+-- Généré le : mer. 09 mars 2022 à 17:58
+-- Version du serveur : 5.6.50-log
+-- Version de PHP : 7.4.25
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET AUTOCOMMIT = 0;
 START TRANSACTION;
 SET time_zone = "+00:00";
 
@@ -19,10 +18,12 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Resabel
--- creation: 28-dec-2019 pchevaillier@gmail.com (en local sur macSense)
+-- Base de données : `avironplsi183` (serveur)
+-- Base de données : `resabel` (local dev.)
+--
 
 -- --------------------------------------------------------
+
 --
 -- Structure de la table `rsbl_heures_marees`
 --

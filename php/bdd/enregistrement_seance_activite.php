@@ -2,7 +2,7 @@
   // ==========================================================================
   // contexte : Resabel - systeme de REServAtion de Bateau En Ligne
   // description : classe Enregistrement_Seance_activite :
-  //               acces a la base de donnees
+  //               operations sur la base de donnees
   // copyright (c) 2020 AMP. Tous droits reserves.
   // --------------------------------------------------------------------------
   // utilisation : php - require_once <chemin_vers_ce_fichier.php>
@@ -15,9 +15,9 @@
   // revision : 08-mar-2020 pchevaillier@gmail.com (suppression participation)
   // revision : 29-mar-2020 pchevaillier@gmail.com erreur code_site
   // revision : 20-aug-2020 pchevaillier@gmail.com suppression seance
+  // revision : 20-aug-2020 pchevaillier@gmail.com rollback si capture exception
   // --------------------------------------------------------------------------
   // commentaires :
-  // - en evolution
   // attention :
   // a faire :
   // ==========================================================================
@@ -134,6 +134,7 @@
          $nouvelle_seance = ($resultat->n == 0);
         }
       } catch (PDOexception $e) {
+        $bdd->rollBack();
         //Base_Donnees::sortir_sur_exception(self::source(), $e);
         return 2;
       }
@@ -159,6 +160,7 @@
           
           $requete->execute();
         } catch (PDOexception $e) {
+          $bdd->rollBack();
           //die("Erreur Mise a jour " . self::source() . " informations pour " . $code . " : ligne " . $e->getLine() . " :<br /> ". $e->getMessage());
           //Base_Donnees::sortir_sur_exception(self::source(), $e);
           return 3;
@@ -173,6 +175,7 @@
              $code_seance = $resultat->x;
           }
         } catch (PDOexception $e) {
+          $bdd->rollBack();
           //Base_Donnees::sortir_sur_exception(self::source(), $e);
           return 4;
         }
@@ -186,6 +189,7 @@
             $requete->bindParam(':code_resp', $infos->code_participant, PDO::PARAM_INT);
             $requete->execute();
           } catch (PDOexception $e) {
+            $bdd->rollBack();
             //Base_Donnees::sortir_sur_exception(self::source(), $e);
             return 5;
           }
@@ -200,6 +204,7 @@
          $requete= $bdd->prepare($code_sql);
          $requete->execute();
       } catch (PDOexception $e) {
+        $bdd->rollBack();
         //die("Erreur Mise a jour " . self::source() . " informations pour " . $code . " : ligne " . $e->getLine() . " :<br /> ". $e->getMessage());
         //Base_Donnees::sortir_sur_exception(self::source(), $e);
         return 6;

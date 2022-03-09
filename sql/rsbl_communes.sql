@@ -1,15 +1,16 @@
 -- phpMyAdmin SQL Dump
--- version 4.8.2
+-- version OVH
 -- https://www.phpmyadmin.net/
 --
--- Hôte : localhost
--- Généré le :  Dim 23 déc. 2018 à 11:29
--- Version du serveur :  5.6.23
--- Version de PHP :  7.1.19
+-- Hôte : avironplsi183.mysql.db
+-- Généré le : dim. 06 mars 2022 à 18:55
+-- Version du serveur : 5.6.50-log
+-- Version de PHP : 7.4.25
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET AUTOCOMMIT = 0;
 START TRANSACTION;
+SET time_zone = "+00:00";
+
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -17,7 +18,8 @@ START TRANSACTION;
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Base de données :  `plougonvelin.mer`
+-- Base de données : `avironplsi183` (serveur)
+-- Base de données : `resabel` (local dev.)
 --
 
 -- --------------------------------------------------------
@@ -25,6 +27,7 @@ START TRANSACTION;
 --
 -- Structure de la table `rsbl_communes`
 --
+
 DROP TABLE IF EXISTS `rsbl_communes`;
 CREATE TABLE `rsbl_communes` (
   `code` int(5) NOT NULL,
