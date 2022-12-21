@@ -346,7 +346,7 @@
            */
           $params = $this->params_action_seance . ', ' . $this->contexte_action()->utilisateur->code() . ', 0'; // 0 : participation pas en tant que responsable (chef de bord)
           $params = $params . ', \'' . $this->contexte_action()->code_action() . '\'';
-          $code_interacteur = '<img src="../../assets/icons/pencil-square.svg" alt="" width="24" height="24" class="rsbl-tooltip" data-toggle="modal" data-target="#' . $this->id_dialogue_action . '" title="Inscription équipier" onclick="requete_inscription_individuelle(' . $params . ');">';
+          $code_interacteur = '<img src="../../assets/icons/pencil-square.svg" alt="inscrire" width="24" height="24" class="rsbl-tooltip" data-toggle="modal" data-target="#' . $this->id_dialogue_action . '" title="Inscription équipier" onclick="requete_inscription_individuelle(' . $params . ');">';
           
           $this->pas_encore_controle_vide = false;
         }

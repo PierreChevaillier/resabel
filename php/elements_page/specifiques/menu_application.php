@@ -44,7 +44,7 @@
       $this->session_admin = isset($_SESSION['adm']) && $_SESSION['adm'];
       $this->session_pers = isset($_SESSION['prs']) && $_SESSION['prs'];
       $this->session_club = ! $this->session_pers;
-      $this->membre_actif = $this->session_pers && isset($_SESSION['usr']) && isset($_SESSION['act']);
+      $this->membre_actif = $this->session_pers && isset($_SESSION['usr']) && isset($_SESSION['act']) && $_SESSION['act'];
       
       $this->jour = isset($GET['j']) ? new Instant($GET['j']): Calendrier::aujourdhui();
     }
@@ -53,13 +53,14 @@
       echo ' <li class="nav-item dropdown">';
       echo '<a class="nav-link dropdown-toggle" href="#" id="mnu_club" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Club</a>';
       echo ' <div class="dropdown-menu" aria-labelledby="mnu-club">';
-      echo '<a class="dropdown-item" href="club.php">Info club</a>';
+      echo '<a class="dropdown-item" href="agendas.php">Calendrier</a>';
       echo '<a class="dropdown-item" href="permanences.php">Permanences</a>';
       if ($this->session_admin) {
         echo '<a class="dropdown-item" href="equipe_permanence.php">Equipe permanence</a>';
         echo '<a class="dropdown-item" href="sites_activite.php">Sites d\'activité</a>';
       }
       echo '<a class="dropdown-item" href="fermetures_sites.php">Fermetures sites</a>';
+      echo '<a class="dropdown-item" href="club.php">Info club</a>';
       echo '<a class="dropdown-item" href="composantes.php">Composantes club</a>';
       echo '</div></li>';
     }
@@ -70,7 +71,7 @@
       echo ' <div class="dropdown-menu" aria-labelledby="mnu-inscr">';
       if ($this->membre_actif)
         echo '<a class="dropdown-item" href="inscription_individuelle.php?a=ii">Inscription individuelle</a>';
-      echo '<a class="dropdown-item" href="inscription_individuelle.php?a=ie">Inscription équipage</a>';
+      echo '<a class="dropdown-item" href="inscription_individuelle.php?a=ie">Inscription équipage</a>'; // Meme paage que inscprtion individuelle avec option 'ie'
       echo '<a class="dropdown-item" href="agendas.php">Agendas</a>';
       echo '</div></li>';
     }

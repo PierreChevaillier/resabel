@@ -198,10 +198,10 @@
   elseif ($erreur_mot_passe)
     header("location: ../../connexion.php?err=mdp&c=" . $code_club . "&s=" . $code_site);
   elseif (!$_SESSION['act']) {
-    header("location: ../../acceuil_perso.php");
+    header("location: ../../accueil_perso.php");
    // header("location: ../../page_tableau_journalier_sorties.php?ta=os&d=" . Jour::aujourdhui()->jour);
   } elseif ($permanence) {
-    header("location: ../../acceuil_perso.php");
+    header("location: ../../accueil_perso.php");
     /*
     $j0 = date("N");
     $j = max(6, $j0);

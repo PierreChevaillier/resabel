@@ -2,15 +2,16 @@
   // ==========================================================================
   // contexte : Resabel - systeme de REServAtion de Bateaux En Ligne
   // description : Definition de la classe Page_Agendas
-  //               affichage des agendas google du club (et framagenda)
-  // copyright (c) 2018-2019 AMP. Tous droits reserves.
+  //               affichage des agendas google du club
+  // copyright (c) 2018-2022 AMP. Tous droits reserves.
   // --------------------------------------------------------------------------
   // utilisation : php - require_once <nom_-fichier.php'
   // dependances : agendas google embarques dans la page
-  // teste avec : PHP 7.1 sur Mac OS 10.14 ; PHP 7.0 sur hebergeur web
+  // utilise avec : PHP 7.1 sur Mac OS 10.14 ; PHP 7.0 sur hebergeur web
   // --------------------------------------------------------------------------
   // creation : 02-mar-2019 pchevaillier@gmail.com
   // revision : 23-mai-2019 pchevaillier@gmail.com
+  // revision : 12-mar-2022 pchevaillier@gmail.com ajout agenda du club
   // --------------------------------------------------------------------------
   // commentaires :
   // - Pour l'instant seulement l'agenda des competitions
@@ -19,8 +20,7 @@
   //   si j'ai bien compris ce que j'ai lu sur un forum, c'est lie a leur serveur.
   //   voir https://framacolibri.org/t/framagenda-et-iframe-bug/4548
   // a faire :
-  // - Au lieu d'embarquer le framagenda, mettre un lien vers l'agenda pour
-  //   l'ouvrir dans un autre onglet.
+  // - verifier pertinence des differents agendas
   // ==========================================================================
 
   // --- Classes utilisees
@@ -32,7 +32,7 @@
   
   // --------------------------------------------------------------------------
   // --- connection a la base de donnees
-  //include 'php/bdd/base_donnees.php';
+  //pas necessaire ici
   
   // --------------------------------------------------------------------------
   class Page_Agendas extends Page_Menu {
@@ -45,17 +45,15 @@
       $element->def_titre("Agendas du club");
       $this->ajoute_element_haut($element);
  
-      // --- Calendrier Catherine dans CAPAB ----------------------------------
+      // --- Calendrier du club -----------------------------------------------
       
       $element = new Entete_Section();
-      $element->def_titre("Calendrier Catherine");
+      $element->def_titre("Agenda du club");
       $this->ajoute_contenu($element);
       
-      // Ca ne marche pas
-      // voir https://framacolibri.org/t/framagenda-et-iframe-bug/4548
-      
       $agenda = new Cadre_Inclusion();
-      $agenda->def_source("https://framagenda.org/index.php/apps/calendar/embed/LtSbd8CZdpwPs2c8");
+      $element->def_id('frm_agd_club');
+      $agenda->def_source("https://calendar.google.com/calendar/embed?src=avironplougonvelin.fr_gsun3r3is0cffmtcckquag8esg%40group.calendar.google.com&ctz=Europe%2FParis");
       $agenda->def_ratio('1by1');
       $this->ajoute_contenu($agenda);
 

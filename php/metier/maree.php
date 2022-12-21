@@ -176,7 +176,7 @@
     private function afficher_marnages() {
       echo '<div style="height:120px; float:left; ">';
       foreach ($this->marees->marees() as $maree)
-      echo '<div class="marnage_maree" style="width:60px;">' . $maree->marnage() . ' m</div>';
+        echo '<div class="marnage_maree" style="width:60px;">' . $maree->marnage() . ' m</div>';
       echo '</div>';
     }
     
@@ -185,7 +185,7 @@
     }
     
     public function afficher_corps() {
-      if (is_null($this->marees) || (count($this->marees) > 0)) {
+      if (!is_null($this->marees) && (count($this->marees) > 0)) {
         $this->afficher_niveaux();
         $this->afficher_coefficients();
         $this->afficher_heures();
