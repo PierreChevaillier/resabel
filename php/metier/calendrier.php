@@ -98,6 +98,16 @@
     }
   
     public function date_texte() {
+     /*
+      $fmt = new IntlDateFormatter('fr_FR',
+                            IntlDateFormatter::FULL,
+                            IntlDateFormatter::FULL,
+                            'America/Los_Angeles',
+                            IntlDateFormatter::GREGORIAN,
+                            'l j F Y');
+      $str = $fmt($this); // $this->getTimestamp());
+      return $str;
+      */
       return strftime('%A %d %B %Y', $this->getTimestamp());
     }
   

@@ -7,7 +7,8 @@
     <body>
       <?php
 //        date_default_timezone_set('Europe/Paris');
-        setlocale(LC_ALL, 'fr_FR', 'french');
+        //setlocale(LC_ALL, 'fr_FR', 'french');
+        setlocale(LC_ALL, 'fr_FR.utf-8', 'french');
         ?>
       <h1>Maintenant</h1>
       <?php
