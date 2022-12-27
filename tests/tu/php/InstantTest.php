@@ -21,7 +21,6 @@ final class InstantTest extends TestCase {
    */
   protected function setUp(): void {
     setlocale(LC_ALL, 'fr_FR.utf-8', 'french');
-    
     $this->instant = new Instant("2023-11-25 21:32",
                                  new DateTimeZone('Europe/Paris'));
     parent::setUp();
@@ -65,6 +64,21 @@ final class InstantTest extends TestCase {
     $this->assertEquals($str, "Samedi 25 novembre 2023", "mauvais format date texte : " . $str);
   }
   
+  /**
+   * Tests
+   */
+  public function test_date_texte_abbr(): void {
+    $str = $this->instant->date_texte_abbr();
+    $this->assertEquals($str, "Sam 25 nov 2023", "mauvais format date texte abbrege : " . $str);
+  }
+
+  /**
+   * Tests
+   */
+  public function test_date_texte_court(): void {
+    $str = $this->instant->date_texte_court();
+    $this->assertEquals($str, "Sam 25 nov", "mauvais format date texte court : " . $str);
+  }
   
 }
 // ===========================================================================

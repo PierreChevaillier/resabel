@@ -16,11 +16,16 @@
   // revision : 30-dec-2019 pchevaillier@gmail.com Calendrier::annee_semaine
   // revision : 05-jan-2020 pchevaillier@gmail.com Instant::valeur_cle_horaire
   // revision : 11-jan-2020 pchevaillier@gmail.com Interval_Temporel
+  // revision : 26-dec-2022 pchevaillier@gmail.com compatibilite php 7.x et 8.x
   // --------------------------------------------------------------------------
   // commentaires :
   // - utilisation des classes DateTime et associees
-  // - pas d'utilisation de timestamp (sauf usage tres specifique)
+  // - pas d'utilisation de timestamp (sauf usage tres specifique : format)
   // - en evolution
+  // - hebergement AMP / OVH : que php 'de base', donc pas le module
+  //     'internationalisation'
+  //   consequence : gestion a la main des nom de jours et de mois (cf Calendrier)
+  // considere : utilisation de gettext (https://www.php.net/manual/en/book.gettext.php)
   // attention :
   // - calcul duree approximatif (pb : annees inhabituelles, heure d'ete ...
   // a faire :
@@ -97,7 +102,14 @@
       return $this->format('Y-m-d H:i:s');
     }
   
-    public function date_texte() {
+    public function date_texte(): string {
+      $j = $this->getTimestamp();
+      $str = Calendrier::$jours[date("N", $j) - 1]
+        . " " . date("j", $j)
+        . " " . Calendrier::$mois[date("n", $j) - 1]
+        . " " . date("Y", $j)
+      ;
+      return $str;
      /*
       $fmt = new IntlDateFormatter('fr_FR',
                             IntlDateFormatter::FULL,
@@ -108,15 +120,27 @@
       $str = $fmt($this); // $this->getTimestamp());
       return $str;
       */
-      return strftime('%A %d %B %Y', $this->getTimestamp());
+      //return strftime('%A %d %B %Y', $this->getTimestamp()); // php < 8
     }
   
-    public function date_texte_abbr() {
-      return strftime('%a %d %h %y', $this->getTimestamp());
+    public function date_texte_abbr(): string {
+      $j = $this->getTimestamp();
+      $str = Calendrier::$jours_courts[date("N", $j) - 1]
+        . " " . date("j", $j)
+        . " " . Calendrier::$mois_courts[date("n", $j) - 1]
+        . " " . date("Y", $j)
+      ;
+      return $str;
+      //return strftime('%a %d %h %y', $this->getTimestamp()); // deprecated 8.x
     }
   
-    public function date_texte_court() {
-         return strftime('%a %d %h', $this->getTimestamp());
+    public function date_texte_court(): string {
+      $j = $this->getTimestamp();
+      $str = Calendrier::$jours_courts[date("N", $j) - 1]
+        . " " . date("j", $j)
+        . " " . Calendrier::$mois_courts[date("n", $j) - 1];
+      return $str;
+      //return strftime('%a %d %h', $this->getTimestamp());  // deprecated 8.x
     }
     
     public function heure_texte() {
@@ -142,7 +166,7 @@
      
      public function __construct(Instant $debut, Instant $fin) {
        if (is_null($debut))
-         throw new InvalidArgumentException("Le debut de l'intervalle temporel n'est pas specifiee (null)");
+         throw new InvalidArgumentException("Le debut de l'intervalle temporel n'est pas specifie (null)");
        elseif (is_null($fin))
          throw new InvalidArgumentException("La fin de l'intervalle temporel n'est pas specifiee (null)");
        elseif ($debut->est_apres($fin))
@@ -264,7 +288,18 @@
    */
   // --------------------------------------------------------------------------
   // Fabrique d'instants et autres fonctions sur les dates
+  // + "localisation" des formats texte (jour et mois)
+  // car strftime est deprecated en version 8.1
+  // et que l'hebergement
+  // ne permet pas d'utiliser l'extension internationale de php
+  // donc retour a l'ancienne version...
+  // utilise par Instant::date_texte_abrev et Instant::date_texte_court
   class Calendrier {
+    public static $jours = array("Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "dimanche");
+    public static $mois = array("janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre");
+    public static $jours_courts = array("Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim");
+    public static $mois_courts = array("janv", "févr", "mars", "avr", "mai", "juin", "juil", "août", "sept", "oct", "nov", "déc");
+    
     public static function maintenant() {
       return new Instant("now");
     }
