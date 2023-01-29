@@ -69,7 +69,8 @@
   if (!isset($_POST['id']) || !isset($_POST['mdp_crypte']))
     exit();
 
-  $identifiant = stripslashes(trim(utf8_decode($_POST['id'])));
+  //$identifiant = stripslashes(trim(utf8_decode($_POST['id'])));
+  $identifiant = stripslashes(trim($_POST['id']));
   //$identifiant = strtolower($identifiant);
   // peut etre un identifiant de club (maj et minuscules sont conserves)
   // ou de personne (ou passe alors l'identifiant en minuscules (cf plus loin)

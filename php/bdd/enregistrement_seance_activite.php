@@ -49,7 +49,7 @@
                          string $critere_tri,
                          array & $seances = null) {
       $status = false;
-      if (is_null($seances)) $seance = array();
+      if (is_null($seances)) $seances = array();
   
       $selection = (strlen($critere_selection) > 0) ? " WHERE " . $critere_selection . " " : "";
       $tri = (strlen($critere_tri) > 0) ? " ORDER BY " . $critere_tri . " " : " ";

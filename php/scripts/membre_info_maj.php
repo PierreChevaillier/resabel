@@ -101,7 +101,7 @@
   
   $iod = 'id';
   if (isset($_POST[$iod])) {
-    $x = trim(utf8_decode($_POST[$iod]));
+    $x = trim($_POST[$iod]);
     $nCar1 = strlen($x);
     $x = strip_tags($x);
     $nCar2 = strlen($x);
@@ -138,7 +138,7 @@
   $iod = 'gnr';
   $erreur = 0;
   if (isset($_POST[$iod])) {
-    $x = strtoupper(trim(utf8_decode($_POST['gnr'])));
+    $x = strtoupper(trim($_POST['gnr']));
     $x = strip_tags($x);
     if (!preg_match("#^(F|H)$#", $x)) {
       $erreur = 1;

@@ -5,15 +5,17 @@
   //               Seance_activite
   //               generation du code html pour affichage des informations
   //               sur une seance d'activite
-  // copyright (c) 2018-2020 AMP. Tous droits reserves.
+  // copyright (c) 2018-2022 AMP. Tous droits reserves.
   // --------------------------------------------------------------------------
   // utilisation : php - require_once <chemin_vers_ce_fichier.php>
   // dependances : bootstratp 4.x
   // teste avec : PHP 7.1 sur Mac OS 10.14 ;
   //              PHP 7.0 sur hebergeur web
+  //  - PHP 8.2 sur macOS 13.1 (> 25-dec-2022)
   // --------------------------------------------------------------------------
   // creation : 22-jan-2020 pchevaillier@gmail.com
   // revision : 25-aug-2020 pchevaillier@gmail.com contexte actions + des actions
+  // revision : 29-dec-2022 pchevaillier@gmail.com fix erreur 8.2 : utf8_encode deprecated
   // --------------------------------------------------------------------------
   // commentaires :
   // - en evolution
@@ -109,7 +111,9 @@
       return $vue;
     }
     
-    protected $seance;
+    public $activite_site = null;
+    
+    protected $seance = null;
     public function def_seance(Seance_Activite $objet_metier) {
       $this->seance = $objet_metier;
     }
@@ -178,8 +182,8 @@
       $couleur_texte = ($personne->est_chef_de_bord()) ?  $this->couleur_texte_cdb :  $couleur_texte;
       $couleur_fond = ($personne->est_debutant()) ? $this->couleur_fond_debutant :  $this->couleur_fond_equipier;
 
-      $str_participant = utf8_encode(''); //$personne->prenom . " " . $personne->nom;
-      $code_interacteur = utf8_encode('');
+      $str_participant = ""; //utf8_encode(''); //$personne->prenom . " " . $personne->nom;
+      $code_interacteur = ""; //utf8_encode('');
       
       if ($this->est_interactif) {
         $code_interacteur = $code_interacteur . $this->generer_code_interacteur($personne);
@@ -201,11 +205,11 @@
     }
     
     protected function generer_code_interacteur(Membre $participant) {
-      $code = utf8_encode('');
+      $code = ""; //utf8_encode('');
       $code = $code . '<div class="dropdown">';
        
       // --- le menu pour interagir : effectuer une action sur la participation a l'activite
-      $texte_bouton = utf8_encode('');
+      $texte_bouton = ""; //utf8_encode('');
       $texte_bouton = substr($participant->prenom . ' ' . $participant->nom, 0, 22);
       $id_menu = 'mnu_particip_' . $this->seance->support->code() . '_' . $this->seance->debut()->date_heure_sql() . '_' . $participant->code();
       $code = $code . '<button class="btn btn-outline-dark btn-sm dropdown-toggle" type="button" style="min-width:196px;" id="' . $id_menu . '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' . $texte_bouton . '</button>';
@@ -213,7 +217,7 @@
       $code = $code . '<div class="dropdown-menu" aria-labelledby="' . $id_menu . '">';
       
       // --- Actions du menu toujours possibles
-      $menu = utf8_encode('');
+      $menu = ""; //utf8_encode('');
       $params = $participant->code() . ', \'' . $this->id_dialogue_action . '\'';
       $menu = $menu . '<a class="dropdown-item" data-toggle="modal" data-target="#' . $this->id_dialogue_action . '" onclick="requete_info_personne(' . $params . '); return false;">Afficher infos</a>';
       
@@ -288,8 +292,8 @@
     }
     
     protected function formater_responsable(String & $code_html) {
-      $str_resp = utf8_encode('');
-      $code_interacteur = utf8_encode('');
+      $str_resp = ""; //utf8_encode('');
+      $code_interacteur = ""; //utf8_encode('');
       if ($this->seance->a_un_responsable()) {
         //$str_resp = $this->seance->responsable->prenom . " " . $this->seance->responsable->nom;
         if ($this->est_interactif) {
@@ -326,7 +330,7 @@
     protected function formater_place_libre(int $rang, String & $code_html) {
       $code_html = $code_html . "<td id=\"" . $this->generer_id($rang) . "\" style =\"width:" . $this->largeur . "px;min-height:300px;color:" . $this->couleur_texte_place_libre . ";background-color:" . $this->couleur_fond_place_libre . ";text-align:center;padding:1px\"><div style=\"min-height:31px\">";
       $code_html = $code_html . "&nbsp;";
-      $code_interacteur = utf8_encode('');
+      $code_interacteur = ""; //utf8_encode('');
       if ($this->est_interactif) {
         $inscription_possible = $this->contexte_action()->inscription_individuelle()
           && !$this->activite_site->participe_activite_creneau($this->contexte_action()->utilisateur, $this->seance->plage_horaire);
@@ -334,7 +338,7 @@
         $indispo = ($this->activite_site->site_ferme_creneau($creneau->debut(), $creneau->fin()) || $this->activite_site->support_indisponible_creneau($this->seance->support, $creneau->debut(), $creneau->fin()));
         $inscription_possible =  $inscription_possible && !$indispo;
         
-        $code_interacteur = utf8_encode('');
+        $code_interacteur = ""; //utf8_encode('');
         if ($inscription_possible && $this->pas_encore_controle_vide) {
           /*
           $params = '\'' . $this->id_dialogue_action . '\', '
@@ -362,7 +366,7 @@
      
      public function formater() {
        //$this->afficher_debut();
-       $code_html = utf8_encode('');
+       $code_html = ""; //utf8_encode('');
        $code_html = $code_html . "\n<div style=\"padding:2px;\">\n";
        $code_html = $code_html . "\n\t<table class=\"table table-bordered table-condensed\" style=\"width:"
                     . ($this->largeur + 0) . "px;\"><tbody>\n";
@@ -429,7 +433,7 @@
     }
     
     protected function formater_info_seance() {
-      $code = utf8_encode('');
+      $code = ""; //utf8_encode('');
       $code = $code . $this->seance->debut()->date_texte();
       $code = $code . ' de ' . $this->seance->debut()->heure_texte();
       $code = $code . ' à ' . $this->seance->fin()->heure_texte();
@@ -442,7 +446,7 @@
     }
     
     protected function formater_info_participations() {
-      $code = utf8_encode('');
+      $code = ""; //utf8_encode('');
       $presentation_nom = new Afficheur_Nom();
       $presentation_tel = new Afficheur_telephone();
       $code = $code . '<div class="container"><table class="table table-sm"><tbody>';
@@ -458,7 +462,7 @@
     }
     
     protected function formater_mail_participants() {
-      $code = utf8_encode('');
+      $code = ""; //utf8_encode('');
       $code = $code . 'mailto:';
       foreach ($this->seance->inscriptions as $participation) {
         $p = $participation->participant;
@@ -473,12 +477,12 @@
     }
     
     public function formater_menu_action() {
-      $code = utf8_encode('');
+      $code = ""; //utf8_encode('');
 
       $code = $code . '<div class="dropdown">';
       
       // --- le bouton pour interagir
-      $texte_bouton = utf8_encode('');
+      $texte_bouton = ""; //utf8_encode('');
       if (is_a($this->seance->support, 'Bateau'))
         $code_support = $this->seance->support->numero();
       else
@@ -490,10 +494,10 @@
       $code = $code . '<div class="dropdown-menu" aria-labelledby="' . $id_menu . '">';
      
       // --- Actions du menu toujours possibles
-      $menu = utf8_encode('');
+      $menu = ""; //utf8_encode('');
       
       // copie de page_accueil_perso.php
-      $details = utf8_encode("");
+      $details = ""; //utf8_encode("");
       $seance = $this->seance;
       $aff_tel = new Afficheur_Telephone();
       $aff_mail = new Afficheur_Courriel_Actif();

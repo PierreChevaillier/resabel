@@ -103,10 +103,10 @@
       $this->page()->ajoute_contenu($this->afficheur_info);
       
       // element modal pour indiquer le resultat d'une action
-      $this->message_modal = new Element_Modal();
-      $this->message_modal->def_id('aff_msg');
-      $this->message_modal->def_titre('Action effectuée');
-      $this->page()->ajoute_contenu($this->message_modal);
+      $message_modal = new Element_Modal();
+      $message_modal->def_id('aff_msg');
+      $message_modal->def_titre('Action effectuée');
+      $this->page()->ajoute_contenu($message_modal);
        
     }
     

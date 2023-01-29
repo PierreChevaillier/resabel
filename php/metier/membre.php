@@ -3,8 +3,10 @@
   // contexte : Resabel - systeme de REServation de Bateaux En Ligne
   // description: definition de la classe Membre
   // utilisation : php - require_once
-  // teste avec : PHP 7.1 sur Mac OS 10.14 ; PHP 7.0 sur serveur OVH
-  // Copyright (c) 2014-2019 AMP. Tous droits reserves.
+  // teste avec :
+  //  - PHP 7.1 sur Mac OS 10.14 ; PHP 7.0 sur serveur OVH
+  //  - PHP 8.2 sur macOS 13.1 (> 25-dec-2022)
+  // Copyright (c) 2014-2022 AMP. Tous droits reserves.
   // ------------------------------------------------------------------------
   // creation: 28-fev-2015 pchevaillier@gmail.com
   // revision: 29-avr-2015 pchevaillier@gmail.com, recherche information
@@ -13,6 +15,7 @@
   // revision: 30-nov-2016 pchevaillier@gmail.com, test si de permanence
   // revision: 05-oct-2018 pchevaillier@gmail.com  chemin vers utilitaires
   // revision: 06-ami-2019 pchevaillier@gmail.com  initialiser_debutant
+  // revision: 29-dec-2022 pchevaillier@gmail.com fix erreur 8.2
   // ------------------------------------------------------------------------
   // commentaires :
   // attention :
@@ -46,9 +49,9 @@
     }
     public function est_actif() { return $this->est_actif;}
     
-    public function est_autorise_connecter() { return $this->est_autorise_connecter; }
-    public function def_autorise_connecter($valeur) {  // pas un 'setter' classique
-      $this->autorise_connecter = ($valeur == 1);
+    public function est_autorise_connecter(): int { return $this->est_autorise_connecter; }
+    public function def_autorise_connecter(int $valeur): void {  // pas un 'setter' classique
+      $this->est_autorise_connecter = ($valeur == 1);
     }
     
     public function est_debutant() {
