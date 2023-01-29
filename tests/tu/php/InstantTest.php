@@ -21,6 +21,7 @@ final class InstantTest extends TestCase {
    */
   protected function setUp(): void {
     setlocale(LC_ALL, 'fr_FR.utf-8', 'french');
+    // jour > 12 et minutes > 23
     $this->instant = new Instant("2023-11-25 21:32",
                                  new DateTimeZone('Europe/Paris'));
     parent::setUp();
