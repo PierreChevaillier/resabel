@@ -57,7 +57,7 @@
             throw new Erreur_Mot_Passe_Club();
             return $identification_ok;
           } else {
-            $this->club->def_nom(utf8_encode($club->nom));
+            $this->club->def_nom($club->nom);
             $identification_ok = true;
           }
         } else {

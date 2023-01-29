@@ -12,6 +12,7 @@
   // --------------------------------------------------------------------------
   // creation : 30-jun-2019 pchevaillier@gmail.com
   // revision : 25-dec-2019 pchevaillier@gmail.com modif definir_creneaux
+  // revision : 25-dec-2019 pchevaillier@gmail.com date_sun_info a la place date_sunrise
   // --------------------------------------------------------------------------
   // commentaires :
   // -
@@ -59,19 +60,16 @@
       
       // Activite de jour uniquement, donc il faut les heures locales
       // de lever et coucher du soleil
+      $info_soleil = date_sun_info($date_jour->getTimestamp(),
+                                   $latitude,
+                                   $longitude);
       
-      $t_lever = date_sunrise($date_jour->getTimestamp(),
-                              SUNFUNCS_RET_TIMESTAMP,
-                              $latitude,
-                              $longitude);
-      
+      $t_lever = $info_soleil['sunrise'];
       //echo 'latitude ', $latitude, ' long. ', $longitude;
       $lever = Calendrier::creer_Instant($t_lever);
+      
+      $t_coucher = $info_soleil['sunset'];
       //echo ' Lever ', $lever->format('d-m-Y H:i:s');
-      $t_coucher = date_sunset($date_jour->getTimestamp(),
-                              SUNFUNCS_RET_TIMESTAMP,
-                              $latitude,
-                              $longitude);
       $coucher = Calendrier::creer_Instant($t_coucher);
       //echo 'Coucher ', $coucher->format('d-m-Y H:i:s');
       

@@ -3,14 +3,16 @@
   // contexte : Resabel - systeme de REServAtion de Bateaux En Ligne
   // description : Definition de la classe Page_Accueil_Perso
   //               Sorte de portail / personne
-  // copyright (c) 2018-2020 AMP. Tous droits reserves.
+  // copyright (c) 2018-2022 AMP. Tous droits reserves.
   // --------------------------------------------------------------------------
-  // utilisation : php - require_once <chemin-fichier.php'
+  // utilisation : php - require_once <chemin-fichier.php>
   // dependances : bootstrap 4.x, valeur variables $_SESSION
   // teste avec : PHP 7.1 sur Mac OS 10.14 ; PHP 7.0 sur hebergeur web
+  //  - PHP 8.2 sur macOS 13.1 (> 25-dec-2022)
   // --------------------------------------------------------------------------
   // creation : 04-mar-2020 pchevaillier@gmail.com
   // revision : 29-mar-2020 pchevaillier@gmail.com ameliorerations + marees
+  // revision : 29-dec-2022 pchevaillier@gmail.com fix erreur 8.2, utf8_encode deprecated
   // --------------------------------------------------------------------------
   // commentaires :
   // - en cours d'evolution
@@ -226,9 +228,9 @@
         $code_info_seance = $afficheur_seance->formater();
         
         // definir menu des actions possibles
-        $code_menu = utf8_encode("\n\n");
+        $code_menu = "\n\n";
         $code_menu = $code_menu . '<div class="btn-group dropup"><button class="btn btn-sm btn-primary dropdown-toggle" type="button" id="XXXXXXXX" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">Actions</button><div class="dropdown-menu" aria-labelledby="dropdownMenuButton">';
-        $details = utf8_encode("");
+        $details = ""; //utf8_encode("");
         $sujet = "Sortie du " . $seance->debut()->date_texte()
                . " à " . $seance->debut()->heure_texte();
         $info_support = " sur " . $seance->support->nom();

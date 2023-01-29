@@ -22,7 +22,7 @@
   // attention :
   // -
   // a faire :
-  // - verifier interet de echo '<input type="hidden" name="id" value="' . $this->id_objet . '" />';
+  // - verifier interet de echo '<input type="hidden" name="id" value="' . $this->id() . '" />';
   // ------------------------------------------------------------------------
 
   // --- Classes utilisees
@@ -86,7 +86,7 @@
       echo "\n";
       echo '<form class="form-horizontal rsbl-form" role="form" id="' . $this->id() . '" name="' . $this->id() . '" onsubmit="return verification_formulaire(this)"  method="' . $this->methode . '" action="' . $this->script_traitement . '">';
       echo '<input type="hidden" name="a" value="' . $this->action . '" />';
-      //echo '<input type="hidden" name="id" value="' . $this->id_objet . '" />';
+      //echo '<input type="hidden" name="id" value="' . $this->id() . '" />';
     }
   
     protected function afficher_corps() {

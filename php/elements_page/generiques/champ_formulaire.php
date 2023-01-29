@@ -8,7 +8,8 @@
   // teste avec : PHP 5.5.3 sur Mac OS 10.11 ;
   //              PHP 7.1 sur Mac OS 10.14  (depuis 14-oct-2018)
   //              PHP 7.3 sur hebergeur web
-  // Copyright (c) 2017-2020 AMP. Tous droits reserves.
+  //              PHP 8.1 sur macOS 12.5 (depuis 21-dec-2022)
+  // Copyright (c) 2017-2022 AMP. Tous droits reserves.
   // ------------------------------------------------------------------------
   // creation : 21-oct-2017 pchevaillier@gmail.com
   // revision : 04-fev-2018 pchevaillier@gmail.com mise en forme, champ montant
@@ -22,6 +23,7 @@
   // revision : 04-jan-2020 pchevaillier@gmail.com Champ de type hidden
   // revision : 13-sep-2020 pchevaillier@gmail.com Champ_Binaire (checked)
   // revision : 19-sep-2020 pchevaillier@gmail.com code erreur, Champ_Entier_Naturel
+  // revision : 21-dec-2022 pchevaillier@gmail.com init valeur (php 8.x)
   // ------------------------------------------------------------------------
   // commentaires :
   // attention :
@@ -38,7 +40,7 @@
     protected $balise = 'input';
     
     // --- Proprietes relatives à la valeur du champ.
-    protected $valeur;
+    protected string $valeur = '';
     public function valeur() {
       return $this->valeur;
     }

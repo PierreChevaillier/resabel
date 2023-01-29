@@ -27,6 +27,7 @@
     
     private $format_colonnes = array();
     
+    // TODO? : plutot redefinir ajouter_element pour masquer cette derniere
     public function ajouter_colonne(Element $element, string $format) {
       $this->elements[] = $element;
       $this->format_colonnes[] = $format;

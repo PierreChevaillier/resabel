@@ -2,16 +2,18 @@
   // ==========================================================================
   // contexte : Resabel - systeme de REServAtion de Bateau En Ligne
   // description : Classes pour information et planification activite journaliere
-  // copyright (c) 2018-2020 AMP. Tous droits reserves.
+  // copyright (c) 2018-2022 AMP. Tous droits reserves.
   // --------------------------------------------------------------------------
   // utilisation : php - require_once <chemin_vers_ce_fichier.php>
   // dependances : 
   // teste avec : PHP 7.1 sur Mac OS 10.14 ;
   //              PHP 7.0 sur hebergeur web
+  //  - PHP 8.2 sur macOS 13.1 (> 25-dec-2022)
   // --------------------------------------------------------------------------
   // creation : 09-jun-2019 pchevaillier@gmail.com
   // revision : 11-jan-2020 pchevaillier@gmail.com fermeture site et indispo supports
   // revision : 02-mar-2020 pchevaillier@gmail.com collecte infos sur seances
+  // revision : 29-dec-2022 pchevaillier@gmail.com fix erreur 8.2
   // --------------------------------------------------------------------------
   // commentaires :
   // - Uniquement 'logique metier': pas d'IHM
@@ -34,7 +36,7 @@
   require_once 'php/bdd/enregistrement_permanence.php';
   
   require_once 'php/metier/site_activite.php';
-  //require_once 'php/bdd/enregistrement_site_activite.php';
+  require_once 'php/bdd/enregistrement_site_activite.php';
   
   require_once 'php/metier/regime_ouverture.php';
   require_once 'php/bdd/enregistrement_regime_ouverture.php';
@@ -59,12 +61,14 @@
     public function def_date_jour(Instant $jour) { $this->date_jour = $jour;}
     
     public $filtre_site = 0;
-    public $filtre_type_sypport = 0;
+    public $filtre_type_support = 0;
     public $filtre_support = 0;
     public $debut_plage_horaire = null;
     public $fin_plage_horaire = null;
     
     public $club = null;
+    protected $sites = array();
+    
     public $activite_sites = array();
 
     public $permanence = null;
@@ -100,13 +104,13 @@
       //$cal->numero_semaine($this->jour());
       $annee = Calendrier::annee_semaine($this->date_jour());
       $this->permanence = new Permanence($sem, $annee);
-      $this->enregistrement_permanence = new Enregistrement_Permanence();
-      $this->enregistrement_permanence->def_permanence($this->permanence);
-      $this->enregistrement_permanence->lire();
+      $enregistrement_permanence = new Enregistrement_Permanence();
+      $enregistrement_permanence->def_permanence($this->permanence);
+      $enregistrement_permanence->lire();
     }
     
     protected function collecter_info_sites() {
-      Enregistrement_Site_Activite::collecter("", " code_type ",  $this->sites);
+      Enregistrement_Site_Activite::collecter("", " code_type ", $this->sites);
       foreach ($this->sites as $site) {
         if (($this->filtre_site == 0) || ($site->code() == $this->filtre_site)) {
           $activite_site = new Activite_Site($this, $site);

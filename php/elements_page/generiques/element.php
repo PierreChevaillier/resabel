@@ -1,41 +1,46 @@
 <?php
-  // ========================================================================
-  // description : definition de la classe Element et des classes derivees
-  //               correspondant aux elements generiques
-  // utilisation : classes racines des elements de pages web, pages comprises
-  // teste avec  : PHP 5.5.3 sur Mac OS 10.11
-  // contexte    : Elements generique d'un site web
-  // Copyright (c) 2017-208 AMP. Tous droits reserves.
-  // ------------------------------------------------------------------------
+  // =========================================================================
+  // contexte    : Elements generiques d'un site web
+  // description : definition des classes Element et Conteneurs_element (composite)
+  //               correspondant aux elements generiques d'une page web
+  // utilisation : php - require_once <chemin_vers_ce_fichier_php>
+  // dependances : classe Page
+  // utilise avec :
+  //   >= 2023: PHP 7.1 sur macOS 10.14 ; PHP 7.3 sur macOS 13.2
+  // Copyright (c) 2017-2023 AMP. Tous droits reserves.
+  // -------------------------------------------------------------------------
   // creation : 04-jun-2017 pchevaillier@gmail.com
   // revision : 06-fev-2018 pchevaillier@gmail.com ajout Conteneur_Elements
   // revision : 17-jun-2018 pchevaillier@gmail.com ajout classe Element_Code
-  // ------------------------------------------------------------------------
+  // revision : 28-jan-2023 pchevaillier@gmail.com typage, correction suite TU
+  // --------------------------------------------------------------------------
   // commentaires :
+  // -
   // attention :
+  // -
   // a faire :
-  // ------------------------------------------------------------------------
+  // -
+  // ==========================================================================
 
   // --- Classes utilisees
 
   // --------------------------------------------------------------------------
   abstract class Element {
     
-    protected $page = null;
-    public function def_page($page_web) {
+    protected ?Page $page = null;
+    final public function def_page(Page $page_web) {
       $this->page = $page_web;
     }
-    public function page() { return $this->page; }
+    final public function page() { return $this->page; }
     
-    private $titre = "";
-    public function titre() { return $this->titre; }
-    public function def_titre($titre) { $this->titre = $titre; }
-    public function a_un_titre() { return strlen($this->titre) > 0; }
+    private string $titre = "";
+    final public function titre(): string { return $this->titre; }
+    final public function def_titre(string $titre): void { $this->titre = $titre; }
+    final public function a_un_titre(): bool { return strlen($this->titre) > 0; }
   
-    protected $id_objet = '';
-    public function def_id_objet($valeur) { $this->id_objet = $valeur; }
-    public function def_id($valeur) { $this->id_objet = $valeur; }
-    public function id() { return $this->id_objet; }
+    protected string $id = ''; // change le 25-01-2023 (avant : id_objet)
+    final public function def_id(string $valeur): void { $this->id = $valeur; }
+    final public function id(): string { return $this->id; }
     
     public abstract function initialiser();
 
@@ -54,10 +59,10 @@
   
   // --------------------------------------------------------------------------
   class Element_Code extends Element {
-    private $code = "";
-    public function code() { return $this->titre; }
-    public function def_code($code_html) { $this->code = $code_html; }
-    public function est_non_vide() { return strlen($this->code) > 0; }
+    private string $code = "";
+    public function code(): string { return $this->code; }
+    public function def_code(string $code_html): void { $this->code = $code_html; }
+    public function est_non_vide(): bool { return strlen($this->code) > 0; }
     
     public function initialiser() {
     }
@@ -87,7 +92,7 @@
     }
     
     protected function afficher_debut() {
-      echo "\n";
+      echo PHP_EOL;
     }
     
     protected function afficher_corps() {
@@ -96,8 +101,9 @@
     }
     
     protected function afficher_fin() {
-      echo "\n";
+      echo PHP_EOL;
     }
   }
   
-  // ========================================================================
+  // =========================================================================
+?>

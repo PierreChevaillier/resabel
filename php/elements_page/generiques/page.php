@@ -37,6 +37,8 @@
     public $javascripts = array();
     public function ajouter_script(String $chemin_fichier) {
       $existe = false;
+      if ($chemin_fichier == "")
+        return false;
       foreach ($this->javascripts as $s) {
         if (strcmp($s, $chemin_fichier) == 0) {
           $existe = true;

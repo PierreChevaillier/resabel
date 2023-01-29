@@ -7,7 +7,8 @@
     <body>
       <?php
 //        date_default_timezone_set('Europe/Paris');
-        setlocale(LC_ALL, 'fr_FR', 'french');
+        //setlocale(LC_ALL, 'fr_FR', 'french');
+        setlocale(LC_ALL, 'fr_FR.utf-8', 'french');
         ?>
       <h1>Maintenant</h1>
       <?php
@@ -73,13 +74,20 @@
         $dfin = $d->add($fin);
         $interval = new DateInterval('PT1H00M00S');
         
+        $latitude = 48.35;
+        $longitude = -4.68;
         //$t_lever = date_sunrise(time(), SUNFUNCS_RET_TIMESTAMP, 48.35, -4.68);
-        $t_lever = date_sunrise($j->getTimestamp(), SUNFUNCS_RET_TIMESTAMP, 48.35, -4.68);
+        //$t_lever = date_sunrise($j->getTimestamp(), SUNFUNCS_RET_TIMESTAMP, 48.35, -4.68);
+        $info_soleil = date_sun_info($j->getTimestamp(),
+                             $latitude,
+                             $longitude);
+        $t_lever = $info_soleil['sunrise'];
         $d_lever = new DateTime("now", $timeZone);
         $d_lever->setTimestamp($t_lever);
         echo "<p>Lever : " , $d_lever->format('d-m-Y H:i:s'), "</p>";
         
-        $t_coucher = date_sunset($j->getTimestamp(), SUNFUNCS_RET_TIMESTAMP, 48.35, -4.68);
+        $t_coucher = $info_soleil['sunset'];
+        //$t_coucher = date_sunset($j->getTimestamp(), SUNFUNCS_RET_TIMESTAMP, 48.35, -4.68);
         $d_coucher = new DateTime("now", $timeZone);
         $d_coucher->setTimestamp($t_coucher);
         echo "<p>coucher : " , $d_coucher->format('d-m-Y H:i:s'), "</p>";

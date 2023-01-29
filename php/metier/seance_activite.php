@@ -2,16 +2,18 @@
   // ==========================================================================
   // contexte : Resabel - systeme de REServAtion de Bateau En Ligne
   // description : Classe Seance Activite et associees - Vue metier
-  // copyright (c) 2018-2020 AMP. Tous droits reserves.
+  // copyright (c) 2018-2022 AMP. Tous droits reserves.
   // --------------------------------------------------------------------------
   // utilisation : php - require_once <chemin_vers_ce_fichier.php>
   // dependances : 
   // teste avec : PHP 7.1 sur Mac OS 10.14 ;
   //              PHP 7.0 sur hebergeur web
+  //  - PHP 8.2 sur macOS 13.1 (> 25-dec-2022)
   // --------------------------------------------------------------------------
   // creation : 09-jun-2019 pchevaillier@gmail.com
   // revision : 18-jan-2020 pchevaillier@gmail.com
   // revision : 08-mar-2020 pchevaillier@gmail.com a_comme_responsable
+  // revision : 29-dec-2022 pchevaillier@gmail.com information
   // --------------------------------------------------------------------------
   // commentaires :
   // -
@@ -42,6 +44,8 @@
     public function fin() {
       return $this->plage_horaire->fin();
     }
+    
+    public $information;
     
     //$intervalle_realise;
     
@@ -108,7 +112,7 @@
     
     private $seance = null;
     public $participant = null;
-    public $informations = "";
+    public $information = "";
     //$programme = "";
     //$forme = "";
     //$condition_pratique = "";
