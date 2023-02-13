@@ -42,7 +42,7 @@
     }
     
     public function lire_identite() {
-      $bdd = Base_Donnees::accede();
+      $bdd = Base_Donnees::acces();
       $site = Site_Web::accede();
       $critere = "code = " . $bdd->quote($site->code()) ;
       $requete = "SELECT sigle, adresse_racine, courriel_contact, fuseau_horaire FROM "

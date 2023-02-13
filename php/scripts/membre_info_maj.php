@@ -36,7 +36,7 @@
   // --- connection a la base de donnees
   include 'php/bdd/base_donnees.php';
   
-  $bdd = Base_donnees::accede();
+  $bdd = Base_Donnees::acces();
   
   require_once 'php/metier/calendrier.php';
   require_once 'php/metier/club.php';

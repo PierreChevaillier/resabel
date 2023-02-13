@@ -38,7 +38,7 @@
   // --- connection a la base de donnees
   include 'php/bdd/base_donnees.php';
   
-  $bdd = Base_donnees::accede();
+  $bdd = Base_Donnees::acces();
     
   require_once 'php/bdd/enregistrement_support_activite.php';
   require_once 'php/metier/support_activite.php';

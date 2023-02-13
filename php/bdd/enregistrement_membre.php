@@ -51,7 +51,7 @@
     
     public function verifier_identite($mot_passe) {
       $identification_ok = false;
-      $bdd = Base_Donnees::accede();
+      $bdd = Base_Donnees::acces();
       $requete = $bdd->prepare("SELECT code, actif, identifiant, connexion, mot_passe, prenom, nom, cdb FROM " . self::source() . " WHERE identifiant = :identifiant LIMIT 1");
       $requete->bindParam(':identifiant', $this->membre->identifiant, PDO::PARAM_STR);
       try {
@@ -86,7 +86,7 @@
       $code_debut = $code;
       $code_fin = ($annee + 1) * 1000;
       try {
-        $bdd = Base_Donnees::accede();
+        $bdd = Base_Donnees::acces();
         $requete = $bdd->prepare("SELECT MAX(code) AS code FROM ". self::source() . " WHERE code BETWEEN :debut AND :fin");
         $requete->bindParam(':debut', $code_debut, PDO::PARAM_INT);
         $requete->bindParam(':fin', $code_fin, PDO::PARAM_INT);
@@ -104,7 +104,7 @@
       // TODO : rechercher le bon club
       $mot_passe = "";
       try {
-        $bdd = Base_Donnees::accede();
+        $bdd = Base_Donnees::acces();
         $requete = $bdd->prepare("SELECT mot_passe FROM rsbl_club WHERE code = 1 LIMIT 1");
         $requete->execute();
         if ($resultat = $requete->fetch(PDO::FETCH_OBJ))
@@ -119,7 +119,7 @@
     public function verifier_identifiant_unique($identifiant) {
       $unique = false;
       try {
-        $bdd = Base_Donnees::accede();
+        $bdd = Base_Donnees::acces();
         $requete= $bdd->prepare("SELECT COUNT(*) AS n FROM " . self::source() . " WHERE identifiant = :identifiant and code != :code");
         $requete->bindParam(':identifiant', $identifiant, PDO::PARAM_STR);
         $code = $this->membre->code();
@@ -139,7 +139,7 @@
     public function lire() {
       $trouve = false;
       try {
-        $bdd = Base_Donnees::accede();
+        $bdd = Base_Donnees::acces();
         $requete= $bdd->prepare("SELECT * FROM " . self::source() . " WHERE code = :code_membre LIMIT 1");
         $code = $this->membre->code();
         $requete->bindParam(':code_membre', $code, PDO::PARAM_INT);
@@ -184,7 +184,7 @@
       $est_admin = false;
       // teste si la membre a le role admin dans le composante 'resabel'
       $source = Base_Donnees::$prefix_table . 'roles_membres';
-      $bdd = Base_Donnees::accede();
+      $bdd = Base_Donnees::acces();
       try {
         $requete= $bdd->prepare("SELECT COUNT(*) as n FROM " . $source . " WHERE code_membre = :code_membre AND code_role = 8 AND code_composante = 2");
         $code = $this->membre->code();
@@ -200,7 +200,7 @@
      }
     
     public function modifier_date_derniere_connexion() {
-      $bdd = Base_Donnees::accede();
+      $bdd = Base_Donnees::acces();
       $maintenant = Calendrier::maintenant()->format('Y-m-d H:i:s');
       try {
         $requete= $bdd->prepare("UPDATE " . self::source()
@@ -214,7 +214,7 @@
     }
     
     public function modifier_niveau($valeur) {
-      $bdd = Base_Donnees::accede();
+      $bdd = Base_Donnees::acces();
       try {
         $requete= $bdd->prepare("UPDATE " . self::source()
                                 . " SET niveau = :niv WHERE code = :code_membre");
@@ -232,7 +232,7 @@
     
     
     public function modifier_cdb($valeur) {
-      $bdd = Base_Donnees::accede();
+      $bdd = Base_Donnees::acces();
       try {
         $requete= $bdd->prepare("UPDATE " . self::source()
                                 . " SET cdb = :cdb WHERE code = :code_membre");
@@ -248,7 +248,7 @@
     }
     
     public static function modifier_niveaux($valeur_actuelle, $nouvelle_valeur) {
-      $bdd = Base_Donnees::accede();
+      $bdd = Base_Donnees::acces();
       try {
         $requete= $bdd->prepare("UPDATE " . self::source()
                                 . " SET niveau = :nouveau WHERE niveau = :actuel AND actif = 1");
@@ -265,7 +265,7 @@
     public function ajouter() {
       $status = true;
       try {
-        $bdd = Base_Donnees::accede();
+        $bdd = Base_Donnees::acces();
         $code_sql = "INSERT INTO " . self::source()
         . " (code, identifiant, mot_passe"
         . ", actif, connexion, niveau, cdb"
@@ -328,7 +328,7 @@
     
     
     public function modifier() {
-      $bdd = Base_Donnees::accede();
+      $bdd = Base_Donnees::acces();
       try {
         $requete= $bdd->prepare("UPDATE " . self::source() . " SET "
                                 . "identifiant = :identifiant"
@@ -427,7 +427,7 @@
       }
       $tri =  " ORDER BY " . $table_membres . ".prenom, " . $table_membres . ".nom ";
       try {
-        $bdd = Base_Donnees::accede();
+        $bdd = Base_Donnees::acces();
         $requete = "SELECT " . $table_membres . ".code AS code, identifiant, genre, prenom, " . $table_membres . ".nom AS nom, telephone, telephone2, rue, courriel, actif, connexion, niveau, date_naissance, cdb, derniere_connexion, num_licence, " . $table_communes . ".nom AS nom_commune" . " FROM " . $source . " INNER JOIN " . $table_communes . " ON " . $table_communes . ".code = " . $table_membres . ".code_commune " . $critere . $tri;
         //echo '<p>' . $requete . '</p>';
         $resultat = $bdd->query($requete);

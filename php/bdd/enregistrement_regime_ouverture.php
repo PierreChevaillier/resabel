@@ -33,7 +33,7 @@
     public static function creer($code) {
       $regime = null;
       try {
-        $bdd = Base_Donnees::accede();
+        $bdd = Base_Donnees::acces();
         $code_sql = "SELECT code, code_type, nom, heure_ouverture, heure_fermeture, duree_seance, de_jour_uniquement, decalage_heure_hiver FROM " . self::source() . " WHERE code = "  . $code . " ORDER BY code, jour_semaine";
         //echo '<p>', $code_sql, '</p>';
         $requete = $bdd->query($code_sql);

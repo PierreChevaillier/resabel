@@ -81,7 +81,14 @@
     public function est_egal(Instant $autre_instant) {
       return $this->getTimestamp() == $autre_instant->getTimestamp();
     }
+    public function est_avant(DateTimeInterface $autre_instant): bool {
+      return $this->diff($autre_instant)->invert == 0;
+    }
     
+    public function est_apres(DateTimeInterface $autre_instant): bool {
+      return $autre_instant->est_avant($this);
+    }
+    /*
     public function est_apres(Instant $autre_instant) {
       return $this->getTimestamp() >= $autre_instant->getTimestamp();
     }
@@ -89,7 +96,7 @@
     public function est_avant(Instant $autre_instant) {
          return $this->getTimestamp() <= $autre_instant->getTimestamp();
     }
-    
+    */
     public function date_html() {
       return $this->format('Y-m-d');
     }
@@ -177,12 +184,12 @@
        }
      }
     
-    public function chevauche(Intervalle_Temporel $autre_intervalle) {
+    public function chevauche(Intervalle_Temporel $autre_intervalle): bool {
       $condition = ($autre_intervalle->fin()->est_avant($this->debut()) || $autre_intervalle->debut()->est_apres($this->fin()));
       return !$condition;
     }
     
-    public function couvre(Intervalle_Temporel $autre_intervalle) {
+    public function couvre(Intervalle_Temporel $autre_intervalle): bool {
       return ($this->debut()->est_avant($autre_intervalle->debut()) && $this->fin()->est_apres($autre_intervalle->fin()));
     }
   }

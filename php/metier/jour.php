@@ -15,7 +15,7 @@
   // commentaires :
   // -
   // attention :
-  // -
+  // - Deprecated
   // a faire :
   // -
   // - finir intervalle temporel. Utiliser les fonctions php / timeDiff
@@ -77,15 +77,14 @@
     public function est_egal($autre_instant) {
       return $this->valeur == $autre_instant->valeur;
     }
-    
-    public function est_avant($autre_instant) {
-      return $this->valeur < $autre_instant->valeur;
+    */
+    public function est_avant(DateTimeInterface $autre_instant): bool {
+      return $this->diff($autre_instant)->invert == 0;
     }
     
-    public function est_apres($autre_instant) {
-      return $this->valeur > $autre_instant->valeur;
+    public function est_apres(DateTimeInterface $autre_instant) {
+      return $autre_instant->est_avant($this);
     }
-     */
     
   }
   /*

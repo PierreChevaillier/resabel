@@ -36,7 +36,7 @@
     public function lire() {
       $trouve = false;
       try {
-        $bdd = Base_Donnees::accede();
+        $bdd = Base_Donnees::acces();
         
         $requete= $bdd->prepare("SELECT * FROM " . self::source() . " WHERE code = :code_commune LIMIT 1");
         $code = $this->commune->code();
@@ -64,7 +64,7 @@
       $selection = (strlen($critere_selection) > 0) ? " WHERE " . $critere_selection . " " : "";
       $tri = (strlen($critere_tri) > 0) ? " ORDER BY " . $critere_tri . " " : "";
       try {
-        $bdd = Base_Donnees::accede();
+        $bdd = Base_Donnees::acces();
         $requete = "SELECT code, nom FROM " . self::source() . $selection . $tri;
         $resultat = $bdd->query($requete);
         while ($donnee = $resultat->fetch(PDO::FETCH_OBJ)) {

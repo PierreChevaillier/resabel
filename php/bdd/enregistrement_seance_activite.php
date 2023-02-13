@@ -3,23 +3,27 @@
   // contexte : Resabel - systeme de REServAtion de Bateau En Ligne
   // description : classe Enregistrement_Seance_activite :
   //               operations sur la base de donnees
-  // copyright (c) 2020 AMP. Tous droits reserves.
+  // copyright (c) 2020-2023 AMP. Tous droits reserves.
   // --------------------------------------------------------------------------
   // utilisation : php - require_once <chemin_vers_ce_fichier.php>
   // dependances : cf. require_once + classe Base_Donnees
   //               structures des tables
-  // teste avec : PHP 7.1 sur Mac OS 10.14 ;
-  //              PHP 7.0 sur hebergeur web
+  // utilise avec : PHP 7.1 sur Mac OS 10.14 ;
+  //                PHP 7.0 sur hebergeur web
+  //  - depuis 2023 :
+  //    PHP 8.2 sur macOS 13.2 ;
   // --------------------------------------------------------------------------
   // creation : 18-jan-2020 pchevaillier@gmail.com
-  // revision : 08-mar-2020 pchevaillier@gmail.com (suppression participation)
+  // revision : 08-mar-2020 pchevaillier@gmail.com suppression participation
   // revision : 29-mar-2020 pchevaillier@gmail.com erreur code_site
   // revision : 20-aug-2020 pchevaillier@gmail.com suppression seance
   // revision : 20-aug-2020 pchevaillier@gmail.com rollback si capture exception
+  // revision : 08-fev-2023 pchevaillier@gmail.com + compter_participations, supprimer_seance
   // --------------------------------------------------------------------------
   // commentaires :
   // attention :
   // a faire :
+  // -
   // ==========================================================================
   
   require_once 'php/metier/calendrier.php';
@@ -39,15 +43,15 @@
   // ==========================================================================
   class Enregistrement_Seance_activite {
     
-    static function source() {
+    static public function source(): string {
       return Base_Donnees::$prefix_table . 'seances_activite';
     }
     
     // ------------------------------------------------------------------------
-    static function collecter(Site_Activite $site = NULL,
+    static public function collecter(Site_Activite $site = NULL,
                          string $critere_selection,
                          string $critere_tri,
-                         array & $seances = null) {
+                         array & $seances = null): bool {
       $status = false;
       if (is_null($seances)) $seances = array();
   
@@ -60,7 +64,7 @@
       
       //echo '<p>', $requete, '</p>', PHP_EOL;
       try {
-        $bdd = Base_Donnees::accede();
+        $bdd = Base_Donnees::acces();
         $resultat = $bdd->query($requete);
         $code_seance_courante = 0;
         $seance = null;
@@ -79,7 +83,7 @@
     
               $seance->support = new Support_activite($donnee->code_support);
               $seance->definir_horaire(new Instant($donnee->date_debut), new Instant($donnee->date_fin));
-              if (strlen($donnee->code_responsable) > 0)
+              if (!is_null($donnee->code_responsable) && strlen($donnee->code_responsable) > 0)
                 $seance->responsable = new Membre($donnee->code_responsable);
               $seance->information = $donnee->info_seance;
               $code_seance_courante = $donnee->code;
@@ -96,15 +100,15 @@
     }
     
     // ------------------------------------------------------------------------
-    static function collecter_participants_creneau(string $date_sql_debut,
-                                                   array & $resultats = null) {
+    static public function collecter_participants_creneau(string $date_sql_debut,
+                                                   array & $resultats = null): bool {
       $status = false;
       if (is_null($resultats)) $resultats = array();
       $source = self::source() . " AS seance INNER JOIN rsbl_participations_activite AS participation ON (participation.code_seance = seance.code) ";
       $selection = " WHERE seance.date_debut = '" . $date_sql_debut . "' ";
       $requete = "SELECT participation.code_membre AS code_participant FROM " . $source . $selection;
       try {
-        $bdd = Base_Donnees::accede();
+        $bdd = Base_Donnees::acces();
         $resultat = $bdd->query($requete);
         while ($donnee = $resultat->fetch(PDO::FETCH_OBJ)) {
           $resultats[] = $donnee->code_participant;
@@ -117,9 +121,9 @@
     }
 
     // ------------------------------------------------------------------------
-    static function ajouter_participation(Information_Participation_Seance_Activite $infos) {
+    static public function ajouter_participation(Information_Participation_Seance_Activite $infos): int {
       $status = 1;
-      $bdd = Base_Donnees::accede();
+      $bdd = Base_Donnees::acces();
       
       $bdd->beginTransaction();
       
@@ -172,7 +176,8 @@
           $requete = $bdd->prepare($code_sql);
           $requete->execute();
           if ($resultat = $requete->fetch(PDO::FETCH_OBJ)) {
-             $code_seance = $resultat->x;
+            $code_seance = $resultat->x;
+            $infos->code_seance = $resultat->x; // pour y acceder ailleurs si besoin
           }
         } catch (PDOexception $e) {
           $bdd->rollBack();
@@ -216,10 +221,12 @@
     }
     
     // ------------------------------------------------------------------------
-    static function supprimer_seance($code_seance) {
+    static public function supprimer_seance(int $code_seance): bool {
       $status = false;
-      $bdd = Base_Donnees::accede();
+      $bdd = Base_Donnees::acces();
+      $bdd->beginTransaction();
       try {
+        // La seance
         $requete = $bdd->prepare("DELETE FROM " . self::source() . " WHERE code = :code_seance");
         $requete->bindParam(':code_seance', $code_seance, PDO::PARAM_INT);
         $requete->execute();
@@ -227,14 +234,24 @@
       } catch (PDOexception $e) {
         Base_Donnees::sortir_sur_exception(self::source(), $e);
       }
+      try {
+        // et toutes les participations a cette seance
+        $requete = $bdd->prepare("DELETE FROM " . Base_Donnees::$prefix_table . "participations_activite WHERE code_seance = :code_seance");
+        $requete->bindParam(':code_seance', $code_seance, PDO::PARAM_INT);
+        $requete->execute();
+        $status = true;
+      } catch (PDOexception $e) {
+        Base_Donnees::sortir_sur_exception(self::source(), $e);
+      }
+      $bdd->commit();
       return $status;
     }
     
     // ------------------------------------------------------------------------
-    static function supprimer_participation(Information_Participation_Seance_Activite $infos) {
+    static public function supprimer_participation(Information_Participation_Seance_Activite $infos): bool {
       $status = false;
       $code_seance = $infos->code_seance;
-      $bdd = Base_Donnees::accede();
+      $bdd = Base_Donnees::acces();
       $bdd->beginTransaction();
       
       try {
@@ -288,9 +305,9 @@
       return $status;
     }
    
-    static function passer_responsable_equipier(int $code_seance) {
+    static public function passer_responsable_equipier(int $code_seance): bool {
       $status = false;
-      $bdd = Base_Donnees::accede();
+      $bdd = Base_Donnees::acces();
       try {
           $requete = $bdd->prepare("UPDATE " . self::source() . " SET code_responsable = NULL WHERE code = :code_seance");
           $requete->bindParam(':code_seance', $code_seance, PDO::PARAM_INT);
@@ -300,11 +317,11 @@
         Base_Donnees::sortir_sur_exception(self::source(), $e);
       }
       return $status;
-      }
+    }
 
-    static function passer_equipier_responsable(int $code_seance, int $code_membre) {
+    static public function passer_equipier_responsable(int $code_seance, int $code_membre): bool {
       $status = false;
-      $bdd = Base_Donnees::accede();
+      $bdd = Base_Donnees::acces();
       try {
         $requete = $bdd->prepare("UPDATE " . self::source() . " SET code_responsable = :code_resp WHERE code = :code_seance");
         $requete->bindParam(':code_seance', $code_seance, PDO::PARAM_INT);
@@ -315,8 +332,38 @@
         Base_Donnees::sortir_sur_exception(self::source(), $e);
       }
       return $status;
-      }
+    }
 
+    static public function compter_participations(Information_Participation_Seance_Activite $infos): int {
+      $resultat = 0;
+      $source = self::source() . " AS seance INNER JOIN rsbl_participations_activite AS participation ON (participation.code_seance = seance.code) ";
+      $selection = " seance.code = :seance AND seance.code_site = :site AND seance.code_support = :support AND seance.date_debut = :debut AND seance.date_fin = :fin AND  participation.code_membre = :participant";
+      if ($infos->responsable == 1)
+        $selection = $selection . " AND seance.code_responsable = " . $infos->code_participant;
+      else
+        $selection = $selection . " AND seance.code_responsable IS NULL ";
+      $code_sql = "SELECT COUNT(*) AS n FROM " . $source . " WHERE " . $selection;
+      //print($code_sql . PHP_EOL);
+      try {
+        $bdd = Base_Donnees::acces();
+        
+        $requete = $bdd->prepare($code_sql);
+        $requete->bindParam(':seance', $infos->code_seance, PDO::PARAM_INT);
+        $requete->bindParam(':site', $infos->code_site, PDO::PARAM_INT);
+        $requete->bindParam(':support', $infos->code_support_activite, PDO::PARAM_INT);
+        $requete->bindParam(':debut', $infos->debut, PDO::PARAM_STR);
+        $requete->bindParam(':fin', $infos->fin, PDO::PARAM_STR);
+        $requete->bindParam(':participant', $infos->code_participant, PDO::PARAM_INT);
+
+        $requete->execute();
+        if ($resultat_requete = $requete->fetch(PDO::FETCH_OBJ)) {
+          $resultat = $resultat_requete->n;
+        }
+      } catch (PDOException $e) {
+        Base_Donnees::sortir_sur_exception(self::source(), $e);
+      }
+      return $resultat;
+    }
   }
   // ==========================================================================
 ?>

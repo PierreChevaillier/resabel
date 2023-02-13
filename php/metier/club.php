@@ -22,17 +22,21 @@
   class Club {
     private $code = 0;
     public function code(): int { return $this->code; }
-    public function def_code(int $valeur) { $this->code = $valeur;}
+    public function def_code(int $valeur): void { $this->code = $valeur;}
     
     public $identifiant = "";
+    public function identifiant(): string { return $this->identifiant; }
+    public function def_identifiant(string $valeur): void {
+      $this->identifiant = $valeur;
+    }
     public function sigle(): string { return $this->identifiant; }
     
     private $nom = ""; // utf8
     public function nom(): string { return $this->nom; }
-    public function def_nom(string $valeur) { $this->code = $valeur; }
+    public function def_nom(string $valeur): void { $this->code = $valeur; }
     
     private $fuseau_horaire = null;
-    public function def_fuseau_horaire(string $nom_fuseau) {
+    public function def_fuseau_horaire(string $nom_fuseau): void {
       $this->fuseau_horaire = new DateTimeZone($nom_fuseau);
     }
     public function fuseau_horaire(): DateTimeZone { return $this->fuseau_horaire; }

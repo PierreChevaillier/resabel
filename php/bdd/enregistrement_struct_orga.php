@@ -39,7 +39,7 @@
     static function collecter($code_club, & $composantes) {
       $status = false;
       try {
-        $bdd = Base_Donnees::accede();
+        $bdd = Base_Donnees::acces();
         $requete = "SELECT * FROM " . self::source() . " WHERE code_club = " . $code_club . " ORDER BY nom";
         $resultat = $bdd->query($requete);
         while ($donnee = $resultat->fetch(PDO::FETCH_OBJ)) {
@@ -64,7 +64,7 @@
     static function collecter(& $entite_orga) {
       $status = false;
       try {
-        $bdd = Base_Donnees::accede();
+        $bdd = Base_Donnees::acces();
         $requete = "SELECT RC.code_composante, R.nom_masculin, R.nom_feminin, RC.code_role, RC.rang, RM.code_membre, M.genre, M.prenom, M.nom, M.telephone, M.courriel FROM `rsbl_roles_composantes` AS RC INNER JOIN rsbl_roles_membres AS RM on (RC.code_composante = RM.code_composante AND RC.code_role = RM.code_role) INNER JOIN rsbl_membres AS M ON RM.code_membre = M.code INNER JOIN rsbl_roles AS R ON R.code = RC.code_role ORDER BY RC.code_composante, RC.rang, RM.rang, M.prenom, M.nom";
         $resultat = $bdd->query($requete);
         while ($donnee = $resultat->fetch(PDO::FETCH_OBJ)) {

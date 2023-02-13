@@ -45,7 +45,7 @@
     public function lire_identite() {
       $trouve = false;
       try {
-        $bdd = Base_Donnees::accede();
+        $bdd = Base_Donnees::acces();
         
         $code_sql = "SELECT site.code AS code, site.nom AS nom_site, site.code_type AS code_type, site.code_regime AS code_regime FROM rsbl_sites_activite AS site INNER JOIN rsbl_types_site_activite as type ON site.code_type = type.code WHERE site.code = :code_site_activite LIMIT 1";
         
@@ -83,7 +83,7 @@
     public static function creer(int $code_site) {
       $site = null;
       try {
-        $bdd = Base_Donnees::accede();
+        $bdd = Base_Donnees::acces();
         $code_sql = "SELECT site.code AS code, site.nom AS nom_site, site.nom_court AS nom_court, longitude, latitude, hauteur_maree_min, hauteur_maree_max, site.code_type AS code_type, site.code_regime AS code_regime FROM rsbl_sites_activite AS site INNER JOIN rsbl_types_site_activite as type ON site.code_type = type.code WHERE site.code = :code_site_activite LIMIT 1";
         $requete= $bdd->prepare($code_sql);
         $requete->bindParam(':code_site_activite', $code_site, PDO::PARAM_INT);
@@ -119,7 +119,7 @@
       $selection = (strlen($critere_selection) > 0) ? " WHERE " . $critere_selection . " " : "";
       $tri = (strlen($critere_tri) > 0) ? " ORDER BY " . $critere_tri . " " : "";
       try {
-        $bdd = Base_Donnees::accede();
+        $bdd = Base_Donnees::acces();
         //$requete = "SELECT code, nom FROM " . self::source() . $selection . $tri;
         $requete = "SELECT site.code AS code, site.nom AS nom_site, site.nom_court AS nom_court, longitude, latitude, site.code_type AS code_type, site.code_regime AS code_regime FROM rsbl_sites_activite AS site INNER JOIN rsbl_types_site_activite as type ON site.code_type = type.code " . $selection . $tri;
         $resultat = $bdd->query($requete);

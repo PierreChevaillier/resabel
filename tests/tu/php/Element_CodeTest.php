@@ -44,6 +44,16 @@ class Element_CodeTest extends TestCase {
     $this->assertTrue($this->element->est_non_vide());
   }
 
+  
+  /**
+   * Test methode initialiser
+   */
+  public function testInitialiser() {
+    // rien a faire, donc etat de l'objet invariant
+    $this->element->initialiser();
+    $this->assertEquals("", $this->element->code());
+  }
+
 
   /**
    * Test methode afficher

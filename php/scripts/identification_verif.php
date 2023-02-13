@@ -3,7 +3,7 @@
   // contexte : Resabel - systeme de REServation de Bateaux En Ligne
   // description: verifie les informations de connexion
   //              - identification de l'utilisateur pour la session
-  // copyright (c) 2014-2020 AMP. Tous droits reserves.
+  // copyright (c) 2014-2023 AMP. Tous droits reserves.
   // ---------------------------------------------------------------------------
   // creation: 01-oct-2014 pchevaillier@gmail.com
   // revision: 08-dec-2014 pchevaillier@gmail.com verification Id utilisateur
@@ -47,7 +47,7 @@
   unset($_SESSION['adm']); // personne connectee est administatrice de resabel
   
   if (isset($_GET['c'])) {
-    $code_club =  $_GET['c'];
+    $code_club = intval($_GET['c']);
     $_SESSION['clb'] = $code_club;
   } else {
     header("location: ../../index.php");
@@ -58,7 +58,7 @@
     $_SESSION['n_clb'] = $_GET['n_clb'];
   
   if (isset($_GET['s'])) {
-    $code_site = $_GET['s'];
+    $code_site = intval($_GET['s']);
     $_SESSION['swb'] = $code_site;
   } else {
     header("location: ../../index.php");
@@ -90,7 +90,7 @@
   // --- connection a la base de donnees
   include 'php/bdd/base_donnees.php';
   
-  $bdd = Base_donnees::accede();
+  $bdd = Base_Donnees::acces();
 
   require_once 'php/metier/club.php';
   require_once 'php/bdd/enregistrement_club.php';
@@ -128,10 +128,11 @@
   $_SESSION['id_clb'] = $club->sigle();
   
   if ($session_club) {
-    if (!isset($_GET['clb'])) {
+    if (!isset($_GET['c'])) {
       $_SESSION['clb'] = $club->code();
-      $_SESSION['n_clb'] = $club->nom();
     }
+    $_SESSION['n_clb'] = $club->nom();
+    
     //header("location: ../../page_tableau_journalier_sorties.php?ta=os");
     header("location: ../../accueil_club.php");
     exit();
