@@ -72,7 +72,7 @@
       
       //echo '<p>', $requete, '</p>', PHP_EOL;
       try {
-        $bdd = Base_Donnees::accede();
+        $bdd = Base_Donnees::acces();
         $resultat = $bdd->query($requete);
         while ($donnee = $resultat->fetch(PDO::FETCH_OBJ)) {
           if (is_null($site) || (!is_null($site) && ($site->code() == $donnee->code_site))) {
@@ -136,7 +136,7 @@
       $selection = (strlen($critere_selection) > 0) ? " WHERE " . $critere_selection . " " : "";
       $tri = (strlen($critere_tri) > 0) ? " ORDER BY " . $critere_tri . " " : " ORDER BY indisp.code_objet, indisp.date_debut ";
       try {
-        $bdd = Base_Donnees::accede();
+        $bdd = Base_Donnees::acces();
         $source = self::source() . " AS indisp INNER JOIN rsbl_motifs_indisponibilite AS motif ON indisp.code_motif = motif.code ";
         $requete = "SELECT indisp.code AS code, information, code_type, date_creation, code_createur, code_motif, code_objet, date_debut, date_fin, motif.nom AS nom_motif, motif.nom_court  FROM " . $source . $selection . $tri;
         //echo "<p>" . $requete . "</p>";

@@ -210,7 +210,7 @@
     }
     
     static public function recherche_marees_jour($lieu, $jour) {
-      $bdd = Base_Donnees::accede();
+      $bdd = Base_Donnees::acces();
       $marees = null;
       $horaires = array();
       $coefficients = array();

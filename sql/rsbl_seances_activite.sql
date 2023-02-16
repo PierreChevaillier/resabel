@@ -35,7 +35,7 @@ CREATE TABLE `rsbl_seances_activite` (
   `code_support` tinyint(4) NOT NULL,
   `date_debut` datetime NOT NULL,
   `date_fin` datetime NOT NULL,
-  `code_responsable` tinyint(4) DEFAULT NULL,
+  `code_responsable` smallint(6) DEFAULT NULL,
   `information` text COLLATE utf8_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 

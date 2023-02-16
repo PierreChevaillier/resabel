@@ -11,18 +11,6 @@ require_once 'php/elements_page/generiques/element.php';
 require_once 'php/elements_page/generiques/page.php';
 
 /**
- * Element etant une classe abstraite avec un implementation partielle,
- * definition d'une classe concrete pour tester les methodes definies
- */
-/*
-class Element_Concret extends Element {
-  public function initialiser(): void {}
-  protected function afficher_debut(): void { print("Debut"); }
-  protected function afficher_corps(): void { print("Corps"); }
-  protected function afficher_fin(): void { print("Fin"); }
-}
-*/
-/**
  * test case.
  */
 class ElementTest extends TestCase {

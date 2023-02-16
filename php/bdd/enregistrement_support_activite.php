@@ -43,7 +43,7 @@
     public function lire_identite() {
       $trouve = false;
       try {
-        $bdd = Base_Donnees::accede();
+        $bdd = Base_Donnees::acces();
         
         $code_sql = "SELECT support.code, numero, support.nom AS nom, type.nom_court AS nom_type, type.code_type AS code_type FROM rsbl_supports AS support INNER JOIN rsbl_types_support AS type ON support.code_type_support = type.code WHERE support.code = :code_support_activite LIMIT 1";
         
@@ -79,7 +79,7 @@
     public function lire(int $code) {
       $trouve = false;
       try {
-        $bdd = Base_Donnees::accede();
+        $bdd = Base_Donnees::acces();
 
         //$code_sql = "SELECT support.code, numero, support.nom AS nom, type.nom_court AS nom_type, type.code_type AS code_type FROM rsbl_supports AS support INNER JOIN rsbl_types_support AS type ON support.code_type_support = type.code WHERE support.code = :code_support_activite LIMIT 1";
         $code_sql = "SELECT support.code AS code, numero, modele, constructeur, annee_construction, actif, competition, loisir, support.nom AS nom, support.nombre_postes AS nb_postes, nb_initiation_min, nb_initiation_max, type_support.nom_court AS nom_type, type_support.code AS type, type_support.code_type AS code_type, type_support.nb_pers_min AS pers_min, type_support.nb_pers_max AS pers_max, type_support.cdb_requis AS cdb_requis FROM rsbl_supports AS support INNER JOIN rsbl_types_support AS type_support ON (support.code_type_support = type_support.code) WHERE support.code = :code_support_activite LIMIT 1";
@@ -137,7 +137,7 @@
         return $status;
       }
       try {
-        $bdd = Base_Donnees::accede();
+        $bdd = Base_Donnees::acces();
         $support = $this->support_activite();
         $requete= $bdd->prepare("UPDATE " . self::source()
                                           . " SET numero = :numero"
@@ -183,7 +183,7 @@
       $status = false;
       $nouveau_code = 0;
       try {
-        $bdd = Base_Donnees::accede();
+        $bdd = Base_Donnees::acces();
         $bdd->beginTransaction();
         $code_sql = "";
         if (is_a($this->support_activite, 'Bateau'))
@@ -272,7 +272,7 @@
       $selection = (strlen($critere_selection) > 0) ? " WHERE " . $critere_selection . " " : "";
       $tri = (strlen($critere_tri) > 0) ? " ORDER BY " . $critere_tri . " " : "";
       try {
-        $bdd = Base_Donnees::accede();
+        $bdd = Base_Donnees::acces();
         //$requete = "SELECT support.code AS code, numero, competition, loisir, support.nom AS nom, support.nombre_postes AS nb_postes, type.nom_court AS nom_type, type.code AS type, type.code_type AS code_type, type.nb_pers_min AS pers_min, type.nb_pers_max AS pers_max, type.cdb_requis AS cdb_requis FROM rsbl_supports AS support INNER JOIN rsbl_types_support AS type ON support.code_type_support = type.code " . $selection . $tri;
         
         $requete = "SELECT support.code AS code, numero, actif, competition, loisir, support.nom AS nom, support.nombre_postes AS nb_postes, type_support.nom_court AS nom_type, type_support.code AS type, type_support.code_type AS code_type, type_support.nb_pers_min AS pers_min, type_support.nb_pers_max AS pers_max, type_support.cdb_requis AS cdb_requis FROM rsbl_supports AS support INNER JOIN rsbl_types_support AS type_support ON (support.code_type_support = type_support.code)" . $selection . $tri;
@@ -306,7 +306,7 @@
       
     
     public function modifier_actif(int $code, int $valeur) {
-      $bdd = Base_Donnees::accede();
+      $bdd = Base_Donnees::acces();
       try {
         $requete= $bdd->prepare("UPDATE " . self::source()
                                 . " SET actif = :etat WHERE code = :code");

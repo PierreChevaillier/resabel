@@ -55,9 +55,8 @@
     
     // --- Elements (code_html) dans la section <head> de la page
     private $elements_entete = array();
-    public function ajoute_element_entete($code_html) {
+    public function ajoute_element_entete(string $code_html): void {
       $this->elements_entete[] = $code_html;
-     // $element->def_page($this);
     }
 
     // --- Elements en debut du <body>
@@ -72,14 +71,14 @@
     private $contenus = array();
     public function ajoute_contenu($element) {
       $this->contenus[] = $element;
-      $element->page = $this;
+      $element->def_page($this);
     }
 
     // --- Elements avant la fin du body
     private $elements_bas = array();
     public function ajoute_element_bas($element) {
       $this->elements_bas[] = $element;
-      $element->page = $this;
+      $element->def_page($this);
     }
  
     public function definir_feuilles_style() {
@@ -91,6 +90,7 @@
       $this->def_titre($nom_site . " - " . $nom_page);
       if ($liste_feuilles_style != null)
         $this->feuilles_style = $liste_feuilles_style;
+      $this->page = $this; // peut pas etre null
       $this->definir_elements();
     }
 	

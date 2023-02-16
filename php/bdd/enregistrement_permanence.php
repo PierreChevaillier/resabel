@@ -35,7 +35,7 @@
     public function lire() {
       $trouve = false;
       try {
-        $bdd = Base_Donnees::accede();
+        $bdd = Base_Donnees::acces();
         $table_personnes =  Base_Donnees::$prefix_table . 'membres';
         $code_sql = "SELECT annee, semaine, code_membre, genre, prenom, nom, telephone, courriel FROM " . self::source() . " AS perm INNER JOIN " . $table_personnes . " AS pers ON perm.code_membre = pers.code WHERE perm.annee = :annee AND perm.semaine = :semaine LIMIT 1";
        
@@ -71,7 +71,7 @@
     public function a_comme_responsable($personne) {
       $reponse = false;
       try {
-        $bdd = Base_Donnees::accede();
+        $bdd = Base_Donnees::acces();
         $requete= $bdd->prepare("SELECT COUNT(*) AS n FROM " . self::source() . " WHERE annee = :annee AND semaine = :semaine AND code_membre = :code_membre");
         $annee = $this->permanence->annee();
         $requete->bindParam(':annee', $annee, PDO::PARAM_INT);
@@ -94,7 +94,7 @@
       $status = false;
       $futures = array();
       try {
-        $bdd = Base_Donnees::accede();
+        $bdd = Base_Donnees::acces();
         $table_personnes =  Base_Donnees::$prefix_table . 'membres';
         $annee = $this->permanence->annee();
         $semaine = $this->permanence->semaine();
@@ -146,7 +146,7 @@
       if ($this->permanence == null)
         return $fait;
       try {
-        $bdd = Base_Donnees::accede();
+        $bdd = Base_Donnees::acces();
         $annee = $this->permanence->annee();
         $semaine = $this->permanence->semaine();
         $code_responsable = $this->permanence->code_responsable();

@@ -1,4 +1,27 @@
-<?php declare(strict_types=1);
+<?php
+// ==========================================================================
+// contexte : Resabel - systeme de REServAtion de Bateau En Ligne
+//            Tests unitaires
+// description : Test unitaire de la classe Instant
+// copyright (c) 2023 AMP. Tous droits reserves.
+// --------------------------------------------------------------------------
+// utilisation : phpunit --testdox <chemin_vers_ce_fichier_php>
+// dependances :
+// utilise avec :
+//  - depuis 2023 :
+//    PHP 8.2 et PHPUnit 9.5 sur macOS 13.2 ;
+// --------------------------------------------------------------------------
+// creation : 06-fev-2023 pchevaillier@gmail.com
+// revision :
+// --------------------------------------------------------------------------
+// commentaires :
+// -
+// attention :
+// -
+// a faire :
+// -
+// ==========================================================================
+declare(strict_types=1);
 use PHPUnit\Framework\TestCase;
 
 set_include_path('./../../..');
@@ -80,7 +103,34 @@ final class InstantTest extends TestCase {
     $str = $this->instant->date_texte_court();
     $this->assertEquals($str, "Sam 25 nov", "mauvais format date texte court : " . $str);
   }
+
+  /**
+   * Tests
+   */
+  public function testEstAvantUnAutre(): void {
+    $instant1 = new Instant("2023-11-25 21:32", new DateTimeZone('Europe/Paris'));
+    $instant2 = new Instant("2023-11-26 17:04", new DateTimeZone('Europe/Paris'));
+    $this->assertTrue($instant1->est_avant($instant2));
+    $this->assertFalse($instant2->est_avant($instant1));
+  }
+
+  public function testEstAvantLuiMeme(): void {
+    $instant1 = new Instant("2023-11-25 21:32", new DateTimeZone('Europe/Paris'));
+    $this->assertTrue($instant1->est_avant($instant1));
+  }
   
+  public function testEstApresUnAutre(): void {
+    $instant1 = new Instant("2023-11-25 21:32", new DateTimeZone('Europe/Paris'));
+    $instant2 = new Instant("2023-11-26 17:04", new DateTimeZone('Europe/Paris'));
+    $this->assertTrue($instant2->est_apres($instant1));
+    $this->assertFalse($instant1->est_apres($instant2));
+  }
+
+  public function testEstApresLuiMeme(): void {
+    $instant1 = new Instant("2023-11-25 21:32", new DateTimeZone('Europe/Paris'));
+    $this->assertTrue($instant1->est_avant($instant1));
+  }
+
 }
 // ===========================================================================
 ?>

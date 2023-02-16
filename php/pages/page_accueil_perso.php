@@ -222,7 +222,7 @@
         $cadre->def_id('seance_' . $seance->code());
         $cadre->def_titre($entete);
         
-        $afficheur_seance = new Afficheur_Vertical_Seance(NULL, $seance, NULL);
+        $afficheur_seance = new Afficheur_Vertical_Seance($this, $seance, NULL);
         $afficheur_seance->est_interactif = false;
         $x = new Element_Code();
         $code_info_seance = $afficheur_seance->formater();

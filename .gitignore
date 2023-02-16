@@ -1,3 +1,5 @@
 .DS_Store
 php/bdd/informations_connexion.php
+php/bdd/informations_bdd.php
 tests/tu/php/informations_bdd_test.php
+tests/tu/php/informations_bdd.php
