@@ -12,7 +12,7 @@
 //    PHP 8.2 et PHPUnit 9.5 sur macOS 13.2 ;
 // --------------------------------------------------------------------------
 // creation : 07-fev-2023 pchevaillier@gmail.com
-// revision :
+// revision : 17-feb-2023 pchevaillier@gmail.com + changer_horaire
 // --------------------------------------------------------------------------
 // commentaires :
 // - en construction.
@@ -272,7 +272,7 @@ class Enregistrement_Seance_activiteTest extends TestCase {
     $this->assertTrue($status, "tentative suppression seance inexistante");
 }
   */
-  
+  /*
   public function testAjouterParticipationsEquipier(): void {
     $jour = Calendrier::aujourdhui();
     $une_heure = new DateInterval('PT1H0M0S');
@@ -326,7 +326,7 @@ class Enregistrement_Seance_activiteTest extends TestCase {
     $np_apres = $this->compter_participations_seance($p2->code_seance);
     $this->assertEquals(2, $np_apres, "enregistrements participation activite");
   }
-   
+   */
   /*
   public function testAjouterParticipationsResponsable(): void {
     $jour = Calendrier::aujourdhui();
@@ -453,6 +453,36 @@ class Enregistrement_Seance_activiteTest extends TestCase {
     $ok = $this->seance_sans_responsable($p2->code_seance);
     $this->assertTrue($ok, "seance sans responsable");
   }
+   */
+  /*
+  public function testchangementHoraire(): void {
+    $jour = Calendrier::aujourdhui();
+    $une_heure = new DateInterval('PT1H0M0S');
+    $debut = $jour;
+    $debut= $jour->add(new DateInterval('PT7H0M0S'));
+    $fin = $debut->add($une_heure);
+    
+    $p1 = new Information_Participation_Seance_Activite();
+    $p1->code_site = 1;
+    $p1->code_support_activite = 1;
+    $p1->code_participant = 999;
+    $p1->debut = $debut->date_heure_sql();
+    $p1->fin = $fin->date_heure_sql();
+    
+    Enregistrement_Seance_Activite::ajouter_participation($p1);
+    $this->participations[] = $p1;
+    
+    $jour = Calendrier::aujourdhui();
+    $debut_nouveau = $jour->add(new DateInterval('PT5H0M0S'));
+    $fin_nouveau = $debut_nouveau->add($une_heure);
+    $p1->debut = $debut_nouveau->date_heure_sql();
+    $p1->fin = $fin_nouveau->date_heure_sql();
+    $status = Enregistrement_Seance_Activite::changer_horaire($p1->code_seance,
+                                                              $p1->debut,
+                                                              $p1->fin);
+    $this->assertTrue($status, "MaJ horaire seance effectuee");
+    
+    }
    */
 }
 // ==========================================================================

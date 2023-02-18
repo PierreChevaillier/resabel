@@ -49,7 +49,7 @@
       // definir les creneaux a partir de la plage horaire
     }
     
-    protected function afficher_debut() {
+    protected function afficher_debut(): void {
       echo "\n";
       echo '<div class="container-fluid" style="padding:0px;"><table class="table table-hover">';
       echo '<thead><tr><th></th>';
@@ -66,10 +66,10 @@
       echo '</tr></thead><tbody>';
     }
     
-    protected function afficher_seance(Seance_Activite $seance) {
+    protected function afficher_seance(Seance_Activite $seance, int $index_creneau): void {
       $aff = new Afficheur_Vertical_Seance($this->page, $seance, $this->activite_site);
       // Menu des actions possibles sur la seance
-      $ctrl = new Controleur_Action_Seance($aff);
+      $ctrl = new Controleur_Action_Seance($aff, $index_creneau);
       echo $ctrl->formater_menu_action();
 
       // Affichage des informations sur la seance
@@ -78,7 +78,7 @@
     }
     
     
-    protected function afficher_corps() {
+    protected function afficher_corps(): void {
       // $this->page reference l'element modal qui permet d'afficher des informations sur les actions affectuees
       
       if (!isset($this->activite_site->site->supports_activite)) return; // on ne sait jamais...
@@ -110,7 +110,7 @@
           $classe = trim($classe); 
           echo '<td id="', $id, '" class="', $classe, '" style="padding:1px;text-align:center;">';
         
-          $this->afficher_seance($seance);
+          $this->afficher_seance($seance, $i);
           echo '</td>';
         }
         echo '</tr>';

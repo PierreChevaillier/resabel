@@ -4,15 +4,17 @@
   // description : traitement requete (json) pour la mise a jour des informations
   //               relatives a la participation a une seance d'actvite :
   //               inscription, desinscription...
-  // copyright (c) 2018-2020 AMP. Tous droits reserves.
+  // copyright (c) 2018-2023 AMP. Tous droits reserves.
   // --------------------------------------------------------------------------
   // utilisation : php - pour traitement requete ajax
   // dependances : javascript qui lance cette requete ($_GET)
   // teste avec : PHP 7.1 sur Mac OS 10.14 ;
-  //              PHP 7.3 sur hebergeur web
+  //  - depuis jan-2023 :
+  //              PHP 8.2 sur macOS 13.2
   // --------------------------------------------------------------------------
   // creation : 08-feb-2020 pchevaillier@gmail.com
   // revision : 20-apr-2020 pchevaillier@gmail.com
+  // revision : 17-feb-2023 pchevaillier@gmail.com + changement horaire
   // --------------------------------------------------------------------------
   // commentaires :
   // attention :
@@ -70,7 +72,13 @@
     $status = Enregistrement_Seance_Activite::passer_responsable_equipier($info_participation->code_seance);
   } elseif ($action == 'mer') {
     $status = Enregistrement_Seance_Activite::passer_equipier_responsable($info_participation->code_seance,
-                                                                          $info_participation->code_participant);
+                                                                          $info_participation->code_participant
+                                                                          );
+  } elseif ($action == 'mc') {
+    $status = Enregistrement_Seance_Activite::changer_horaire($info_participation->code_seance,
+                                                              $info_participation->debut,
+                                                              $info_participation->fin
+                                                              );
   }
   // --------------------------------------------------------------------------
   // Reponse a la requete :

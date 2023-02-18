@@ -163,17 +163,6 @@
       $element->def_titre("Page personnelle " . $_SESSION['n_usr']);
       $this->ajoute_element_haut($element);
       
-      /*
-      $info = new Element_Code();
-      $code_html = '<div>' . PHP_EOL;
-      $maintenant = Calendrier::maintenant();
-      $aujourdhui = $maintenant->jour();
-      $code_html = $code_html . '<p>Nous sommes le ' . $aujourdhui->date_texte() . '</p>' . PHP_EOL;
-      $code_html = $code_html . '</div>' . PHP_EOL;
-      $info->def_code($code_html);
-      $this->ajoute_contenu($info);
-      */
-      
       $element = new Entete_Section();
       $maintenant = Calendrier::maintenant();
       $aujourdhui = $maintenant->jour();

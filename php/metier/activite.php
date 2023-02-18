@@ -14,6 +14,7 @@
   // revision : 11-jan-2020 pchevaillier@gmail.com fermeture site et indispo supports
   // revision : 02-mar-2020 pchevaillier@gmail.com collecte infos sur seances
   // revision : 29-dec-2022 pchevaillier@gmail.com fix erreur 8.2
+  // revision : 17-feb-2023 pchevaillier@gmail.com + creneau suiv/prec libre
   // --------------------------------------------------------------------------
   // commentaires :
   // - Uniquement 'logique metier': pas d'IHM
@@ -242,10 +243,12 @@
                                                 $critere_tri,
                                                 $seances);
       
-      // rangement des seances par support et par plage horaire
+      // rangement des seances du jour sur le site par support et par creneau horaire
       $code_support = 0;
       foreach ($seances as $seance) {
         $seance->site = $this->site;
+        
+        // indexation par support: cle = code du support
         $i = $seance->support->code();
         if (key_exists($i, $this->site->supports_activite)) {
           $seance->support = $this->site->supports_activite[$i];
@@ -253,6 +256,7 @@
           if (!key_exists($i, $this->seances_support))
             $this->seances_support[$i] = array();
         }
+        
         // seances par creneau
         $trouve = false;
         for ($c = 0; ((!$trouve) && ($c < count($this->creneaux_activite))); $c++) {
@@ -342,7 +346,8 @@
       return $seance;
     }
     
-    public function participe_activite_creneau(Membre $personne, Intervalle_Temporel $creneau) {
+    public function participe_activite_creneau(Membre $personne,
+                                               Intervalle_Temporel $creneau): bool {
       $code_personne = $personne->code();
       if (array_key_exists($code_personne, $this->seances_personne)) {
         foreach ($this->seances_personne[$code_personne] as $seance) {
@@ -353,7 +358,30 @@
       }
       return false;
     }
+
+    // prochain creneau pour lequel le support est disponible et qui n'a pas de seance programmee
+    public function creneau_suivant_est_libre(int $code_support, int $index_creneau): bool {
+      $condition = false;
+      $n = count($this->creneaux_activite) - 1;
+      if ($index_creneau < $n) {
+        $seance = null;
+        $seance = $this->seance_programmee($code_support, $index_creneau + 1);
+        $condition = is_null($seance);
+      }
+      return $condition;
+    }
     
+    // precedent creneau pour lequel le support est disponible et qui n'a pas de seance programmee
+    public function creneau_precedent_est_libre(int $code_support, int $index_creneau): bool {
+      $condition = false;
+      if ($index_creneau > 0) {
+        $seance = null;
+        $seance = $this->seance_programmee($code_support, $index_creneau - 1);
+        $condition = is_null($seance);
+      }
+      return $condition;
+    }
+
   }
   
   /*
