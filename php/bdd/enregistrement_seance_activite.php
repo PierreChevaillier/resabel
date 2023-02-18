@@ -19,6 +19,7 @@
   // revision : 20-aug-2020 pchevaillier@gmail.com suppression seance
   // revision : 20-aug-2020 pchevaillier@gmail.com rollback si capture exception
   // revision : 08-fev-2023 pchevaillier@gmail.com + compter_participations, supprimer_seance
+  // revision : 17-feb-2023 pchevaillier@gmail.com + changer_horaire
   // --------------------------------------------------------------------------
   // commentaires :
   // attention :
@@ -363,6 +364,22 @@
         Base_Donnees::sortir_sur_exception(self::source(), $e);
       }
       return $resultat;
+    }
+    
+    static public function changer_horaire(int $code_seance, string $debut, string $fin): bool {
+      $status = false;
+      $bdd = Base_Donnees::acces();
+      try {
+        $requete = $bdd->prepare("UPDATE " . self::source() . " SET date_debut = :debut, date_fin = :fin WHERE code = :code_seance");
+        $requete->bindParam(':code_seance', $code_seance, PDO::PARAM_INT);
+        $requete->bindParam(':debut', $debut, PDO::PARAM_STR);
+        $requete->bindParam(':fin', $fin, PDO::PARAM_STR);
+        $requete->execute();
+        $status = true;
+      } catch (PDOexception $e) {
+        Base_Donnees::sortir_sur_exception(self::source(), $e);
+      }
+      return $status;
     }
   }
   // ==========================================================================

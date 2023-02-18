@@ -5,10 +5,11 @@
   //               Seance_activite
   //               generation du code html pour affichage des informations
   //               sur une seance d'activite
-  // copyright (c) 2018-2022 AMP. Tous droits reserves.
+  // copyright (c) 2018-2023 AMP. Tous droits reserves.
   // --------------------------------------------------------------------------
   // utilisation : php - require_once <chemin_vers_ce_fichier.php>
   // dependances : bootstratp 4.x
+  //  - actions_seance_activite.js
   // teste avec : PHP 7.1 sur Mac OS 10.14 ;
   //              PHP 7.0 sur hebergeur web
   //  - PHP 8.2 sur macOS 13.1 (> 25-dec-2022)
@@ -16,6 +17,7 @@
   // creation : 22-jan-2020 pchevaillier@gmail.com
   // revision : 25-aug-2020 pchevaillier@gmail.com contexte actions + des actions
   // revision : 29-dec-2022 pchevaillier@gmail.com fix erreur 8.2 : utf8_encode deprecated
+  // revision : 17-feb-2023 pchevaillier@gmail.com + changement horaire
   // --------------------------------------------------------------------------
   // commentaires :
   // - en evolution
@@ -142,7 +144,9 @@
     
     protected $pas_encore_controle_vide = true;
     
-    public function __construct($page, $seance, $activite_site) {
+    public function __construct(Page $page,
+                                Seance_Activite $seance,
+                                ?Activite_site $activite_site) {
       $this->def_page($page);
       $this->seance = $seance;
       $this->activite_site = $activite_site;
@@ -416,6 +420,7 @@
 
   // --------------------------------------------------------------------------
   class Controleur_Action_Seance {
+    private $index_creneau = -1; // necessaire pour parler du creneau avant ou apres
     public $seance = null; // objet metier
     public $page = null; // pour ajouter des javascripts
     public $activite_site = null; // contexte : activite du site sur la periode
@@ -423,8 +428,9 @@
     protected $afficheur = null;
     protected $id_dialogue_action = "";
     
-    public function __construct(Afficheur_Seance_Activite $afficheur) {
+    public function __construct(Afficheur_Seance_Activite $afficheur, int $index_creneau) {
       $this->page = $afficheur->page();
+      $this->index_creneau = $index_creneau;
       $this->seance = $afficheur->seance();
       $this->activite_site = $afficheur->activite_site;
       $this->mode_interactif = $afficheur->est_interactif;
@@ -446,7 +452,7 @@
     }
     
     protected function formater_info_participations() {
-      $code = ""; //utf8_encode('');
+      $code = "";
       $presentation_nom = new Afficheur_Nom();
       $presentation_tel = new Afficheur_telephone();
       $code = $code . '<div class="container"><table class="table table-sm"><tbody>';
@@ -462,7 +468,7 @@
     }
     
     protected function formater_mail_participants() {
-      $code = ""; //utf8_encode('');
+      $code = "";
       $code = $code . 'mailto:';
       foreach ($this->seance->inscriptions as $participation) {
         $p = $participation->participant;
@@ -477,12 +483,12 @@
     }
     
     public function formater_menu_action() {
-      $code = ""; //utf8_encode('');
+      $code = "";
 
       $code = $code . '<div class="dropdown">';
       
       // --- le bouton pour interagir
-      $texte_bouton = ""; //utf8_encode('');
+      $texte_bouton = "";
       if (is_a($this->seance->support, 'Bateau'))
         $code_support = $this->seance->support->numero();
       else
@@ -566,6 +572,29 @@
           $menu = $menu . '<a class="dropdown-item" onclick="activer_controle_annulation_seance(' . $params . '); return false;" data-toggle="modal" data-target="#' . $this->id_dialogue_action . '">Annuler séance</a>';
           $menu = $menu . '<a class="dropdown-item" onclick="return false;">Changer horaire</a>';
           $menu = $menu . '<a class="dropdown-item" onclick="return false;">Changer support</a>';
+          
+          // possibilite report sur seance avant ou apres
+          $code_support = $this->seance->code_support();
+          $nouveau_creneau = null;
+          if ($this->afficheur->activite_site->creneau_precedent_est_libre($code_support,
+                                                                           $this->index_creneau)) {
+            $nouveau_creneau = $this->afficheur->activite_site->creneaux_activite[$this->index_creneau - 1];
+            $params_nouveau_creneau = $params  . ', '
+              . '\'' . $nouveau_creneau->debut()->date_heure_sql() . '\', '
+              . '\'' . $nouveau_creneau->fin()->date_heure_sql() . '\'';
+            $menu = $menu . '<a class="dropdown-item" onclick="activer_controle_changer_horaire_seance('
+              . $params_nouveau_creneau . '); return false;" data-toggle="modal" data-target="#' . $this->id_dialogue_action . '">Passer sur créneau précédent</a>';
+          }
+          if ($this->afficheur->activite_site->creneau_suivant_est_libre($this->seance->code_support(),
+                                                                         $this->index_creneau)) {
+            $nouveau_creneau = $this->afficheur->activite_site->creneaux_activite[$this->index_creneau + 1];
+            $params_nouveau_creneau = $params  . ', '
+              . '\'' . $nouveau_creneau->debut()->date_heure_sql() . '\', '
+              . '\'' . $nouveau_creneau->fin()->date_heure_sql() . '\'';
+            $menu = $menu . '<a class="dropdown-item" onclick="activer_controle_changer_horaire_seance('
+              . $params_nouveau_creneau . '); return false;" data-toggle="modal" data-target="#' . $this->id_dialogue_action . '">Passer sur créneau suivant</a>';
+            //$menu = $menu . '<a class="dropdown-item" onclick="return false;">Passer sur créneau suivant</a>';
+          }
         }
       }
       

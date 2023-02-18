@@ -10,7 +10,7 @@
 // Copyright (c) 2017-2020 AMP. Tous droits reserves
 // ----------------------------------------------------------------------------
 // creation : 13-avr-2020 pchevaillier@gmail.com
-// revision :
+// revision : 17-feb-2023 pchevaillier@gmail.com + changement horaire seance
 // ----------------------------------------------------------------------------
 // commentaires :
 // - en evolution
@@ -235,6 +235,42 @@ function supprimer_seance_activite(code_seance) {
   return true;
 }
 
+// ----------------------------------------------------------------------------
+// Changement d'horaire d'une seance, meme equipage, meme support
+
+// Activation de la boite modale pour confirmer la realisation de l'action
+function activer_controle_changer_horaire_seance(code_seance, id_modal, html_info_seance, html_info_partipations, html_mailto, debut_nouveau_creneau, fin_nouveau_creneau) {
+  $("#" + id_modal + "_titre").html("Changement horaire séance");
+  html_corps = '<div class="alert alert-warning" role="alert">Opération irréversible !<br />Ne pas oublier de prévenir les personnes intéressées.</div>';
+  html_corps = html_corps + '<div class="card"><div class="card-body"><p>' + html_info_seance + '</p><p>' + html_info_partipations + '</p></div></div>';
+  html_corps = html_corps + '<div><button type="button" class="btn btn-outline-primary"><a href="' + html_mailto + '">Envoyez un mail aux participants</a></button></div>';
+  html_corps = html_corps + '<div><button type="button" class="btn btn-primary" onclick="modifier_horaire_seance_activite(' + code_seance
+    + ', \'' + debut_nouveau_creneau
+    + '\', \'' + fin_nouveau_creneau
+    + '\'); return false;">Confirmer changement horaire</button></div>';
+  $("#" + id_modal + "_corps").html("<div>" + html_corps + "</div>");
+  
+  $("#" + id_modal + "_btn").html("Ne rien faire");
+
+  return true;
+}
+
+// envoi la requete de modification au serveur pour mise a jour dans base de donnees
+function modifier_horaire_seance_activite(code_seance, debut_nouveau, fin_nouveau) {
+  const code_action = 'mc'; // modification creneau
+  const envoi = {act: code_action, id: code_seance, deb: debut_nouveau, fin: fin_nouveau};
+  console.log(envoi);
+  var jqxhr = $.getJSON("php/scripts/inscription_seance_activite_maj.php?", envoi, function(retour) {
+                         console.log("success inscription_seance_activite_maj - modification creneau");
+                         location.reload(); // necessaire pour prendre en compte nouveau contexte
+                         return true;
+                         })
+                       .fail(function(retour) {
+                             console.log("error inscription_seance_activite_maj.php - modification creneau ");
+                             return false;
+                             });
+  return true;
+}
 
 
 // ============================================================================
