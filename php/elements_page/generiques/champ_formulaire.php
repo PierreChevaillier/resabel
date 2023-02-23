@@ -9,7 +9,7 @@
   //              PHP 7.1 sur Mac OS 10.14  (depuis 14-oct-2018)
   //              PHP 7.3 sur hebergeur web
   //              PHP 8.1 sur macOS 12.5 (depuis 21-dec-2022)
-  // Copyright (c) 2017-2022 AMP. Tous droits reserves.
+  // Copyright (c) 2017-2023 AMP. Tous droits reserves.
   // ------------------------------------------------------------------------
   // creation : 21-oct-2017 pchevaillier@gmail.com
   // revision : 04-fev-2018 pchevaillier@gmail.com mise en forme, champ montant
@@ -24,6 +24,7 @@
   // revision : 13-sep-2020 pchevaillier@gmail.com Champ_Binaire (checked)
   // revision : 19-sep-2020 pchevaillier@gmail.com code erreur, Champ_Entier_Naturel
   // revision : 21-dec-2022 pchevaillier@gmail.com init valeur (php 8.x)
+  // revision : 23-feb-2023 pchevaillier@gmail.com on_change pour Champ_Identifiant
   // ------------------------------------------------------------------------
   // commentaires :
   // attention :
@@ -223,6 +224,8 @@
     
     protected function afficher_corps () {
       $this->afficher_ouverture_commune();
+      if (strlen($this->fonction_controle_saisie) > 0)
+        echo 'onchange="' . $this->fonction_controle_saisie . '(this)" ';
       echo 'type="text" maxlength="50" ';
       $affiche = ($this->valeur_definie())? 'value="' . $this->valeur() . '" ' : '';
       echo $affiche . ' />';
