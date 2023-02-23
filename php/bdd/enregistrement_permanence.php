@@ -32,7 +32,7 @@
       return Base_Donnees::$prefix_table . 'permanences';
     }
     
-    public function lire() {
+    public function lire(): bool {
       $trouve = false;
       try {
         $bdd = Base_Donnees::acces();

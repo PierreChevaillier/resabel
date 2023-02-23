@@ -116,7 +116,7 @@
     }
     
     
-    public function verifier_identifiant_unique($identifiant) {
+    public function verifier_identifiant_unique(string $identifiant): bool {
       $unique = false;
       try {
         $bdd = Base_Donnees::acces();
@@ -136,7 +136,7 @@
     /*
      * recherche les informations dans la base de donnees
      */
-    public function lire() {
+    public function lire(): bool {
       $trouve = false;
       try {
         $bdd = Base_Donnees::acces();
@@ -180,7 +180,7 @@
       $this->membre->num_licence = $donnee->num_licence;
     }
     
-    public function recherche_si_admin() {
+    public function recherche_si_admin(): bool {
       $est_admin = false;
       // teste si la membre a le role admin dans le composante 'resabel'
       $source = Base_Donnees::$prefix_table . 'roles_membres';
@@ -213,7 +213,7 @@
       }
     }
     
-    public function modifier_niveau($valeur) {
+    public function modifier_niveau(int $valeur): void {
       $bdd = Base_Donnees::acces();
       try {
         $requete= $bdd->prepare("UPDATE " . self::source()
@@ -231,7 +231,7 @@
     }
     
     
-    public function modifier_cdb($valeur) {
+    public function modifier_cdb(int $valeur): void {
       $bdd = Base_Donnees::acces();
       try {
         $requete= $bdd->prepare("UPDATE " . self::source()
@@ -247,7 +247,7 @@
 
     }
     
-    public static function modifier_niveaux($valeur_actuelle, $nouvelle_valeur) {
+    public static function modifier_niveaux(int $valeur_actuelle, int $nouvelle_valeur): void {
       $bdd = Base_Donnees::acces();
       try {
         $requete= $bdd->prepare("UPDATE " . self::source()
@@ -319,7 +319,7 @@
         $requete->execute();
         
       } catch (PDOexception $e) {
-        die("Erreur Mise a jour " . self::source() . " informations pour " . $code . " : ligne " . $e->getLine() . " :<br /> ". $e->getMessage());
+        die("Erreur Insertion dans " . self::source() . " informations pour " . $code . " : ligne " . $e->getLine() . " :<br /> ". $e->getMessage());
         //Base_Donnees::sortir_sur_exception(self::source(), $e);
       }
       $requete->closeCursor();

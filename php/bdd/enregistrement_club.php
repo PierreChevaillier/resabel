@@ -31,13 +31,13 @@
   // ==========================================================================
   class Enregistrement_Club {
     
-    static function source() {
+    static function source(): string {
       return Base_Donnees::$prefix_table . 'club';
     }
     
     private $club = null;
-    public function club() { return $this->club; }
-    public function def_club($club) { $this->club = $club; }
+    public function club(): Club { return $this->club; }
+    public function def_club(Club $club) { $this->club = $club; }
     
     public function verifier_identite($identifiant, $mot_passe): bool {
       $identification_ok = false;
