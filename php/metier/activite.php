@@ -22,7 +22,8 @@
   // - En chantier...
   // - non stabilise
   // a faire :
-  // - recuperation des donnees $GET ou $POST : a faire ailleurs.
+  //  - collecter informations marees
+  //  - recuperation des donnees $GET ou $POST : a faire ailleurs. (pas sur)
   // ==========================================================================
 
   require_once 'php/metier/calendrier.php';
@@ -53,65 +54,74 @@
    
   // --------------------------------------------------------------------------
   class Activite_Journaliere {
+        
+    private ?Instant $date_jour = null;
+    public final function date_jour(): Instant { return $this->date_jour; }
+    public final function def_date_jour(Instant $jour) { $this->date_jour = $jour;}
     
-    //private $jour = null; // Instant
-    //public function jour() { return $this->jour; }
+    public ?Instant $debut_plage_horaire = null;
+    public ?Instant $fin_plage_horaire = null;
     
-    private $date_jour = null; // DateTimeImmutable
-    public function date_jour() { return $this->date_jour; }
-    public function def_date_jour(Instant $jour) { $this->date_jour = $jour;}
+    public int $filtre_site = 0;
+    public int $filtre_type_support = 0;
+    public int $filtre_support = 0;
     
-    public $filtre_site = 0;
-    public $filtre_type_support = 0;
-    public $filtre_support = 0;
-    public $debut_plage_horaire = null;
-    public $fin_plage_horaire = null;
+    public ?Club $club = null;
     
-    public $club = null;
-    protected $sites = array();
+    protected $sites = array(); // sites du club
+    public final function nombre_sites(): int { return count($this->sites); }
     
     public $activite_sites = array();
-
-    public $permanence = null;
+    public final function nombre_activite_sites(): int { return count($this->activite_sites); }
+    
+    public ?Permanence $permanence = null;
     
     public $personnes_actives = array(); // cle : code_personne ; valeur : personne
-    public $seances_personnes = array();
+    //public $seances_personnes = array();
 
-    public function collecter_informations() {
-      $this->collecter_info_club(); // pour le fuseau horaire
-    
-      $this->collecter_info_personnes_actives();
+    public function collecter_informations(): bool {
+      $status = true;
+      $status = $this->collecter_info_club(); // pour le fuseau horaire
       
-      $this->collecter_info_permanence();
+      if ($status)
+        $this->collecter_info_permanence();
       
-      $this->collecter_info_sites();  // renseigne les infos pour chaque activite_site
+      if ($status)
+        $status = $this->collecter_info_personnes_actives();
       
+      if ($status)
+        $status = $this->collecter_info_sites();  // renseigne les infos pour chaque activite_site
+      
+      return $status;
      
     }
     
-    protected function collecter_info_club() {
+    protected function collecter_info_club(): bool {
       $code_club = isset($_SESSION['clb']) ? $_SESSION['clb'] : 0;
-      $this->club = new Club($code_club);
+      $club = new Club($code_club);
       $enreg = new Enregistrement_Club();
-      $enreg->def_club($this->club);
-      $enreg->lire();
+      $enreg->def_club($club);
+      $status = $enreg->lire();
+      if ($status)
+        $this->club = $club;
+      return $status;
     }
     
-    protected function collecter_info_permanence() {
-      //Permanence::cette_semaine($this->permanence);
-      //$cal = Calendrier::obtenir();
-      //$this->permanence = new Permanence($cal->numero_semaine($this->jour()), $cal->annee_semaine($this->jour()));
+    protected function collecter_info_permanence(): bool {
       $sem = $this->date_jour()->format("W");
-      //$cal->numero_semaine($this->jour());
       $annee = Calendrier::annee_semaine($this->date_jour());
-      $this->permanence = new Permanence($sem, $annee);
+      $permanence = new Permanence($sem, $annee);
+
       $enregistrement_permanence = new Enregistrement_Permanence();
-      $enregistrement_permanence->def_permanence($this->permanence);
-      $enregistrement_permanence->lire();
+      $enregistrement_permanence->def_permanence($permanence);
+      $existe = $enregistrement_permanence->lire();
+
+      if ($existe) $this->permanence = $permanence;
+      return true; // si pas de permanence ce n'est pas grave
     }
     
-    protected function collecter_info_sites() {
-      Enregistrement_Site_Activite::collecter("", " code_type ", $this->sites);
+    protected function collecter_info_sites(): bool {
+      Enregistrement_Site_Activite::collecter(" actif = 1 ", " code_type ", $this->sites);
       foreach ($this->sites as $site) {
         if (($this->filtre_site == 0) || ($site->code() == $this->filtre_site)) {
           $activite_site = new Activite_Site($this, $site);
@@ -119,29 +129,26 @@
           $activite_site->collecter_informations();
         }
       }
+      return true;
     }
     
-    protected function collecter_info_personnes_actives() {
+    protected function collecter_info_personnes_actives(): bool {
+      $ok = false;
       $personnes = null;
       $criteres = array();
-      //$criteres['act'] = 1;
-      Enregistrement_Membre::collecter($criteres, '', '', $personnes);
+      $criteres['act'] = 1;
+      $ok = Enregistrement_Membre::collecter($criteres, '', '', $personnes);
       $this->personnes_actives = $personnes;
-      //echo '>>>>>', count( $this->personnes_actives);
-      return false;
+      //echo PHP_EOL . '>>>>>', count( $this->personnes_actives) . PHP_EOL;
+      return $ok;
     }
 
-    /*
-    protected function collecter_info_seances_activite() {
-      return false;
-    }
-*/
   }
   
    // --------------------------------------------------------------------------
   class Activite_Site {
-    public $activite_journaliere = null;
-    public $site = null;
+    public $activite_journaliere = null; // referencement croise
+    public ?Site_Activite $site = null;
    
     protected function jour() { return $this->activite_journaliere->date_jour(); }
     protected function latitude() { return $this->site->latitude; }
@@ -219,7 +226,7 @@
     }
     
     protected function collecter_info_marees() {
-      $this->marees = Enregistrement_Maree::recherche_marees_jour($this->site->code(), $this->jour());
+      //$this->marees = Enregistrement_Maree::recherche_marees_jour($this->site->code(), $this->jour());
     }
     
     protected function collecter_info_supports_actifs() {
@@ -383,15 +390,6 @@
     }
 
   }
-  
-  /*
-  class Plan_Journalier_activite extends Activite_Journaliere {
-    $fermeture_site = null;
-    $indisponibilites_support_jour = array();
-    $indisponibilites_support_creneaux = array();
-    
-  }
-   */
   
   // --------------------------------------------------------------------------
   /*

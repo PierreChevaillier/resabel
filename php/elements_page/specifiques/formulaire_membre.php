@@ -4,7 +4,7 @@
   // description : Definition de la classe Formulaire_Membre
   //               Formulaire pour la saisie/modification des informations
   //               relatives a un membre du club
-  // copyright (c) 2018-2019 AMP. Tous droits reserves.
+  // copyright (c) 2018-2023 AMP. Tous droits reserves.
   // --------------------------------------------------------------------------
   // utilisation : php - require_once <nom_-fichier.php>
   // dependances :
@@ -13,6 +13,7 @@
   // --------------------------------------------------------------------------
   // creation : 06-dec-2018 pchevaillier@gmail.com
   // revision : 27-dec-2019 pchevaillier@gmail.com impact refonte Calendrier
+  // revision : 23-feb-2023 pchevaillier@gmail.com + controle saisie identifiant
   // --------------------------------------------------------------------------
   // commentaires :
   // -
@@ -72,6 +73,9 @@
       
       try {
     
+        $item = new Champ_Cache("code_mbr"); // on en a besoin pour verification identifiant
+        $this->ajouter_champ($item);
+        
         $item = new Champ_Civilite("gnr");
         $item->def_titre("Civilité");
         $item->def_obligatoire();
@@ -87,7 +91,9 @@
         $item->def_obligatoire();
         $this->ajouter_champ($item);
         
-        $item = new Champ_Identifiant("id");
+        $item = new Champ_Identifiant("id",
+                                      "js/verification_identifiant_membre.js",
+                                      "verif_identifiant");
         $item->def_titre("Identifiant de connexion");
         $item->def_obligatoire();
         $this->ajouter_champ($item);
@@ -126,6 +132,7 @@
     public function initialiser_champs() {
       $ok = isset($this->membre);
       if ($ok) {
+        $this->champ('code_mbr')->def_valeur($this->membre->code());
         $this->champ('id')->def_valeur($this->membre->identifiant);
         $this->champ('gnr')->def_valeur($this->membre->genre);
         $this->champ('prn')->def_valeur($this->membre->prenom);
