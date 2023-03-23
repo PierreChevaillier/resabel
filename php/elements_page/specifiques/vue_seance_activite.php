@@ -216,14 +216,14 @@
       $texte_bouton = ""; //utf8_encode('');
       $texte_bouton = substr($participant->prenom . ' ' . $participant->nom, 0, 22);
       $id_menu = 'mnu_particip_' . $this->seance->support->code() . '_' . $this->seance->debut()->date_heure_sql() . '_' . $participant->code();
-      $code = $code . '<button class="btn btn-outline-dark btn-sm dropdown-toggle" type="button" style="min-width:196px;" id="' . $id_menu . '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' . $texte_bouton . '</button>';
+      $code = $code . '<button class="btn btn-outline-dark btn-sm dropdown-toggle" type="button" style="min-width:196px;" id="' . $id_menu . '" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' . $texte_bouton . '</button>';
        
       $code = $code . '<div class="dropdown-menu" aria-labelledby="' . $id_menu . '">';
       
       // --- Actions du menu toujours possibles
       $menu = ""; //utf8_encode('');
       $params = $participant->code() . ', \'' . $this->id_dialogue_action . '\'';
-      $menu = $menu . '<a class="dropdown-item" data-toggle="modal" data-target="#' . $this->id_dialogue_action . '" onclick="requete_info_personne(' . $params . '); return false;">Afficher infos</a>';
+      $menu = $menu . '<a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#' . $this->id_dialogue_action . '" onclick="requete_info_personne(' . $params . '); return false;">Afficher infos</a>';
       
       // --- Actions dependant du contexte
       $resp = $this->seance->a_comme_responsable($participant) ? 1:0;
@@ -241,7 +241,7 @@
         $params = $this->params_action_seance . ', ' . $participant->code() . ', ' . $resp;
         $code_action = "di";
         $params = $params . ', \'' . $code_action . '\'';
-        $menu = $menu . '<a class="dropdown-item" data-toggle="modal" data-target="#' . $this->id_dialogue_action . '" onclick="requete_inscription_individuelle(' . $params . ');return false;">Annuler participation</a>';
+        $menu = $menu . '<a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#' . $this->id_dialogue_action . '" onclick="requete_inscription_individuelle(' . $params . ');return false;">Annuler participation</a>';
       }
       
       // Passage du role responsable au role equipier. Possible si
@@ -321,7 +321,7 @@
             // Cas d'uns inscription individuelle
             $params = $this->params_action_seance . ', ' . $this->contexte_action()->utilisateur->code() . ', 1'; // 1: participation en tant que responsable (chef de bord)
             $params = $params . ', \'' . $this->contexte_action()->code_action() . '\'';
-            $code_interacteur = '<img src="../../assets/icons/pencil-square.svg" alt="+" width="24" height="24" class="rsbl-tooltip" data-toggle="modal" data-target="#' . $this->id_dialogue_action . '" title="Inscription chef de bord" onclick="requete_inscription_individuelle(' . $params . ');">';
+            $code_interacteur = '<img src="../../assets/icons/pencil-square.svg" alt="+" width="24" height="24" class="rsbl-tooltip" data-bs-toggle="modal" data-bs-target="#' . $this->id_dialogue_action . '" title="Inscription chef de bord" onclick="requete_inscription_individuelle(' . $params . ');">';
           }
         }
       }
@@ -354,7 +354,7 @@
            */
           $params = $this->params_action_seance . ', ' . $this->contexte_action()->utilisateur->code() . ', 0'; // 0 : participation pas en tant que responsable (chef de bord)
           $params = $params . ', \'' . $this->contexte_action()->code_action() . '\'';
-          $code_interacteur = '<img src="../../assets/icons/pencil-square.svg" alt="inscrire" width="24" height="24" class="rsbl-tooltip" data-toggle="modal" data-target="#' . $this->id_dialogue_action . '" title="Inscription équipier" onclick="requete_inscription_individuelle(' . $params . ');">';
+          $code_interacteur = '<img src="../../assets/icons/pencil-square.svg" alt="inscrire" width="24" height="24" class="rsbl-tooltip" data-bs-toggle="modal" data-bs-target="#' . $this->id_dialogue_action . '" title="Inscription équipier" onclick="requete_inscription_individuelle(' . $params . ');">';
           
           $this->pas_encore_controle_vide = false;
         }
@@ -495,7 +495,7 @@
         $code_support = $this->seance->support->nom();
       $texte_bouton = $texte_bouton . $code_support . ' à ' . $this->seance->debut()->heure_texte();
       $id_menu = 'mnu_seance_' . $this->seance->support->code() . '_' . $this->seance->debut()->date_heure_sql();
-      $code = $code . '<button class="btn btn-outline-primary btn-sm dropdown-toggle" type="button" id="' . $id_menu . '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' . $texte_bouton . '</button>';
+      $code = $code . '<button class="btn btn-outline-primary btn-sm dropdown-toggle" type="button" id="' . $id_menu . '" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' . $texte_bouton . '</button>';
       
       $code = $code . '<div class="dropdown-menu" aria-labelledby="' . $id_menu . '">';
      
@@ -528,7 +528,7 @@
       }
       $details = htmlspecialchars($details); // indispensable car il ya des " dans $details
       $modal_id = "aff_act";
-      $menu = $menu . '<a class="dropdown-item" data-toggle="modal" data-target="#' . $this->id_dialogue_action . '" onclick="return afficher_info_seance(\'' . $this->id_dialogue_action . '\', \''
+      $menu = $menu . '<a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#' . $this->id_dialogue_action . '" onclick="return afficher_info_seance(\'' . $this->id_dialogue_action . '\', \''
           . $entete . '\', \'' . $details . '\');">Afficher informations</a>';
       
       //$menu = $menu . '<a href="#" class="dropdown-item">Afficher infos</a>';
@@ -569,7 +569,7 @@
           $html_info_seance = htmlspecialchars($this->formater_info_seance());
           $html_info_participations = htmlspecialchars($this->formater_info_participations());
           $params = $this->seance->code() . ', \'' . $this->id_dialogue_action . '\', \'' . $html_info_seance . '\', \'' . $html_info_participations . '\', \'' . htmlspecialchars($this->formater_mail_participants()) . '\'';
-          $menu = $menu . '<a class="dropdown-item" onclick="activer_controle_annulation_seance(' . $params . '); return false;" data-toggle="modal" data-target="#' . $this->id_dialogue_action . '">Annuler séance</a>';
+          $menu = $menu . '<a class="dropdown-item" onclick="activer_controle_annulation_seance(' . $params . '); return false;" data-bs-toggle="modal" data-bs-target="#' . $this->id_dialogue_action . '">Annuler séance</a>';
           $menu = $menu . '<a class="dropdown-item" onclick="return false;">Changer horaire</a>';
           $menu = $menu . '<a class="dropdown-item" onclick="return false;">Changer support</a>';
           
@@ -583,7 +583,7 @@
               . '\'' . $nouveau_creneau->debut()->date_heure_sql() . '\', '
               . '\'' . $nouveau_creneau->fin()->date_heure_sql() . '\'';
             $menu = $menu . '<a class="dropdown-item" onclick="activer_controle_changer_horaire_seance('
-              . $params_nouveau_creneau . '); return false;" data-toggle="modal" data-target="#' . $this->id_dialogue_action . '">Passer sur créneau précédent</a>';
+              . $params_nouveau_creneau . '); return false;" data-bs-toggle="modal" data-bs-target="#' . $this->id_dialogue_action . '">Passer sur créneau précédent</a>';
           }
           if ($this->afficheur->activite_site->creneau_suivant_est_libre($this->seance->code_support(),
                                                                          $this->index_creneau)) {
@@ -592,7 +592,7 @@
               . '\'' . $nouveau_creneau->debut()->date_heure_sql() . '\', '
               . '\'' . $nouveau_creneau->fin()->date_heure_sql() . '\'';
             $menu = $menu . '<a class="dropdown-item" onclick="activer_controle_changer_horaire_seance('
-              . $params_nouveau_creneau . '); return false;" data-toggle="modal" data-target="#' . $this->id_dialogue_action . '">Passer sur créneau suivant</a>';
+              . $params_nouveau_creneau . '); return false;" data-bs-toggle="modal" data-bs-target="#' . $this->id_dialogue_action . '">Passer sur créneau suivant</a>';
             //$menu = $menu . '<a class="dropdown-item" onclick="return false;">Passer sur créneau suivant</a>';
           }
         }

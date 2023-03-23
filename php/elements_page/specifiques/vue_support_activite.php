@@ -60,19 +60,19 @@
     }
     
     protected function afficher_debut() {
-      echo '<div class="dropdown"><button class="btn  btn-outline-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Actions</button>';
+      echo '<div class="dropdown"><button class="btn  btn-outline-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Actions</button>';
       echo '<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">';
     }
     
     protected function afficher_actions() {
-      echo '<a class="dropdown-item" data-toggle="modal" data-target="#' . $this->afficheur_info->id() . '"  onclick="return requete_info_support_activite(' . $this->support_activite->code() .', \'' . $this->afficheur_info->id() . '\');">Afficher</a>';
+      echo '<a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#' . $this->afficheur_info->id() . '"  onclick="return requete_info_support_activite(' . $this->support_activite->code() .', \'' . $this->afficheur_info->id() . '\');">Afficher</a>';
       if (isset($_SESSION['adm'])) {
         $type_objet = (is_a($this->support_activite, 'Bateau')) ? 'bat' : 'erg';
         echo '<a class="dropdown-item" href="support_activite.php?a=m&typ=' . $type_objet . '&sua=' . $this->support_activite->code() . '">Modifier</a>';
         if ($this->support_activite->est_actif())
-          echo '<a class="dropdown-item" data-toggle="modal" data-target="#' . $this->afficheur_action->id() . '"  onclick="return requete_maj_support_actif(' . $this->support_activite->code() . ', 0, \'' . $this->afficheur_action->id() . '\');">Rendre inactif</a>';
+          echo '<a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#' . $this->afficheur_action->id() . '"  onclick="return requete_maj_support_actif(' . $this->support_activite->code() . ', 0, \'' . $this->afficheur_action->id() . '\');">Rendre inactif</a>';
         else
-          echo '<a class="dropdown-item" data-toggle="modal" data-target="#' . $this->afficheur_action->id() . '"  onclick="return requete_maj_support_actif(' . $this->support_activite->code() . ', 1, \'' . $this->afficheur_action->id() . '\');">Rendre actif</a>';
+          echo '<a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#' . $this->afficheur_action->id() . '"  onclick="return requete_maj_support_actif(' . $this->support_activite->code() . ', 1, \'' . $this->afficheur_action->id() . '\');">Rendre actif</a>';
       }
     }
     protected function afficher_corps() {

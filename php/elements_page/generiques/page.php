@@ -3,10 +3,10 @@
   // contexte : Resabel - systeme de REServAtion de Bateau En Ligne
   // description : definition des classes Page et Page_Simple
   // utilisation : structure commune a toutes les pages web du site
-  // dependances : bootstrap 4.x, jquery, popper
-  // teste avec  : PHP 7.1 sur Mac OS 10.14
-  // contexte    : Elements generique d'un site web
-  // copyright (c) 2017-2020 AMP. Tous droits reserves.
+  // dependances : chemin vers bootstrap
+  // suppression dependances jquery, popper
+  // utilise avec : PHP 8.2 sur macOS 13.2
+  // copyright (c) 2017-2023 AMP. Tous droits reserves.
   // --------------------------------------------------------------------------
   // creation: 04-jun-2017 pchevaillier@gmail.com
   // revision: 17-jun-2018 pchevaillier@gmail.com adaptation resabel V2
@@ -16,6 +16,7 @@
   // revision: 11-mai-2019 pchevaillier@gmail.com jquery UI
   // revision: 28-mar-2020 pchevaillier@gmail.com script / activation tooltips Bootstrap
   // revision: 13-avr-2020 pchevaillier@gmail.com ajouter_script pour eviter doublons
+  // revision : 17-mar-2023 pchevaillier@gmail.com passage a bootstrap V5 en local
   // --------------------------------------------------------------------------
   // commentaires :
   // - https://getbootstrap.com/docs/4.1/getting-started/introduction/
@@ -35,10 +36,10 @@
   abstract class Page extends Element {
   
     public $javascripts = array();
-    public function ajouter_script(String $chemin_fichier) {
-      $existe = false;
+    public function ajouter_script(String $chemin_fichier): bool {
       if ($chemin_fichier == "")
         return false;
+      $existe = false;
       foreach ($this->javascripts as $s) {
         if (strcmp($s, $chemin_fichier) == 0) {
           $existe = true;
@@ -83,7 +84,7 @@
  
     public function definir_feuilles_style() {
       foreach ($this->feuilles_style as $f)
-        echo "     <link rel=\"stylesheet\" href=\"" . get_include_path() . $f . "\" media=\"screen\" />\n";
+        echo '<link rel="stylesheet" href="' . get_include_path() . $f . '" media="screen" />';
     }
     
     public function __construct($nom_site, $nom_page, $liste_feuilles_style = null) {
@@ -106,71 +107,79 @@
     // ceci permet de l'identifier comme le parent d'elements du document HTML
     // qui seraient crees dynamiquement par un script
     $html_id = (strlen($this->id()) > 0) ? " id=\"" . $this->id() . "\" " : " ";
-    echo "      <div class=\"container-fluid\"" . $html_id . " style=\"padding:2px;\">\n";
+    echo "<div class=\"container-fluid\"" . $html_id . " style=\"padding:10px;\">";
     
     foreach ($this->elements_haut as $e) $e->afficher();
     foreach ($this->contenus as $e) $e->afficher();
     foreach ($this->elements_bas as $e) $e->afficher();
-    echo "\n      </div>\n";
+    echo "</div>";
   }
 
   protected function afficher_titre() {
-     echo "      <title>" . $this->titre() . "</title>\n";
+     echo '<title>' . $this->titre() . '</title>';
   }
   
   abstract protected function inclure_meta_donnees_open_graph(); // pour Facebook
   
   protected function afficher_debut() {
-    echo "<head>\n      <meta charset=\"utf-8\" />";
+    echo '<head><meta charset="utf-8" />';
     
     if ($this->prive)
-      echo "\n      <meta name=\"robots\" content=\"none\" />";
+      echo '<meta name="robots" content="none" />';
     else
       $this->inclure_meta_donnees_open_graph();
     
-    echo "\n      <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\" />
-      <meta name=\"viewport\" content=\"width=device-width, initial-scale=1, shrink-to-fit=no\" />\n";
+    echo '<meta http-equiv="X-UA-Compatible" content="IE=edge" />';
+    echo '<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />'; // TODO enlever shrink... ?
     
     // Bootstrap CSS
+    /*
     echo "      <link href=\"https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css\" rel=\"stylesheet\" integrity=\"sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T\" crossorigin=\"anonymous\" />\n";
+    */
+    echo '<link rel="stylesheet" href="' . get_include_path() . '../bootstrap/5.3.0/css/bootstrap.min.css"/>';
     
-    echo "      <link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.css\" />\n";
+    // JQuery plus besoin dans version 2 (a verfier)
+    //echo "      <link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.css\" />\n";
     
     // Feuille de style locale (screen)
     foreach ($this->feuilles_style as $css)
-      echo "      <link rel=\"stylesheet\" href=\"" . get_include_path() . "/" . $css . "\" media=\"screen\" />\n";
+      echo '  <link rel="stylesheet" href="' . get_include_path() . $css . '" media="screen" />';
     
-    // Jquery
-    echo "      <script src=\"https://code.jquery.com/jquery-3.3.1.min.js\" integrity=\"sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=\" crossorigin=\"anonymous\"></script>\n";
+    // Jquery - plus besoin (a terme dans v2)
+    //echo "      <script src=\"https://code.jquery.com/jquery-3.3.1.min.js\" integrity=\"sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=\" crossorigin=\"anonymous\"></script>\n";
     /*
      // semble incompatible avec jquery-3.3.1.min.js
     echo "      <script src=\"https://code.jquery.com/jquery-3.3.1.slim.min.js\" integrity=\"sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo\" crossorigin=\"anonymous\"></script>\n";
   */
-    // Popper (requis pour bootstrap modal)
-    echo "      <script src=\"https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js\" integrity=\"sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1\" crossorigin=\"anonymous\"></script>\n";
+    // Popper (requis pour bootstrap modal) // plus besoin bootstrap.bundle fournit le script
+    //echo "      <script src=\"https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js\" integrity=\"sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1\" crossorigin=\"anonymous\"></script>\n";
     
     // Bootstrap javascript
-    echo "      <script src=\"https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js\" integrity=\"sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM\" crossorigin=\"anonymous\"></script>\n";
-    
-    // JQuery UI (pour datepicker ...)
-    echo "      <script src=\"https://code.jquery.com/ui/1.12.1/jquery-ui.min.js\" integrity=\"sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=\" crossorigin=\"anonymous\"></script>";
+    echo '<script src="' . get_include_path() . '../bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>';
+
+    // JQuery UI (pour datepicker ...) On va essayer de s'en passer
+    //echo "      <script src=\"https://code.jquery.com/ui/1.12.1/jquery-ui.min.js\" integrity=\"sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=\" crossorigin=\"anonymous\"></script>";
     
     foreach ($this->javascripts as $scripts) {
-      echo "      <script src=\"" . get_include_path() . $scripts . "\"></script>\n";
+      echo '<script src="' . get_include_path() . $scripts . '"></script>';
     }
     foreach ($this->elements_entete as $e)
       echo $e;
     $this->afficher_titre();
     
     // Activation des tooltips Bootstrap pour les elements de la classe rsbl-tooltip
+    // a enlever ?
+    /*
     echo "      <script> $(function () { $('.rsbl-tooltip').tooltip() })</script>" . PHP_EOL;
     
     echo "      <script> $(function () { $('[data-toggle=\"popover\"]').popover(); var myDefaultWhiteList = $.fn.popover.Constructor.Default.whiteList; myDefaultWhiteList.div = ['class']; myDefaultWhiteList.a = ['target', 'href', 'title', 'rel', 'class']; })</script>" . PHP_EOL;
-    echo "    </head>\n    <body>\n";
+     
+     */
+    echo '</head><body>';
   }
 
   protected function afficher_fin() {
-  	echo "    </body>\n";
+  	echo '</body>';
   }
 
   abstract protected function definir_elements();

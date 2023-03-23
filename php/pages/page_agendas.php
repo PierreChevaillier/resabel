@@ -54,7 +54,7 @@
       $agenda = new Cadre_Inclusion();
       $element->def_id('frm_agd_club');
       $agenda->def_source("https://calendar.google.com/calendar/embed?src=avironplougonvelin.fr_gsun3r3is0cffmtcckquag8esg%40group.calendar.google.com&ctz=Europe%2FParis");
-      $agenda->def_ratio('1by1');
+      $agenda->def_ratio('1x1');
       $this->ajoute_contenu($agenda);
 
       // --- Calendrier des competitions --------------------------------------
@@ -64,7 +64,7 @@
       
       $agenda = new Cadre_Inclusion();
       $agenda->def_source('https://calendar.google.com/calendar/embed?src=avironplougonvelin.fr_d4gompedlk2f5ka6pb15kl0l58%40group.calendar.google.com&ctz=Europe%2FParis');
-      $agenda->def_ratio('1by1');
+      $agenda->def_ratio('1x1');
       $this->ajoute_contenu($agenda);
       
       $element = new Cadre_Texte_Repliable();
@@ -82,7 +82,7 @@
       
       $agenda = new Cadre_Inclusion();
   $agenda->def_source('https://calendar.google.com/calendar/embed?src=avironplougonvelin.fr_3p6q61fs2nofh9kt9eiaoq1cps%40group.calendar.google.com&ctz=Europe%2FParis');
-      $agenda->def_ratio('1by1');
+      $agenda->def_ratio('1x1');
       $this->ajoute_contenu($agenda);
     
        // --- Calendrier des randonnees --------------------------------------
@@ -92,7 +92,7 @@
       
       $agenda = new Cadre_Inclusion();
       $agenda->def_source('https://calendar.google.com/calendar/embed?src=avironplougonvelin.fr_3s243n6g52q0pjug9hra5i5k3k%40group.calendar.google.com&ctz=Europe%2FParis');
-      $agenda->def_ratio('1by1');
+      $agenda->def_ratio('1x1');
       $this->ajoute_contenu($agenda);
       
     }

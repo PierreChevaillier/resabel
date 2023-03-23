@@ -3,10 +3,11 @@
 // utilisation : javascript - controleur formulaire web
 // teste avec  : Mac OS 10.11
 // contexte    : Site web du championnat de France 2018
-// Copyright (c) 2017 AMP
+// Copyright (c) 2017-2023 AMP
 // ----------------------------------------------------------------------------
 // creation: 23-oct-2017 pchevaillier@gmail.com
-// revision: 01-03-2018  pchevaillier@gmail.com 2e chiffre : de 1 à 9
+// revision: 01-mar-2018  pchevaillier@gmail.com 2e chiffre : de 1 à 9
+// revision: 16-mar-2023  pchevaillier@gmail.com modif apres tests
 // ----------------------------------------------------------------------------
 // commentaires :
 // -
@@ -23,7 +24,7 @@ function verif_numero_telephone(element) {
   if (x == null || x == "") {
     est_correct = true;
   } else {
-    var reg =/^(0[1-9])(?:[ _.-]?(\d{2})){4}$/;
+    var reg =/^(0[1-9])(?:[ _.-]?([0-9]{2})){4}$/;
     if (!reg.test(x)) {
       element.style.color = "red";
       element.focus(); // marche pas...

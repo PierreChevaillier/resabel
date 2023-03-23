@@ -29,34 +29,47 @@ require_once 'php/metier/membre.php';
 require_once 'php/bdd/enregistrement_membre.php';
 // --------------------------------------------------------------------------
 
-// --- informations fournies dans la requete
-//     Le code de la personne
-// on recoit :
+// donnee qui sera retournee
+$donnee = array();
 
+// --- Controle des informations recues dans la requete
+// - code de la personne
+// - identifiant choisi a verifier
 $code_membre = 0;
 $identifiant = "";
 
-$code_membre = (isset($_GET['code'])) ? $_GET['code'] : 0;
-
-if (isset($_GET['id'])) // && preg_match('/[01]/', $_GET['cdb']))
-  $identifiant = $_GET['id'];
-//else
-//  die();
+$ok = true;
+if (isset($_GET['code']) && is_numeric($_GET['code'])) {
+  $code_membre = $_GET['code'];
+  $ok = ($code_membre > 0);
+} else {
+  $ok = false;
+}
+if ($ok) {
+  if (isset($_GET['id']) && preg_match("#^[a-zA-Z0-9.-]+$#", $_GET['id'])) {
+    $identifiant = $_GET['id'];
+  } else {
+    $ok = false;
+  }
+}
+if (!$ok) {
+  $donnee['status'] = 2;
+  $resultat_json = json_encode($donnee);
+  echo $resultat_json;
+  exit();
+}
 
 // --- Recherche des informations dans la base de donnees
-  
 $personne = new Membre($code_membre);
 $enreg_membre = new Enregistrement_Membre();
 $enreg_membre->def_membre($personne);
-
 $condition = $enreg_membre->verifier_identifiant_unique($identifiant);
 
-// --- Mise en forme des informations avant retour
-
+// --- Mise en forme des informations avant reponse a la requete
 if ($condition)
-  $donnee = array('status' => 1);
+  $donnee['status'] = 1;
 else
-  $donnee = array('status' => 0);
+  $donnee['status'] = 0;
 
 // --- Reponse a la requete
 $resultat_json = json_encode($donnee);

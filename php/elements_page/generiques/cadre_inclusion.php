@@ -2,7 +2,7 @@
   // ==========================================================================
   // contexte : Resabel - systeme de REServAtion de Bateau En Ligne
   // description : element pour inclusion cadre (iframe) responsive
-  // copyright (c) 2018-2019 AMP. Tous droits reserves.
+  // copyright (c) 2018-2023 AMP. Tous droits reserves.
   // --------------------------------------------------------------------------
   // utilisation : php - require_once <chemin_vers_ce_fichier.php>
   // dependances : bootstrap 4.x (teste avec bootstrap 4.1.3)
@@ -10,10 +10,10 @@
   //              PHP 7.0 sur hebergeur web
   // --------------------------------------------------------------------------
   // creation : 02-mar-2019 pchevaillier@gmail.com
-  // revision :
+  // revision : 17-mar-2023 pchevaillier@gmail.com bootstrap v5.3
   // --------------------------------------------------------------------------
   // commentaires :
-  // - https://getbootstrap.com/docs/4.1/utilities/embed/
+  // - https://getbootstrap.com/docs/5.3/helpers/ratio/
   // attention :
   // -
   // a faire :
@@ -23,7 +23,7 @@
   // --------------------------------------------------------------------------
   class Cadre_Inclusion extends Element {
     private $source = '';
-    private $ratio = '4by3'; //aspect ratio bootstrap 4 : 21by9, 16by9, 4by3, 1by1
+    private $ratio = '1x1';
     public function def_source($code_html) { $this->source = $code_html; }
     public function def_ratio($expression_ratio) { return $this->ratio = $expression_ratio; }
     
@@ -31,15 +31,16 @@
     }
     
     protected function afficher_debut() {
-       echo '<div class="embed-responsive embed-responsive-' . $this->ratio . '" style="margin:0px;">';
+       echo '<div class="ratio ratio-' . $this->ratio . '">';
     }
     
     protected function afficher_corps() {
-      echo '<iframe class="embed-responsive-item" style="margin:0px; padding:5px;" src="' . $this->source . '"></iframe>';
+      //echo '<iframe class="embed-responsive-item" style="margin:0px; padding:5px;" src="' . $this->source . '"></iframe>';
+      echo '<iframe src="' . $this->source . '"></iframe>';
     }
     
     protected function afficher_fin() {
-      echo "</div>\n";
+      echo "</div>";
     }
   }
   

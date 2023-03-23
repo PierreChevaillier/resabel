@@ -164,7 +164,7 @@
     }
     $erreur = 0;
     if (strlen($x) < 2) $erreur = 1;
-    elseif (!preg_match("#^[a-zA-Zéèëçñì\ '-]+$#", $x)) $erreur = 2;
+    elseif (!preg_match("#^[a-zA-Zéèëçñìï\ '-]+$#", $x)) $erreur = 2;
     if ($erreur > 0) {
       header("location: ../../membre.php?a=m&o=" . $objet . "&mbr=" . $code . "&r=" . $erreur . "&i=" . $iod . "&v=" . $x);
       exit();
@@ -219,7 +219,7 @@
   
   // --------------------------------------------------------------------------
   // Controle de la valeur saisie pour l'adresse courriel (saisie non obligatoire)
-  $iod = 'couriel';
+  $iod = 'courriel';
   if (isset($_POST[$iod])) {
     $x = trim($_POST[$iod]);
     $nCar1 = strlen($x);
