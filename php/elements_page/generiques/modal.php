@@ -5,21 +5,20 @@
   // copyright (c) 2018-2023 AMP. Tous droits reserves.
   // --------------------------------------------------------------------------
   // utilisation : php - require_once <chemin_vers_ce_fichier.php>
-  // dependances : bootstrap 5.x (teste avec bootstrap 5.2)
+  // dependances : bootstrap 5.x (teste avec bootstrap 5.3)
   // utilise avec :
   // - PHP 8.2 sur macOS 13.2
   // --------------------------------------------------------------------------
   // creation : 04-avr-2019 pchevaillier@gmail.com
-  // revision : 21-mar-2023 pchevaillier@gmail.com bootstrap v5.2
+  // revision : 21-mar-2023 pchevaillier@gmail.com bootstrap v5.3
   // --------------------------------------------------------------------------
   // commentaires :
   // - https://getbootstrap.com/docs/5.3/components/modal/
-  // - Fait pour etre utlise avec un script js (typiquement htmlRequest)
-  //   qui sert a remplir le corps du composant
+  // - Fait pour etre utlise avec un script js qui remplit le corps du composant
   // attention :
   // -
   // a faire :
-  // - tester avec bs 5.3
+  // -
   // ==========================================================================
 
   // --------------------------------------------------------------------------
@@ -40,8 +39,7 @@
     protected function afficher_tete_contenu(): void {
       echo '<div class="modal-header">';
       echo '<h4 class="modal-title" id="' . $this->id() . '_titre">' . $this->titre() . '</h4>';
-//      echo '<button type="button" class="close" data-bs-dismiss="modal" aria-label="Fermer"><span aria-hidden="true">&times;</span></button>';
-      echo '<button type="button" class="close" data-bs-dismiss="modal" aria-label="Fermer"></button>';
+      echo '<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>';
       echo '</div>';
     }
     

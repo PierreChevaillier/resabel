@@ -1,13 +1,16 @@
 // ============================================================================
 // contexte : Resabel - systeme de REServAtion de Bateau En Ligne
-//            controle actions utitisateurice - cote client
-//            essais
-// description : fiormulaire membre
+//            controle actions utilisateurice - cote client
+// description : controle action sur formulaire membre
+// copyright (c) 2023 AMP. Tous droits reserves.
+// ----------------------------------------------------------------------------
 // utilisation : javascript - controleur action element page web
 // teste avec  : firefox, safari sur macOS 13.2,
-// dependances : Bootstrap 5.x
-//               ids des elements (cf. formulaire_membre.php)
-// copyright (c) 2023 AMP. Tous droits reserves
+// dependances :
+// - bootstrap 5.3
+// - ids des elements (cf. formulaire_membre.php)
+// utilise avec  :
+//  - firefox, safari sur macOS 13.x
 // ----------------------------------------------------------------------------
 // creation : 15-mar-2023 pchevaillier@gmail.com
 // revision :

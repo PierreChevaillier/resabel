@@ -1,16 +1,19 @@
 // ============================================================================
-// contexte    : Resabel V2
+// contexte : Resabel - systeme de REServAtion de Bateau En Ligne
 // description : controle des actions sur une seance d'activite
+// Copyright (c) 2017-2023 AMP. Tous droits reserves.
+// ----------------------------------------------------------------------------
 // utilisation : javascript - controleur action element page web
 // teste avec  : firefox, safari sur Mac OS 10.14,
 //               jQuery 3.3.1
-// dependances : JQuery
+// dependances : JQuery, JQuery-ui
 //               ids des elements
 //               bootstrap : boutons et grid
-// Copyright (c) 2017-2020 AMP. Tous droits reserves
+//               scripts PHP (cote serveur)
 // ----------------------------------------------------------------------------
 // creation : 13-avr-2020 pchevaillier@gmail.com
 // revision : 17-feb-2023 pchevaillier@gmail.com + changement horaire seance
+// revision : 29-mar-2023 pchevaillier@gmail.com utilisation XMLHttpRequest
 // ----------------------------------------------------------------------------
 // commentaires :
 // - en evolution
@@ -48,6 +51,7 @@ function activer_formulaire(code_seance, code_site, code_support, debut, fin, id
   let champ_nom = document.createElement("input");
   champ_nom.id = id_champ_nom;
   champ_nom.focus();
+  formulaire.autocomplete = "off";
   formulaire.appendChild(champ_nom);
   
   let champ_code = document.createElement("input");
@@ -70,7 +74,7 @@ function activer_formulaire(code_seance, code_site, code_support, debut, fin, id
   bouton.type = "submit";
   bouton.classList.add("btn", "btn-success", "btn-sm");
   bouton.innerHTML = "Ok";
-  params = code_seance + ", " + code_site + ", " + code_support
+  var params = code_seance + ", " + code_site + ", " + code_support
     + ", '" + debut + "', '" + fin + "', '" + id_contexte_saisie + "', " + rang;
   console.log("params " + params);
   bouton.setAttribute("onclick", "fin_saisie_participant(" + params + ");");
@@ -94,9 +98,49 @@ function activer_formulaire(code_seance, code_site, code_support, debut, fin, id
   
   parent.appendChild(formulaire);
   
-  let responsable = (rang == 0)? 1: 0;
-  envoi = {deb: debut, resp: responsable};
+  const responsable = (rang == 0)? 1: 0;
+  const envoi = {deb: debut, resp: responsable};
   var possibilites = [];
+  
+  var xmlhttp = new XMLHttpRequest();
+  var url = "php/scripts/membres_dispo_collecter.php?";
+  params = new URLSearchParams(envoi).toString();
+  url += params;
+  console.log(url);
+  
+  var ok = false;
+  xmlhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        console.log("chargement membres disponibles: ok");
+        var dict = JSON.parse(this.responseText);
+        for (var entree in dict) {
+          valeur = dict[entree];
+          p = JSON.parse(valeur);
+          console.log(p);
+          possibilites.push(p);
+        }
+        $( "#nom_part" ).autocomplete({ minLength: 2,
+                                        source: possibilites,
+                                        focus: function( event, ui ) {
+                                          $( "#nom_part" ).val( ui.item.label );
+                                          return false;
+                                        },
+                                       select: function( event, ui ) {
+                                                $( "#nom_part" ).val( ui.item.label );
+                                                $( "#code_part" ).val( ui.item.value );
+                                                return false;
+                                              }
+                                            });
+        ok = true;
+      }
+    };
+  
+  xmlhttp.open('GET', url, true);
+  xmlhttp.send();
+  console.log("request sent");
+  return ok;
+  
+  /*
   $.getJSON("php/scripts/membres_dispo_collecter.php?", envoi, function(retour) {
             console.log( "success membres_dispo_collecter" );
             $.each( retour, function(cle, valeur) {
@@ -110,14 +154,15 @@ function activer_formulaire(code_seance, code_site, code_support, debut, fin, id
                  //$("#statut_requete_json").html("<p>Oups: ça ce marche pas...</p>");
                  return false;
                  });
+   */
   /*
   possibilites = [ {value: "1", label: "Adèle Gamby"},{value: "111", label: "Catherine Bocher"},{value: "17000", label: "Catherine Bruneau"},{value: "18020", label: "Catherine Causeur"},{value: "16", label: "Catherine Lagadec "},{value: "112", label: "Catherine Lamour"},{value: "17", label: "Cathou Viollette"},{value: "18030", label: "Céline Gueneugues"},
   {value: "18", label: "Céline Prince"},{value: "152", label: "Christian Lannuzel"},{value: "20", label: "Christian Venot"},{value: "16039", label: "Christine Arsant"},{value: "22", label: "Christophe Perrochon"},{value: "23", label: "Claude Langlois"},{value: "115", label: "Claudie Dubrana"},{value: "24", label: "Claudine Lassée "},
   {value: "18037", label: "Corinne Paillet"},{value: "26", label: "David Banks"},{value: "117", label: "Denis Creach"},{value: "137", label: "Marcelline Calzas"},{value: "17031", label: "Marie Boeuf"},
   {value: "17039", label: "Marie Aude Pina Silas"},{value: "67", label: "Marie-Christine Robelet"},{value: "1521", label: "Marie-Françoise Kermaidic"},{value: "68", label: "Marie-Josée Le Beux"},{value: "9009", label: "Marie-No Guével"},{value: "69", label: "Marie-Noelle Bénard"},{value: "138", label: "Marine Lombard"},{value: "18011", label: "Marion Lorzil"},{value: "17044", label: "Maryse Pichon"},{value: "101", label: "Pierre Chevaillier"} ];
   */
-  
-  $( "#nom_part" ).autocomplete({ minLength: 2,
+  /*
+  document.getElementById("nom_part").autocomplete({ minLength: 2,
                                   source: possibilites,
                                   focus: function( event, ui ) {
                                     $( "#nom_part" ).val( ui.item.label );
@@ -129,6 +174,7 @@ function activer_formulaire(code_seance, code_site, code_support, debut, fin, id
                                           return false;
                                         }
                                       });
+   */
   }
 
 function fin_saisie_participant(code_seance, code_site, code_support, debut, fin, id_contexte_saisie, rang) {
@@ -157,11 +203,31 @@ function fin_saisie_participant(code_seance, code_site, code_support, debut, fin
   }
   
   // Enregistrement de la nouvelle participation dans la base de donnees
-  let code_action = 'ii';
-  let responsable = (rang == 0) ? 1: 0;
+  const code_action = 'ii';
+  const responsable = (rang == 0) ? 1: 0;
   console.log(code_personne, " ", nom_participant, " resp ", responsable);
   envoi = {act: code_action, id: code_seance, sa: code_site, s: code_support, deb: debut, fin: fin, p: code_personne, resp: responsable};
   
+  var xmlhttp = new XMLHttpRequest();
+  var url = "php/scripts/inscription_seance_activite_maj.php?";
+  const params = new URLSearchParams(envoi).toString();
+  url += params;
+  console.log(url);
+  
+  var ok = false;
+  xmlhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        console.log("changement role seance : ok");
+        location.reload(); // necessaire pour prendre en compte nouveau contexte
+        ok = true;
+      }
+    };
+  
+  xmlhttp.open('GET', url, true);
+  xmlhttp.send();
+  console.log("request sent");
+  return ok;
+  /*
   var jqxhr = $.getJSON("php/scripts/inscription_seance_activite_maj.php?", envoi, function(retour) {
                         console.log( "success inscription_seance_activite_maj" );
                         texte.innerHTML = nom_participant;
@@ -170,12 +236,7 @@ function fin_saisie_participant(code_seance, code_site, code_support, debut, fin
                                console.log(cle + " " + status);
                                }
                               )
-                        /*
-                        let handler_id = code_support + '_' + debut;
-                        var handler = document.getElementById(code_support + '_' + debut);
-                        console.log("handler " + handler_id);
-                        handler.dispatchEvent(new Event('Fini'));
-                         */
+                       
                         location.reload(); // necessaire pour prendre en compte nouveau contexte
                         return true;
                         })
@@ -187,6 +248,7 @@ function fin_saisie_participant(code_seance, code_site, code_support, debut, fin
                             });
   
   return true;
+*/
 }
 
 // ----------------------------------------------------------------------------
@@ -202,15 +264,19 @@ function annuler_saisie_participant(id_contexte_saisie) {
 }
 
 // ----------------------------------------------------------------------------
-function activer_controle_annulation_seance(code_seance, id_modal, html_info_seance, html_info_partipations, html_mailto) {
-  $("#" + id_modal + "_titre").html("Annulation séance");
+function activer_controle_annulation_seance(code_seance, modal_id, html_info_seance, html_info_partipations, html_mailto) {
+  
+  const titre_modal = document.getElementById(modal_id + "_titre");
+  const corps_modal = document.getElementById(modal_id + "_corps");
+  const bouton_modal = document.getElementById(modal_id + "_btn");
+  
+  titre_modal.innerHTML = "Annulation séance";
   html_corps = '<div class="alert alert-warning" role="alert">Opération irréversible !<br />Ne pas oublier de prévenir les personnes intéressées.</div>';
   html_corps = html_corps + '<div class="card"><div class="card-body"><p>' + html_info_seance + '</p><p>' + html_info_partipations + '</p></div></div>';
   html_corps = html_corps + '<div><button type="button" class="btn btn-outline-primary"><a href="' + html_mailto + '">Envoyez un mail aux participants</a></button></div>';
   html_corps = html_corps + '<div><button type="button" class="btn btn-primary" onclick="supprimer_seance_activite(' + code_seance + '); return false;">Confirmer annulation</button></div>';
-  $("#" + id_modal + "_corps").html("<div>" + html_corps + "</div>");
-  
-  $("#" + id_modal + "_btn").html("Ne rien faire");
+  corps_modal.innerHTML = "<div>" + html_corps + "</div>";
+  bouton_modal.textContent = "Ne rien faire";
 
   return true;
 }
@@ -239,8 +305,13 @@ function supprimer_seance_activite(code_seance) {
 // Changement d'horaire d'une seance, meme equipage, meme support
 
 // Activation de la boite modale pour confirmer la realisation de l'action
-function activer_controle_changer_horaire_seance(code_seance, id_modal, html_info_seance, html_info_partipations, html_mailto, debut_nouveau_creneau, fin_nouveau_creneau) {
-  $("#" + id_modal + "_titre").html("Changement horaire séance");
+function activer_controle_changer_horaire_seance(code_seance, modal_id, html_info_seance, html_info_partipations, html_mailto, debut_nouveau_creneau, fin_nouveau_creneau) {
+  
+  const titre_modal = document.getElementById(modal_id + "_titre");
+  const corps_modal = document.getElementById(modal_id + "_corps");
+  const bouton_modal = document.getElementById(modal_id + "_btn");
+  
+  titre_modal.innerHTML = "Changement horaire séance";
   html_corps = '<div class="alert alert-warning" role="alert">Opération irréversible !<br />Ne pas oublier de prévenir les personnes intéressées.</div>';
   html_corps = html_corps + '<div class="card"><div class="card-body"><p>' + html_info_seance + '</p><p>' + html_info_partipations + '</p></div></div>';
   html_corps = html_corps + '<div><button type="button" class="btn btn-outline-primary"><a href="' + html_mailto + '">Envoyez un mail aux participants</a></button></div>';
@@ -248,9 +319,9 @@ function activer_controle_changer_horaire_seance(code_seance, id_modal, html_inf
     + ', \'' + debut_nouveau_creneau
     + '\', \'' + fin_nouveau_creneau
     + '\'); return false;">Confirmer changement horaire</button></div>';
-  $("#" + id_modal + "_corps").html("<div>" + html_corps + "</div>");
+  corps_modal.innerHTML = "<div>" + html_corps + "</div>";
   
-  $("#" + id_modal + "_btn").html("Ne rien faire");
+  bouton_modal.textContent = "Ne rien faire";
 
   return true;
 }
@@ -260,6 +331,27 @@ function modifier_horaire_seance_activite(code_seance, debut_nouveau, fin_nouvea
   const code_action = 'mc'; // modification creneau
   const envoi = {act: code_action, id: code_seance, deb: debut_nouveau, fin: fin_nouveau};
   console.log(envoi);
+  
+  var xmlhttp = new XMLHttpRequest();
+  var url = "php/scripts/inscription_seance_activite_maj.php?";
+  const params = new URLSearchParams(envoi).toString();
+  url += params;
+  console.log(url);
+  
+  var ok = false;
+  xmlhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        console.log("changement horaire seance : ok");
+        location.reload(); // necessaire pour prendre en compte nouveau contexte
+        ok = true;
+      }
+    };
+  
+  xmlhttp.open('GET', url, true);
+  xmlhttp.send();
+  console.log("request sent");
+  return ok;
+  /*
   var jqxhr = $.getJSON("php/scripts/inscription_seance_activite_maj.php?", envoi, function(retour) {
                          console.log("success inscription_seance_activite_maj - modification creneau");
                          location.reload(); // necessaire pour prendre en compte nouveau contexte
@@ -270,6 +362,7 @@ function modifier_horaire_seance_activite(code_seance, debut_nouveau, fin_nouvea
                              return false;
                              });
   return true;
+   */
 }
 
 

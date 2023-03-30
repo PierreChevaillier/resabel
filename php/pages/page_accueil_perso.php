@@ -3,26 +3,31 @@
   // contexte : Resabel - systeme de REServAtion de Bateaux En Ligne
   // description : Definition de la classe Page_Accueil_Perso
   //               Sorte de portail / personne
-  // copyright (c) 2018-2022 AMP. Tous droits reserves.
+  // copyright (c) 2018-2023 AMP. Tous droits reserves.
   // --------------------------------------------------------------------------
   // utilisation : php - require_once <chemin-fichier.php>
-  // dependances : bootstrap 4.x, valeur variables $_SESSION
-  // teste avec : PHP 7.1 sur Mac OS 10.14 ; PHP 7.0 sur hebergeur web
-  //  - PHP 8.2 sur macOS 13.1 (> 25-dec-2022)
+  // dependances :
+  //  - bootstrap 5.3
+  //  - valeur variables $_SESSION
+  //  - code actions
+  //  - champs table seances_activite
+  // utilise avec : PHP 7.1 sur Mac OS 10.14 ; PHP 7.0 sur hebergeur web
+  //  - PHP 8.2 sur macOS 13.x (> 25-dec-2022)
   // --------------------------------------------------------------------------
   // creation : 04-mar-2020 pchevaillier@gmail.com
   // revision : 29-mar-2020 pchevaillier@gmail.com ameliorerations + marees
   // revision : 29-dec-2022 pchevaillier@gmail.com fix erreur 8.2, utf8_encode deprecated
+  // revision : 30-mar-2023 pchevaillier@gmail.com actions changement de role
   // --------------------------------------------------------------------------
   // commentaires :
   // - en cours d'evolution
   // attention :
   // - pas complet
   // - $code_site = 1; EN DUR (suppose etre un site pour lequel il a des marees)
-  //    et etre le site de base du club
+  //    et etre le site de base du club (cf. definir_affichage_marees)
   // a faire :
   // - pas completement teste, a completer
-  // - dans collecter_info_permanence: garder $this->permanance a null si pas de perm trouvee
+  // - dans collecter_info_permanence: garder $this->permanence a null si pas de perm trouvee
   // ==========================================================================
 
   // --- Classes utilisees
@@ -59,12 +64,12 @@
   // --------------------------------------------------------------------------
   class Page_Accueil_Perso extends Page_Menu {
     
-    private $maintenant = null;
+    private ?Instant $maintenant = null;
     private function code_utilisateur() { return $this->contexte->utilisateur->code(); }
     private $contexte = null;
     
     private $sites = array();
-    private $permanence = null;
+    private ?Permanence $permanence = null;
     private $personnes = null;
     private $supports_activite = null;
     private $seances = array();
@@ -252,10 +257,18 @@
         $code_action = "di"; // annulation inscription individuelle
         $params = $params . ', \'' . $code_action . '\'';
         $code_menu = $code_menu . '<a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#aff_act" onclick="requete_inscription_individuelle(' . $params . ');">Annuler ma participation</a>';
-        if ($seance->responsable_requis() && !$seance->a_un_responsable() && $this->contexte->utilisateur_responsable())
-          $code_menu = $code_menu . '<a class="dropdown-item" onclick="return true;">Passer chef de bord</a>';
-        if ($seance->a_un_responsable() && $seance->responsable->code() == $this->code_utilisateur())
-          $code_menu = $code_menu . '<a class="dropdown-item" onclick="return true;">Laisser la place de chef de bord</a>';
+        if ($seance->responsable_requis() && !$seance->a_un_responsable() && $this->contexte->utilisateur_responsable()) {
+          $params = $seance->code . ', ' . $this->contexte->utilisateur->code();
+          $code_action = 'mer'; // Modification : passage Equipier a Responsable
+          $params = $params . ', \'' . $code_action . '\'';
+          $code_menu = $code_menu . '<a class="dropdown-item" onclick="requete_changement_role_seance(' . $params . ');return false;">Passer Chef de bord</a>';
+        }
+        if ($seance->a_un_responsable() && $seance->responsable->code() == $this->code_utilisateur()) {
+          $params = $seance->code . ', ' . $this->contexte->utilisateur->code();
+          $code_action = 'mre'; // Modification : passage Responsable a Equipier
+          $params = $params . ', \'' . $code_action . '\'';
+          $code_menu = $code_menu . '<a class="dropdown-item" onclick="requete_changement_role_seance(' . $params . ');return false;">Laisser la place de chef de bord</a>';
+        }
         if ($seance->nombre_participants() > 1)
           $code_menu = $code_menu . '<a class="dropdown-item" onclick="return true;">Contacter les participants</a>';
         $code_menu = $code_menu . '</div></div>' . PHP_EOL;
