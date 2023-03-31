@@ -3,7 +3,7 @@
 <?php
 // ============================================================================
 // contexte : Resabel - systeme de REServation de Bateaux En Ligne
-// - Test composant Resable pour generation de contenu dans une page web
+// - Test composant Resabel pour generation de contenu dans une page web
 // - modele de fichier source
 // description : genere une page web "vide"
 // copyright (c) 2023 AMP. Tous droits reserves.
@@ -17,7 +17,7 @@
 // revision : 23-mar-2023 pchevaillier@gmail.com essa
 // ----------------------------------------------------------------------------
 // commentaires :
-//  - affiche juste du texte pour s'assurer qu'il se passe bien queleque chose
+//  - affiche juste du texte pour s'assurer qu'il se passe bien quelque chose
 // attention :
 // a faire :
 // ============================================================================
