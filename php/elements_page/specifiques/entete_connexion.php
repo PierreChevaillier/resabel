@@ -23,18 +23,20 @@
   // --------------------------------------------------------------------------
   class Entete_Connexion extends Element {
     
+    public string $sous_titre = "";
     public function initialiser() { }
     
     protected function afficher_debut() {
-      echo '<div class="jumbotron" style="padding:20px;text-align:center;">';
+      echo '<div style="padding:40px;"><div class="mt-4 p-2 rounded bg-primary" style="padding:10px;text-align:center;color:white;">';
     }
     
     protected function afficher_corps() {
-      echo "<h1 class=\"display-4\">" . $this->titre() . "</h1><p class=\"lead\">Inscription pour les Sorties en Mer</p>";
+      echo '<h1>' . $this->titre() . '</h1>';
+      echo '<p class="lead">' . $this->sous_titre . '</p>';
     }
     
     protected function afficher_fin() {
-      echo "</div>\n";
+      echo '</div></div>';
     }
     
   }

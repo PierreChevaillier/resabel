@@ -115,12 +115,12 @@
     }
     
     protected function afficher_debut() {
-      echo '<div class="dropdown"><button class="btn  btn-outline-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Actions</button>';
+      echo '<div class="dropdown"><button class="btn  btn-outline-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Actions</button>';
       echo '<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">';
     }
     
     protected function afficher_actions() {
-      echo '<a class="dropdown-item" data-toggle="modal" data-target="#aff_mbr" href="#" onclick="return requete_info_personne(' . $this->personne->code() .', \'aff_mbr\');">Afficher</a>';
+      echo '<a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#aff_mbr" href="#" onclick="return requete_info_personne(' . $this->personne->code() .', \'aff_mbr\');">Afficher</a>';
       if (isset($_SESSION['prs']) && isset($_SESSION['usr']) && $this->personne->code() == $_SESSION['usr'])
         echo '<a class="dropdown-item" href="membre.php?a=m&o=m&mbr=' . $this->personne->code() . '">Modifier mes données</a>';
       elseif (isset($_SESSION['adm'])) {
@@ -145,14 +145,14 @@
       if (isset($_SESSION['adm'])) {
         // Changements de statuts possibles (reversibles)
         if (!$this->personne->est_chef_de_bord() && !$this->personne->est_debutant())
-          echo '<a class="dropdown-item" id="ctrl_cdb" data-toggle="modal" data-target="#aff_msg" href="#" onclick="return requete_maj_statut_cdb(this, ' . $this->personne->code() .', 1, \'aff_msg\');">Passer chef de bord</a>';
+          echo '<a class="dropdown-item" id="ctrl_cdb" data-bs-toggle="modal" data-bs-target="#aff_msg" href="#" onclick="return requete_maj_statut_cdb(this, ' . $this->personne->code() .', 1, \'aff_msg\');">Passer chef de bord</a>';
         elseif ($this->personne->est_chef_de_bord())
-          echo '<a class="dropdown-item" id="ctrl_cdb" data-toggle="modal" data-target="#aff_msg" href="#" onclick="return requete_maj_statut_cdb(this, ' . $this->personne->code() .', 0, \'aff_msg\');">Plus chef de bord</a>';
+          echo '<a class="dropdown-item" id="ctrl_cdb" data-bs-toggle="modal" data-bs-target="#aff_msg" href="#" onclick="return requete_maj_statut_cdb(this, ' . $this->personne->code() .', 0, \'aff_msg\');">Plus chef de bord</a>';
         
         if ($this->personne->est_debutant())
-          echo '<a class="dropdown-item" id="ctrl_nouv" data-toggle="modal" data-target="#aff_msg" href="#" onclick="return requete_maj_niveau(this, ' . $this->personne->code() .', 2, \'aff_msg\');">Passer non débutant</a>';
+          echo '<a class="dropdown-item" id="ctrl_nouv" data-bs-toggle="modal" data-bs-target="#aff_msg" href="#" onclick="return requete_maj_niveau(this, ' . $this->personne->code() .', 2, \'aff_msg\');">Passer non débutant</a>';
         elseif (!$this->personne->est_chef_de_bord())
-          echo '<a class="dropdown-item" id="ctrl_nouv" data-toggle="modal" data-target="#aff_msg" href="#" onclick="return requete_maj_niveau(this, ' . $this->personne->code() .', 1, \'aff_msg\');">Repasser débutant</a>';
+          echo '<a class="dropdown-item" id="ctrl_nouv" data-bs-toggle="modal" data-bs-target="#aff_msg" href="#" onclick="return requete_maj_niveau(this, ' . $this->personne->code() .', 1, \'aff_msg\');">Repasser débutant</a>';
         /*
         if ($this->personne->est_actif())
           echo '<a class="dropdown-item" href="#">Désactiver compte</a>';

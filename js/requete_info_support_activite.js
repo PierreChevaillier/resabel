@@ -1,47 +1,67 @@
 // ============================================================================
-// contexte    : Resabel V2
-// description : requete ajax pour modifier l'etat actif (on non) d'un support d'activite
+// contexte : Resabel - systeme de REServAtion de Bateau En Ligne
+//            controle actions utilisateurice - cote client
+// description : requete au serveur pour modifier l'etat actif (on non) d'un support d'activite
+// Copyright (c) 2017-2023 AMP. Tous droits reserves.
+// ----------------------------------------------------------------------------
 // utilisation : javascript - controleur action element page web
-// teste avec  : firefox, safari sur Mac OS 10.14,
-//               jQuery 3.3.1
-// dependances : JQuery
-//               modal.php (de Resabel) : ids des elements du composant
-//               vue_support_activite.php : operation afficher_actions de Menu_Actions_Membre
-// Copyright (c) 2017-2020 AMP. Tous droits reserves
+// dependances :
+// - modal.php (de Resabel) : ids des elements du composant
+// - script execute par le serveur : nom et reponse
+// - bootstrap (classe du bouton)
+// utilise avec  :
+//  - firefox, safari sur macOS 13.x
 // ----------------------------------------------------------------------------
 // creation : 29-aug-2020 pchevaillier@gmail.com
-// revision :
+// revision : 23-mar-2023 pchevaillier@gmail.com jQuery  > XMLHttpRequest
 // ----------------------------------------------------------------------------
 // commentaires :
 // attention :
 // a faire :
 // ----------------------------------------------------------------------------
 
-function requete_info_support_activite(code_support, modal_id) {
-  envoi = {code: code_support};
-
-  //alert("on est ici. Code = " + code_support + " Modal id " + modal_id);
+function afficher_info_support_activite(modal_id, reponse) {
+  var ok = true;
   
-  var jqxhr = $.getJSON("php/scripts/support_activite_info_obtenir.php?", envoi, function(retour) {
-                        console.log( "success" );
-                        $("#" + modal_id + "_titre").html("Support activité");
-                        code_html = "<div>";
-                        var items = [];
-                        $.each( retour, function(cle, valeur) {
-                               items.push(valeur + "<br />");
-                               });
-                        code_html += items.join("");
-                        $("#" + modal_id + "_corps").html(code_html + "</div>");
-                        
-                        $("#" + modal_id + "_btn").html("Fermer");
-                        var bouton = document.getElementById(modal_id + "_btn");
-                        bouton.classList.add("btn-success");
-                        console.log("fin affichage");
-                        })
-  .fail(function(retour) {
-        console.log("error");
-        })
-  ;
+  const titre_modal = document.getElementById(modal_id + "_titre");
+  const corps_modal = document.getElementById(modal_id + "_corps");
+  const bouton_modal = document.getElementById(modal_id + "_btn");
+  
+  titre_modal.textContent = "Support activité";
+  var code_html = "<div>";
+  var items = [];
+  var dict = JSON.parse(reponse);
+  for (var entree in dict) {
+    valeur = dict[entree];
+    //console.log("JSON retour : " + entree + " =>" + valeur);
+    items.push(valeur + "<br />");
+  }
+  code_html += items.join("");
+  corps_modal.innerHTML = code_html + "</div>";
+  bouton_modal.textContent = "Fermer";
+  bouton_modal.classList.add("btn-success");
+  return ok;
+}
+
+function requete_info_support_activite(code_support, modal_id) {
+  const envoi = {code: code_support};
+
+  var xmlhttp = new XMLHttpRequest();
+  var url = "php/scripts/support_activite_info_obtenir.php?";
+  const params = new URLSearchParams(envoi).toString();
+  url += params;
+  console.log(url);
+  
+  var ok = false;
+  xmlhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        ok = afficher_info_support_activite(modal_id, this.responseText);
+      }
+    };
+  
+  xmlhttp.open('GET', url, true);
+  xmlhttp.send();
+  return ok;
 }
 
 // ============================================================================

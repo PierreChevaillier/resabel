@@ -61,8 +61,8 @@
       $page->ajoute_contenu($afficheur_action);
       
       $info = new Element_Code();
-      $code_html = "\n<div class=\"rsbl-msg-action\"><p class=\"lead\">Cette opération supprime le repérage des nouveaux en tant que tel. </p><p><strong>Attention</strong> : Elle ne peut pas être annulée.</p></div>\n";
-      $code_html = $code_html . "\n<button class=\"btn btn-primary\" data-toggle=\"modal\" data-target=\"#aff_msg_act\" onclick=\"return requete_maj_niveau_debutants('aff_msg_act');\">Exécuter action</button>\n";
+      $code_html = PHP_EOL . '<div class="alert alert-warning" role="alert"><p class="lead">Cette opération supprime le repérage des nouveaux en tant que tel. </p><p><strong>Attention</strong> : Elle ne peut pas être annulée.</p></div>' . PHP_EOL;
+      $code_html = $code_html . '<button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#aff_msg_act" onclick="return requete_maj_niveau_debutants("aff_msg_act");">Exécuter action</button>' . PHP_EOL;
       $info->def_code($code_html);
       $page->ajoute_contenu($info);
       

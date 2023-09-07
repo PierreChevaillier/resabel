@@ -2,19 +2,20 @@
   // ==========================================================================
   // contexte : Resabel - systeme de REServAtion de Bateau En Ligne
   // description : menu de navigation dans l'application
-  // copyright (c) 2018 AMP. Tous droits reserves.
+  // copyright (c) 2018-2023 AMP. Tous droits reserves.
   // --------------------------------------------------------------------------
   // utilisation : php - require_once <chemin_vers_ce_fichier.php>
-  // dependances : bootstrap 4.1
+  // dependances : bootstrap
   // teste avec : PHP 7.1 sur Mac OS 10.14 ; 
   //              PHP 7.0 sur hebergeur web (pas encore)
   // --------------------------------------------------------------------------
   // creation : 14-oct-2018 pchevaillier@gmail.com reprise de France 2018
   // revision : 16-dec-2018 pchevaillier@gmail.com sigle site web et home page
   // revision : 02-mar-2019 pchevaillier@gmail.com erreur toggle Menu
+  // revision : 17-mar-2023 pchevaillier@gmail.com bootstrap v5.3
   // --------------------------------------------------------------------------
   // commentaires :
-  // -
+  // - pres a recevoir le contenu du module
   // attention :
   // -
   // a faire :
@@ -34,25 +35,26 @@
     }
     
     protected function afficher_debut() {
-      echo "\n        <nav class=\"navbar navbar-expand-lg navbar-light\" role=\"navigation\">\n";
-    
-      // Lien vers le site web du club
-      echo "\n<a class=\"navbar-brand\" href=\"" . htmlspecialchars(Site_Web::accede()->adresse_racine()) . "\" target=\"_new\">" . htmlspecialchars(Site_Web::accede()->sigle()) . "</a>\n";
+      $html_id = (strlen($this->id()) > 0) ? " id=\"" . $this->id() . "\" " : " ";
+      echo '<nav class="navbar navbar-expand-lg"' . $html_id . 'role="navigation">';
+      echo '<div class="container-fluid">';
       
-      // toggler
-      echo ' <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#menu_nav" aria-controls="menu_nav" aria-expanded="false" aria-label="Toggle navigation">';
+      // Lien vers le site web du club
+      echo '<a class="navbar-brand" href="' . htmlspecialchars(Site_Web::accede()->adresse_racine()) . '" target="_new">'
+        . htmlspecialchars(Site_Web::accede()->sigle()) . '</a>';
+      
+      // Le bouton 'toggler'
+      echo '<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu_nav" aria-controls="menu_nav" aria-expanded="false" aria-label="Toggle navigation">';
       echo '<span class="navbar-toggler-icon"></span>';
       echo '</button>';
-      
+
+      // la barre de menu en elle-meme
       echo '<div class="collapse navbar-collapse" id="menu_nav">';
-      //echo "\n</div>\n";
-      
-      // la barre de menu
-      echo "\n" . '<ul class="navbar-nav mr-auto">';
+      echo '<ul class="navbar-nav me-auto mb-2 mb-lg-0">'; // "\n" . '<ul class="navbar-nav mr-auto">';
     }
     
     protected function afficher_fin() {
-      echo "\n</ul>\n</div>\n</nav>\n";
+      echo '</ul></div></div></nav>';
     }
     
   }

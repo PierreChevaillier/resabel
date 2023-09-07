@@ -61,29 +61,33 @@
   */
   // --------------------------------------------------------------------------
   // realisation de l'action (selon le type d'action)
-  
+  $ok = false;
+
   if ($action[0] == 'i') { // ii (inscr. individuelle) ou ie (inscr. equipage)
     $status = Enregistrement_Seance_Activite::ajouter_participation($info_participation);
+    $ok = ($status == 1);
   } elseif ($action == 'di') {
     $status = Enregistrement_Seance_Activite::supprimer_participation($info_participation);
+    $ok = ($status == 1);
   } elseif ($action == 'de') {
-    $status = Enregistrement_Seance_Activite::supprimer_seance($info_participation->code_seance);
+    $ok = Enregistrement_Seance_Activite::supprimer_seance($info_participation->code_seance);
   } elseif ($action == 'mre') {
-    $status = Enregistrement_Seance_Activite::passer_responsable_equipier($info_participation->code_seance);
+    $ok = Enregistrement_Seance_Activite::passer_responsable_equipier($info_participation->code_seance);
   } elseif ($action == 'mer') {
-    $status = Enregistrement_Seance_Activite::passer_equipier_responsable($info_participation->code_seance,
+    $ok = Enregistrement_Seance_Activite::passer_equipier_responsable($info_participation->code_seance,
                                                                           $info_participation->code_participant
                                                                           );
   } elseif ($action == 'mc') {
-    $status = Enregistrement_Seance_Activite::changer_horaire($info_participation->code_seance,
+    $ok = Enregistrement_Seance_Activite::changer_horaire($info_participation->code_seance,
                                                               $info_participation->debut,
                                                               $info_participation->fin
                                                               );
   }
   // --------------------------------------------------------------------------
   // Reponse a la requete :
-   
-  $donnees = array('res' => $status);
+
+  $status = $ok ? 1 : 0;
+  $donnees = array('status' => $status);
   //array('s' => $supports_json, 'ts' => $types_support_json, 'pc' => $creneaux_json, 'dc' => $creneaux_json);
 
   $resultat_json = json_encode($donnees);

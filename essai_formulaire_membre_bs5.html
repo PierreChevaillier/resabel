@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="robots" content="none"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    
+  <link rel="stylesheet" href="./../bootstrap/5.3.0/css/bootstrap.min.css"/>
+  <link rel="stylesheet" href="./css/resabel_ecran.css" media="screen"/>
+
+  <script src="./../bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script> <!-- after bootstrap -->
+
+  <script src="./js/controle_formulaire_membre.js" defer></script>
+    
+    <title>Resabel - Essai formulaire membre</title>
+</head>
+<body>
+  <div class="container-fluid" style="padding:20px;">
+    <nav class="navbar navbar-expand-lg" role="navigation">
+      <div class="container-fluid"> <!-- nouveau BS5 -->
+        <a class="navbar-brand" href="https://avironplougonvelin.fr" target="_new">AMP</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu_nav" aria-controls="menu_nav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <div class="collapse navbar-collapse" id="menu_nav">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0"> <!-- nouveau BS5 -->
+            <li class="nav-item">
+              <a class="nav-link active" href="activites.php?a=l&j=2023-03-16">Sorties</a>
+            </li>
+            
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="mnu_club" role="button" data-bs-toggle="dropdown" aria-expanded="false">Club</a> <!-- nouveau BS5 -->
+              <ul class="dropdown-menu" aria-labelledby="mnu-club"> <!-- nouveau BS5 -->
+                <li><a class="dropdown-item" href="agendas.php">Calendrier</a></li>
+                <li><a class="dropdown-item" href="permanences.php">Permanences</a></li>
+                <li><a class="dropdown-item" href="equipe_permanence.php">Equipe permanence</a></li>
+                <li><a class="dropdown-item" href="sites_activite.php">Sites d'activité</a></li>
+                <li><a class="dropdown-item" href="fermetures_sites.php">Fermetures sites</a></li>
+                <li><a class="dropdown-item" href="club.php">Info club</a></li>
+                <li><a class="dropdown-item" href="composantes.php">Composantes club</a></li>
+              </ul>
+            </li>
+            
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="mnu_prs" role="button" data-bs-toggle="dropdown" aria-expanded="false">Personnes</a>
+              <ul class="dropdown-menu" aria-labelledby="mnu_prs">
+                <li><a class="dropdown-item" href="personnes.php?a=l&act=1&cnx=1">Liste personnes</a></li>
+                <li><a class="dropdown-item" href="membre.php?a=c&o=n">Enregistrement nouveau</a></li>
+                <li><a class="dropdown-item" href="debutants.php">Débutants > Confirmés</a></li>
+              </ul>
+            </li>
+            
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="mnu_support" role="button" data-bs-toggle="dropdown" aria-expanded="false">Supports activités</a>
+              <div class="dropdown-menu" aria-labelledby="mnu_support">
+                <a class="dropdown-item" href="indisponibilites.php">Indisponibilités supports</a>
+                <a class="dropdown-item" href="https://docs.google.com/spreadsheets/d/14zDfgiiELgDnSE4GkX0tpoB2RK1tlmWS3hywiklecFc/edit#gid=795898690">Signalements anomalie</a>
+                <a class="dropdown-item" href="supports_activite.php">Supports activités</a>
+              </div>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="membre.php?a=m&o=u&mbr=101">Pierre Chevaillier</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="php/scripts/deconnexion.php">Déconnexion</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="mt-4 p-2 bg-primary text-white rounded" style="text-align:center;">
+      <h1>Informations membre</h1>
+    </div>
+
+        <form class="row g-3 needs-validation was-validated" novalidate="" role="form" id="form_mbr" name="form_mbr" method="post" action="php/scripts/membre_info_maj.php?a=m&o=m&mbr=6">
+          
+            <!-- input type="hidden" name="a" value="a"/ -->
+              <div class="col-12">
+            <p>
+              Les champs obligatoires sont indiqués par <span aria-label="required">*</span>.
+            </p>
+            </div>
+
+            <input id="code_mbr" name="code_mbr" type="hidden" value="6"/>
+            
+            <div class="col-md-4">
+                <label class="form-label" for="gnr">Civilité <span aria-label="required">*</span></label>
+                <div>
+                    <select class="form-control" id="gnr" name="gnr" required>
+                        <option value="F">Madame</option>
+                        <option value="H" selected>Monsieur</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label" for="prn">Prénom <span aria-label="required">*</span></label>
+              <input class="form-control" id="prn" name="prn" required type="text" minlength="2" maxlength="50" value="Antoine">
+              <div id="prnFeedback" class="invalid-feedback"><span></span></div>
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label" for="nom">Nom <span aria-label="required">*</span></label>
+              <input class="form-control" id="nom" name="nom" required type="text"  minlength="2" maxlength="50" value="Zannini">
+              <div id="nomFeedback" class="invalid-feedback"><span></span></div>
+            </div>
+            
+            <div class="col-md-4">
+              <label class="form-label" for="id">Identifiant de connexion <span aria-label="required">*</span></label>
+              <input class="form-control" id="id" name="id" required type="text" minlength="3" maxlength="50" value="antoine.zannini"/>
+              <div id="idFeedback" class="invalid-feedback"><span></span></div>
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label" for="courriel">Adresse courriel </label>
+              <input class="form-control" id="courriel" name="courriel" type="mail" value="azannini29@orange.fr"/>
+              <div id="courrielFeedback" class="invalid-feedback"><span></span></div>
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label" for="tel">Numéro de téléphone </label>
+              <input class="form-control" id="tel" name="tel" type="tel" value="0608851701"/>
+              <div id="telFeedback" class="invalid-feedback"><span></span></div>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label" for="cmn">Commune </label>
+                    <select class="form-select" id="cmn" name="cmn">
+                        <option value="29011">Bohars</option>
+                        <option value="29015">Bourg-Blanc</option>
+                        <option value="29019">Brest</option>
+                        <option value="29061">Gouesnou</option>
+                        <option value="29069">Guilers</option>
+                        <option value="29075">Guipavas</option>
+                        <option value="29076">Guipronvel</option>
+                        <option value="29098">Lampaul-Plouarzel</option>
+                        <option value="29099">Lampaul-Ploudalmézeau</option>
+                        <option value="29101">Landéda</option>
+                        <option value="29112">Lanildut</option>
+                        <option value="29117">Lannilis</option>
+                        <option value="29040">Le Conquet</option>
+                        <option value="29235">Le Relecq-Kerhuon</option>
+                        <option value="29124">Lesneven</option>
+                        <option value="29130" selected>Locmaria-Plouzané</option>
+                        <option value="29149">Milizac</option>
+                        <option value="29151">Morlaix</option>
+                        <option value="29160">Plabennec</option>
+                        <option value="29177">Plouarzel</option>
+                        <option value="29190">Plougonvelin</option>
+                        <option value="29195">Plouguerneau</option>
+                        <option value="29201">Ploumoguer</option>
+                        <option value="29212">Plouzané</option>
+                        <option value="29221">Porspoder</option>
+                        <option value="29236">Riec-sur-Bélon</option>
+                        <option value="44162">Saint-Herblin</option>
+                        <option value="29260">Saint-Renan</option>
+                        <option value="29282">Trébabu</option>
+                    </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label" for="nais">Date de naissance </label>
+                <input class="form-control" id="nais" name="nais" type="date" value="1965-11-03"/>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label" for="lic">Licence </label>
+                <div>
+                    <input class="form-control" id="lic" name="lic" type="text" size="50" maxlength="50" value="361187"/>
+                </div>
+            </div>
+            <div class="col-12">
+              <div class="form-check">
+                <input type="checkbox" name="verifiee" required>
+                <label class="form-check-label" for="verifiee">J'ai vérifié les informations saisies dans ce formulaire, elles sont complètes.</label>
+                <div id="verifieeFeedback" class="invalid-feedback"><span>Vous devez cocher cette case</span></div>
+              </div>
+            </div>
+            <div class="col-12">
+              <input class="btn btn-large btn-primary" type="submit" id="form_mbr_valid" value="Valider">
+              <input class="btn btn-large btn-secondary" type="reset" id="form_mbr_reset" value="Ré-initialiser la saisie">
+            </div>
+        </form>
+        <footer>
+            <p>Resabel - V2 Copyright &copy; 2014 - 2023</p>
+        </footer>
+    </div>
+</body>
+</html>

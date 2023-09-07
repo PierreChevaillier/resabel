@@ -2,13 +2,15 @@
   // ==========================================================================
   // contexte : Resabel - systeme de REServAtion de Bateau En Ligne
   // description : definition du menu de navigation de l'application
-  // copyright (c) 2018-2019 AMP. Tous droits reserves.
+  // copyright (c) 2018-2023 AMP. Tous droits reserves.
   // --------------------------------------------------------------------------
   // utilisation : php - require_once <chemin-fichier.php>
-  // dependances : bootstrap 4.x, variables de session (identification_verif.php)
-  // teste avec : PHP 7.1 sur Mac OS 10.14 ;
-  //              PHP 7.0 sur hebergeur web
-  //              bootstrap 4.3.1
+  // dependances :
+  //   - bootstrap 5.3, depuis mars 2023
+  //   - variables de session (identification_verif.php)
+  // utilise avec :
+ //    - (depuis 2023) PHP 8.2 sur macOS 13.2 ;
+  //   - PHP 8.1 sur hebergeur web
   // --------------------------------------------------------------------------
   // creation : 14-oct-2018 pchevaillier@gmail.com
   // revision : 29-dec-2018 pchevaillier@gmail.com deconnexion
@@ -18,10 +20,12 @@
   // revision : 10-jun-2019 pchevaillier@gmail.com + menu_indisponibilites
   // revision : 25-dec-2019 pchevaillier@gmail.com impact refonte calendrier
   // revision : 29-dec-2019 pchevaillier@gmail.com reorganisation items menu
+  // revision : 17-mar-2023 pchevaillier@gmail.com bootstrap v5.3
   // --------------------------------------------------------------------------
   // commentaires :
   // attention :
   // a faire :
+  //  - completer au fur et a mesure du developpement (nouvelles pages) 
   // - variables pour acronyme club et lien home-page
   // ==========================================================================
 
@@ -50,56 +54,56 @@
     }
     
     private function afficher_menu_club() {
-      echo ' <li class="nav-item dropdown">';
-      echo '<a class="nav-link dropdown-toggle" href="#" id="mnu_club" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Club</a>';
-      echo ' <div class="dropdown-menu" aria-labelledby="mnu-club">';
-      echo '<a class="dropdown-item" href="agendas.php">Calendrier</a>';
-      echo '<a class="dropdown-item" href="permanences.php">Permanences</a>';
+      echo '<li class="nav-item dropdown">';
+      echo '<a class="nav-link dropdown-toggle" href="#" id="mnu_club" role="button" data-bs-toggle="dropdown" aria-expanded="false">Club</a>';
+      echo '<ul class="dropdown-menu" aria-labelledby="mnu-club">';
+      echo '<li><a class="dropdown-item" href="agendas.php">Calendrier</a></li>';
+      echo '<li><a class="dropdown-item" href="permanences.php">Permanences</a></li>';
       if ($this->session_admin) {
-        echo '<a class="dropdown-item" href="equipe_permanence.php">Equipe permanence</a>';
-        echo '<a class="dropdown-item" href="sites_activite.php">Sites d\'activité</a>';
+        echo '<li><a class="dropdown-item" href="equipe_permanence.php">Equipe permanence</a></li>';
+        echo '<li><a class="dropdown-item" href="sites_activite.php">Sites d\'activité</a></li>';
       }
-      echo '<a class="dropdown-item" href="fermetures_sites.php">Fermetures sites</a>';
-      echo '<a class="dropdown-item" href="club.php">Info club</a>';
-      echo '<a class="dropdown-item" href="composantes.php">Composantes club</a>';
-      echo '</div></li>';
+      echo '<li><a class="dropdown-item" href="fermetures_sites.php">Fermetures sites</a></li>';
+      echo '<li><a class="dropdown-item" href="club.php">Info club</a></li>';
+      echo '<li><a class="dropdown-item" href="composantes.php">Composantes club</a></li>';
+      echo '</ul></li>';
     }
     
     private function afficher_menu_inscription() {
       echo ' <li class="nav-item dropdown">';
-      echo '<a class="nav-link dropdown-toggle" href="#" id="mnu_inscr" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Inscriptions</a>';
-      echo ' <div class="dropdown-menu" aria-labelledby="mnu-inscr">';
+      echo '<a class="nav-link dropdown-toggle" href="#" id="mnu_inscr" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Inscriptions</a>';
+      echo ' <ul class="dropdown-menu" aria-labelledby="mnu-inscr">';
       if ($this->membre_actif)
-        echo '<a class="dropdown-item" href="inscription_individuelle.php?a=ii">Inscription individuelle</a>';
-      echo '<a class="dropdown-item" href="inscription_individuelle.php?a=ie">Inscription équipage</a>'; // Meme paage que inscprtion individuelle avec option 'ie'
-      echo '<a class="dropdown-item" href="agendas.php">Agendas</a>';
-      echo '</div></li>';
+        echo '<li><a class="dropdown-item" href="inscription_individuelle.php?a=ii">Inscription individuelle</a>';
+      echo '<li><a class="dropdown-item" href="inscription_individuelle.php?a=ie">Inscription équipage</a></li>'; // Meme page que inscription individuelle avec option 'ie'
+      echo '<li><a class="dropdown-item" href="agendas.php">Agendas</a></li>';
+      echo '</ul></li>';
     }
     
     private function afficher_menu_supports_activite() {
-      echo ' <li class="nav-item dropdown">';
-      echo '<a class="nav-link dropdown-toggle" href="#" id="mnu_support" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Supports activités</a>';
-      echo ' <div class="dropdown-menu" aria-labelledby="mnu_support">';
-      echo '<a class="dropdown-item" href="indisponibilites.php">Indisponibilités supports</a>';
-      echo '<a class="dropdown-item" href="https://docs.google.com/spreadsheets/d/14zDfgiiELgDnSE4GkX0tpoB2RK1tlmWS3hywiklecFc/edit#gid=795898690">Signalements anomalie</a>';
+      echo '<li class="nav-item dropdown">';
+      echo '<a class="nav-link dropdown-toggle" href="#" id="mnu_support" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Supports activités</a>';
+      echo '<ul class="dropdown-menu" aria-labelledby="mnu_support">';
+      echo '<li><a class="dropdown-item" href="indisponibilites.php">Indisponibilités supports</a></li>';
+      echo '<li><a class="dropdown-item" href="https://docs.google.com/spreadsheets/d/14zDfgiiELgDnSE4GkX0tpoB2RK1tlmWS3hywiklecFc/edit#gid=795898690">Signalements anomalie</a></li>';
      /* if ($this->session_admin) {
-        echo '<a class="dropdown-item" href="motifs_indispo_support.php">Motifs indisponibilités</a>';
+        echo '<li><a class="dropdown-item" href="motifs_indispo_support.php">Motifs indisponibilités</a></li>';
       }
       */
-      echo '<a class="dropdown-item" href="supports_activite.php">Supports activités</a>';
+      echo '<li><a class="dropdown-item" href="supports_activite.php">Supports activités</a><li>';
       /*
       if ($this->session_admin) {
-        echo '<a class="dropdown-item" href="page_temporaire.php">Types de support d\'activité</a>';
+        echo '<li><a class="dropdown-item" href="page_temporaire.php">Types de support d\'activité</a>'</li>;
       }
        */
-      echo '</div></li>';
+      echo '</ul></li>';
     }
     
     private function afficher_menu_personnes() {
-      echo ' <li class="nav-item dropdown">';
-      echo '<a class="nav-link dropdown-toggle" href="#" id="mnu_prs" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Personnes</a>';
-      echo ' <div class="dropdown-menu" aria-labelledby="mnu_prs">';
-      echo '<a class="dropdown-item" href="personnes.php?a=l&act=1&cnx=1">Liste personnes</a>';
+      echo '<li class="nav-item dropdown">';
+      echo '<a class="nav-link dropdown-toggle" href="#" id="mnu_prs" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Personnes</a>';
+      echo '<ul class="dropdown-menu" aria-labelledby="mnu_prs">';
+      echo '<li><a class="dropdown-item" href="personnes.php?a=l&act=1&cnx=1">Liste personnes</a></li>';
       if ($this->session_club || $this->session_admin) {
         /*
          * Acces au formulaire pour l'enregistrement d'un nouveau membre du club
@@ -108,23 +112,23 @@
          * o = n :
          *   objet de l'action est un nouveau membre (pas encore cree a ce stade)
          */
-        echo '<a class="dropdown-item" href="membre.php?a=c&o=n">Enregistrement nouveau</a>';
+        echo '<li><a class="dropdown-item" href="membre.php?a=c&o=n">Enregistrement nouveau</a></li>';
       }
       if ($this->session_admin) {
-        echo '<a class="dropdown-item" href="debutants.php">Débutants > Confirmés</a>';
+        echo '<li><a class="dropdown-item" href="debutants.php">Débutants > Confirmés</a></li>';
         //echo '<a class="dropdown-item" href="page_temporaire.php">Listes visiteurs</a>';
       }
-      echo '</div></li>';
+      echo '</ul></li>';
     }
       
     private function afficher_menu_administration() {
-      echo ' <li class="nav-item dropdown">';
-      echo '<a class="nav-link dropdown-toggle" href="#" id="mnu_admin" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Administration</a>';
-      echo ' <div class="dropdown-menu" aria-labelledby="mnu-admin">';
-      echo '<a class="dropdown-item" href="page_temporaire.php">Equipe permanences</a>';
-      echo '<a class="dropdown-item" href="debutants.php">Débutants</a>';
-      echo '<a class="dropdown-item" href="page_temporaire.php">Visiteurs</a>';
-      echo '</div></li>';
+      echo '<li class="nav-item dropdown">';
+      echo '<a class="nav-link dropdown-toggle" href="#" id="mnu_admin" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Administration</a>';
+      echo '<ul class="dropdown-menu" aria-labelledby="mnu-admin">';
+      echo '<li><a class="dropdown-item" href="page_temporaire.php">Equipe permanences</a></li>';
+      echo '<li><a class="dropdown-item" href="debutants.php">Débutants</a></li>';
+      echo '<li><a class="dropdown-item" href="page_temporaire.php">Visiteurs</a></li>';
+      echo '</ul></li>';
     }
     
     protected function afficher_corps() {
@@ -136,10 +140,12 @@
       echo '<li class="nav-item"><a class="nav-link" href="activites.php?a=l&j=' . $this->jour->valeur_cle_date() . '">Sorties</a></li>';
       
       //if (!isset($_SESSION['prs']) || (isset($_SESSION['prs']) && isset($_SESSION['act'])))
+      
       if ($this->session_club || $this->membre_actif)
         $this->afficher_menu_inscription();
 
       $this->afficher_menu_club();
+      
       $this->afficher_menu_personnes();
       $this->afficher_menu_supports_activite();
       /*

@@ -6,11 +6,11 @@
   // copyright (c) 2018-2019 AMP. Tous droits reserves.
   // --------------------------------------------------------------------------
   // utilisation : php - require_once <nom_-fichier.php'
-  // dependances : bootstrap 4.x
+  // dependances : bootstrap 5.
   // teste avec : PHP 7.1 sur Mac OS 10.14 ; PHP 7.0 sur hebergeur web
   // --------------------------------------------------------------------------
   // creation : 02-mar-2019 pchevaillier@gmail.com
-  // revision :
+  // revision : 18-mar-2023 pchevaillier@gmail.com bootstrap v5.3
   // --------------------------------------------------------------------------
   // commentaires :
   // -
@@ -28,15 +28,15 @@
     }
     
     protected function afficher_debut() {
-      echo '<div class="jumbotron entete_sect" style="padding:5px;text-align:center;">';
+      echo '<div class=" mt-4 p-2 rounded entete_sect" style="padding:10px;text-align:center;">';
     }
     
     protected function afficher_corps() {
-      echo "<h2 class=\"display-6\">" . $this->titre() . "</h2>";
+      echo '<h2>' . $this->titre() . '</h2>';
      }
 
     protected function afficher_fin() {
-      echo "</div>\n";
+      echo '</div>';
     }
 
   }

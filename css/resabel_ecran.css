@@ -180,14 +180,14 @@ div.num_bateau {
 td.cel_bateau.compet {
   padding: 4px;
   width: 180px;
-  text-align: center;
+  /* text-align: center; */
   background-color: PapayaWhip;
 }
 
 td.cel_bateau.loisir {
   padding: 4px;
   width: 180px;
-  text-align: center;
+/*  text-align: center; */
   background-color: PowderBlue;
   align-content: center;
 }
