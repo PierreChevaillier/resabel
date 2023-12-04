@@ -36,25 +36,27 @@
     }
     
     private $club = null;
-    public function club(): Club { return $this->club; }
+    public function club(): ? Club { return $this->club; }
     public function def_club(Club $club) { $this->club = $club; }
     
-    public function verifier_identite($identifiant, $mot_passe): bool {
+    public function verifier_identite(string $mdp_clair): bool {
       $identification_ok = false;
       $bdd = Base_Donnees::acces();
       $code_club = $this->club()->code();
+      $identifiant= $this->club->identifiant();
+      
       $requete= $bdd->prepare("SELECT identifiant, mot_passe, nom FROM " . self::source() . " WHERE code = :code LIMIT 1");
       $requete->bindParam(':code', $code_club, PDO::PARAM_INT);
       try {
 //        $resultat = $bdd->query($requete);
         $requete->execute();
         if ($club = $requete->fetch(PDO::FETCH_OBJ)) {//($resultat->rowCount() > 0) {
-          $this->club()->identifiant = $club->identifiant;
+          $mdp_ok = Club::verifier_mot_passe($mdp_clair, $club->mot_passe);
           
           if (strtolower($club->identifiant) != strtolower($identifiant)) {
             throw new Erreur_Identifiant_Club();
             $identification_ok = false; //return $identification_ok;
-          } else if ($club->mot_passe != $mot_passe) {
+          } else if (!$mdp_ok) {
             throw new Erreur_Mot_Passe_Club();
             $identification_ok = false; //return $identification_ok;
           } else {
@@ -94,7 +96,7 @@
         $bdd = Base_Donnees::acces();
         $requete = $bdd->prepare("SELECT nom, identifiant, fuseau_horaire FROM " . self::source() . " WHERE code = :code LIMIT 1");
         $code_club = $this->club()->code();
-        $requete->bindParam(':code', $code_club, PDO::PARAM_STR);
+        $requete->bindParam(':code', $code_club, PDO::PARAM_INT);
         $requete->execute();
         if ($donnee = $requete->fetch(PDO::FETCH_OBJ)) {
           $this->initialiser_depuis_table($donnee);

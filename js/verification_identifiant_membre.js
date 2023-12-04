@@ -78,7 +78,7 @@ function traiter_reponse(element, reponse) {
         if (!unique) {
           msg = document.createElement('p');
           msg.id = element.id + '_msg';
-          msg.className('text-danger rsbl-msg-err');
+          msg.classList.add('text-danger'); // rsbl-msg-err';
           if (valeur === 0)
             msg.innerHTML = "valeur interdite : identifiant déjà attribué";
           else if (valeur === 2)
@@ -100,7 +100,7 @@ function verif_identifiant(element) {
   supprimer_message_erreur(element);
   var ok = verifier_format_identifiant(element);
   if (!ok) return false;
-  
+  /*
   const champ_code = document.getElementById("code_mbr");
   const code_membre = champ_code.value;
   const identifiant = element.value;
@@ -124,6 +124,7 @@ function verif_identifiant(element) {
   xmlhttp.open('GET', url, true);
   xmlhttp.send();
   console.log("request sent");
+   */
   return ok;
 }
 

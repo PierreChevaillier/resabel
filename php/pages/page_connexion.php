@@ -2,7 +2,7 @@
   // ==========================================================================
   // contexte : Resabel - systeme de REServAtion de Bateaux En Ligne
   // description : Definition de la classe Page_Connexion
-  // copyright (c) 2018 AMP. Tous droits reserves.
+  // copyright (c) 2018-2023 AMP. Tous droits reserves.
   // --------------------------------------------------------------------------
   // utilisation : php - require_once <nom_-fichier.php'
   // dependances :
@@ -10,6 +10,7 @@
   // --------------------------------------------------------------------------
   // creation : 17-jun-2018 pchevaillier@gmail.com
   // revision : 15-dec-2018 pchevaillier@gmail.com club parametrable
+  // revision : 01-dec-2023 pchevaillier@gmail.com gestion form. connexion
   // --------------------------------------------------------------------------
   // commentaires :
   // -
@@ -28,18 +29,11 @@
   // --------------------------------------------------------------------------
   class Page_Connexion extends Page_Simple {
     
-    private $informations_temporaires = array();
-    public function ajoute_information($element) {
-      $this->contenus[] = $element;
-      $element = $this;
-    }
-
-    public function __construct($nom_site, $nom_page, $feuilles_style = null) {
+    /*public function __construct($nom_site, $nom_page, $feuilles_style = null) {
       parent::__construct($nom_site, $nom_page, $feuilles_style);
       //$this->javascripts[] = "js/controle_identification.js";
-      $this->javascripts[] = "js/md5.js";
     }
-    
+    */
     protected function inclure_meta_donnees_open_graph() {
     }
     
@@ -51,17 +45,14 @@
       $element->sous_titre = "Resabel";
       $this->ajoute_element_haut($element);
       
-      foreach ($this->informations_temporaires as $info) {
-        $this->ajoute_contenu($info);
-      }
-      
       $messages_erreur = new Element_Code();
       $this->ajoute_contenu($messages_erreur);
       
-      // infos temporaires pour le club
-      
       // formulaire connexion
-      $formulaire = new Formulaire_Connexion($this);
+      $script = "php/scripts/identification_perso.php?c=" . $_GET['c'] . "&s=" . $_GET['s'];
+      $action = 'a'; // TODO: je ne sais pas a quoi ca sert ici
+      $id = 'form_cnx_perso';
+      $formulaire = new Formulaire_Connexion($this, $script, $action, $id);
       $this->ajoute_contenu($formulaire);
     }
   }

@@ -66,7 +66,7 @@
       
       if ($modification) {
         if (isset($_GET['mbr']))
-          $code_membre = $_GET['mbr'];
+          $code_membre = intval($_GET['mbr']);
         $membre = new Membre($code_membre);
         /* La personne existe deja
          * On va initialiser le formulaire avec les informations enregistrees

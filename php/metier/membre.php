@@ -6,7 +6,7 @@
   // teste avec :
   //  - PHP 7.1 sur Mac OS 10.14 ; PHP 7.0 sur serveur OVH
   //  - PHP 8.2 sur macOS 13.1 (> 25-dec-2022)
-  // Copyright (c) 2014-2022 AMP. Tous droits reserves.
+  // Copyright (c) 2014-2023 AMP. Tous droits reserves.
   // ------------------------------------------------------------------------
   // creation: 28-fev-2015 pchevaillier@gmail.com
   // revision: 29-avr-2015 pchevaillier@gmail.com, recherche information
@@ -16,6 +16,7 @@
   // revision: 05-oct-2018 pchevaillier@gmail.com  chemin vers utilitaires
   // revision: 06-ami-2019 pchevaillier@gmail.com  initialiser_debutant
   // revision: 29-dec-2022 pchevaillier@gmail.com fix erreur 8.2
+  // revision: 30-nov-2023 pchevaillier@gmail.com separation membre - connexion
   // ------------------------------------------------------------------------
   // commentaires :
   // attention :
@@ -24,93 +25,91 @@
   // -----------------------------------------------------------------------
 
   require_once 'php/metier/personne.php';
-  
-  //require_once 'php/metier/calendrier.php';
-  //require_once 'php/utilitaires/format_donnees.php';
+require_once 'php/metier/connexion.php';
+require_once 'php/metier/calendrier.php';
 
   class Membre extends Personne {
-    private $est_actif = true; // actif = possibilite de pratiquer une activite
-    private $est_autorise_connecter = true;
-    public $niveau = 0;
-    public $date_naissance = null; //"0000-00-00";
+    
+    const NIVEAU_DEBUTANT = 1;
+    
+    private $connexion = null;
+    public function def_connexion(Connexion $cnx) { $this->connexion = $cnx; }
+    
+    // private $est_actif = true; // actif = possibilite de pratiquer une activite
+    //private $est_autorise_connecter = true;
+    public int $niveau = 0;
+    public function niveau(): int { return $this->niveau; }
+    public function def_niveau(int $valeur) {$this->niveau = $valeur; }
+    
+    public ? Instant $date_naissance = null; //"0000-00-00";
     private $est_chef_de_bord = false;
-    public $date_derniere_connexion = null; //"0000-00-00 00:00:00";
+    //public ? Instant $date_derniere_connexion = null; //"0000-00-00 00:00:00";
     public $type_licence = "A";
     public $num_licence = "";
 	
-    public function def_chef_de_bord($valeur) {  // pas un 'setter' classique
+    public function __construct(int $code) {
+      parent::__construct($code);
+      $this->connexion = new Connexion();
+    }
+    
+    public function def_chef_de_bord(int $valeur) {  // pas un 'setter' classique
+      if ($valeur != 0 && $valeur != 1)
+        throw new InvalidArgumentException();
       $this->est_chef_de_bord = ($valeur == 1);
     }
-    public function est_chef_de_bord() { return $this->est_chef_de_bord; }
-    public function def_est_chef_de_bord($valeur) { $this->est_chef_de_bord = $valeur; }
+    public function est_chef_de_bord(): bool { return $this->est_chef_de_bord; }
+    public function def_est_chef_de_bord(bool $valeur) { $this->est_chef_de_bord = $valeur; }
     
-    public function def_actif($valeur) { // pas un 'setter' classique
-      $this->est_actif = ($valeur == 1);
+    /**
+     * Identifiant de connexion
+     * Attribut derive : facade pour masquer l'implementation des informations de connexion
+     */
+    public function identifiant(): string { return $this->connexion->identifiant(); }
+    public function def_identifiant(string $valeur): void {$this->connexion->def_identifiant($valeur);}
+
+    /**
+     * Attribut derive : facade pour masquer l'implementation des informations de connexion
+     */
+    public function est_actif(): bool {
+      return $this->connexion->est_compte_actif();
     }
-    public function est_actif() { return $this->est_actif;}
     
-    public function est_autorise_connecter(): int { return $this->est_autorise_connecter; }
+    public function def_actif(int $valeur): void { // pas un 'setter' classique
+      if ($valeur != 0 && $valeur != 1)
+        throw new InvalidArgumentException();
+      $this->connexion->def_est_compte_actif($valeur);
+    }
+    
+    /**
+     * Attribut derive : facade pour masquer l'implementation des informations de connexion
+     */
+    
+    public function est_autorise_connecter(): bool {
+      return $this->connexion->est_autorise();
+    }
+    
+    
     public function def_autorise_connecter(int $valeur): void {  // pas un 'setter' classique
-      $this->est_autorise_connecter = ($valeur == 1);
+      if ($valeur != 0 && $valeur != 1)
+        throw new InvalidArgumentException();
+      $this->connexion->def_est_autorise($valeur);
     }
     
-    public function est_debutant() {
-      return ($this->niveau < 2);
+    public function est_debutant(): bool {
+      return ($this->niveau < self::NIVEAU_DEBUTANT  + 1);
     }
     
-    public function initialiser_debutant() {
-      $this->def_actif(1);
-      $this->def_autorise_connecter(1);
-      $this->def_chef_de_bord(0);
-      $this->niveau = 1;
+    public function initialiser_debutant(): void {
+      $this->connexion->def_est_compte_actif(1);
+      $this->connexion->def_est_autorise(1);
+      $this->est_chef_de_bord = false;
+      $this->niveau = self::NIVEAU_DEBUTANT;
     }
-    
-/*
-    static public function recherche_membres($critere_selection, $critere_tri, & $personnes) {
-      $status = false;
-      $personnes = array();
-      $selection = "";
-      if (strlen($critere_selection) > 0)
-        $selection = " WHERE " . $critere_selection;
-      $tri = "";
-      if (strlen($critere_tri) > 0)
-        $tri = " ORDER BY " . $critere_tri;
-    	 
-      $requete = "SELECT code, identifiant, actif, connexion, niveau, genre, mot_passe, prenom, nom, date_naissance, code_commune, rue, telephone, telephone2, courriel, cdb, derniere_connexion, num_licence FROM membres " . $selection . $tri;
-      echo $requete;
       
-      $resultat = mysql_query($requete) or die('Requête recherche personnes invalide : ' . mysql_error());
-      while ($donnee = mysql_fetch_assoc($resultat)) {
-        $p = new Personne($donnee['code']);
-        $personnes[] = $p;
-        $p->identifiant = $donnee['identifiant'];
-        $p->est_actif = ($donnee['actif'] == 1);
-        $p->connexion_autorisee = ($donnee['connexion'] == 1);
-        $p->niveau = $donnee['niveau'];
-        $p->genre = $donnee['genre'];
-        $p->mot_passe = $donnee['mot_passe'];
-        $p->prenom = $donnee['prenom'];
-        $p->nom = $donnee['nom'];
-        $p->date_naissance = $donnee['date_naissance'];
-        $p->code_commune = $donnee['code_commune'];
-        $p->rue = $donnee['rue'];
-        $p->telephone = $donnee['telephone'];
-        $p->telephone2 = $donnee['telephone2'];
-        $p->courriel = $donnee['courriel'];
-        $p->est_chef_de_bord = ($donnee['cdb'] == 1);
-        $p->date_derniere_connexion = $donnee['derniere_connexion'];
-        $p->num_licence = $donnee['num_licence'];
-      }
-      
-      $status = true;
-      return $status;
-    }
-*/
-  
     public function enregistrer_nouveau() {
-      $actif = ($this->est_actif()) ? 1: 0;
-      $connexion = ($this->est_autorise_connecter()) ? 1: 0;
-      $cdb = ($this->est_chef_de_bord()) ? 1: 0;
+      //$actif = ($this->est_actif()) ? 1: 0;
+      //$connexion = ($this->est_autorise_connecter()) ? 1: 0;
+      //$cdb = ($this->est_chef_de_bord()) ? 1: 0;
       /*
       $requete = "INSERT INTO membres VALUES('" . $this->code . "', '"
                                                 . $this->identifiant . "', '"
@@ -134,12 +133,14 @@
       $resultat = mysql_query($requete);
       return $resultat;
     */
+      return;
     }
 		
-    public function initialiser_visiteur() {
-      $this->def_actif(1);
-      $this->def_autorise_connecter(0);
-      $this->def_chef_de_bord(0);
+    public function initialiser_visiteur(): void {
+      $this->connexion->def_est_compte_actif(1);
+      $this->connexion->def_est_autorise(0);
+      
+      $this->est_chef_de_bord = false;
       $this->niveau = 0;
       $this->prenom = "z";
       $this->code_commune = 29190; // Plougonvelin
@@ -162,4 +163,5 @@
      */
 	
   }
+// ============================================================================
   ?>
