@@ -242,7 +242,7 @@
   }
   
   // --------------------------------------------------------------------------
-  class Champ_Mot_Passe extends Champ_formulaire {
+  class Champ_Mot_Passe_Crypte extends Champ_formulaire {
     public function __construct($id, $script, $fonction = 'crypte_mdp') {
       parent::__construct($id, $script, $fonction);
       $this->def_titre("Mot de passe");
@@ -262,6 +262,23 @@
     }
   }
   
+  // --------------------------------------------------------------------------
+  class Champ_Mot_Passe extends Champ_formulaire {
+    public function __construct($id, $script = '', $fonction= '') {
+      parent::__construct($id, $script, $fonction);
+      $this->def_titre("Mot de passe");
+      $this->def_obligatoire();
+    }
+    
+    protected function afficher_corps () {
+      $this->afficher_ouverture_commune();
+      echo 'type="password" ';
+      $affiche = ($this->valeur_definie())? 'value="' . $this->valeur() . '" ' : '';
+      echo $affiche . ' />';
+      if (isset($_GET['err']) && ($_GET['err'] == 'mdp'))
+        echo "<p class=\"text-danger\">Erreur : mot de passe incorrect</p>";
+    }
+  }
   // --------------------------------------------------------------------------
   class Champ_Texte extends Champ_Formulaire {
     public $longueur_max = 50;

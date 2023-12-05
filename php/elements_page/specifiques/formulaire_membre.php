@@ -8,12 +8,15 @@
   // --------------------------------------------------------------------------
   // utilisation : php - require_once <nom_-fichier.php>
   // dependances :
-  // teste avec : PHP 7.1 sur Mac OS 10.14 ;
-  //              PHP 7.0 sur hebergeur web
+  // utilise avec :
+  // - depuis 2023 :
+  //   PHP 8.2 sur macOS 13.x
+  //   PHP 8.1 sur hebergeur web
   // --------------------------------------------------------------------------
   // creation : 06-dec-2018 pchevaillier@gmail.com
   // revision : 27-dec-2019 pchevaillier@gmail.com impact refonte Calendrier
   // revision : 23-feb-2023 pchevaillier@gmail.com + controle saisie identifiant
+  // revision : 02-dec-2023 pchevaillier@gmail.com modifs. mineures PHP 8.2
   // --------------------------------------------------------------------------
   // commentaires :
   // -
@@ -21,6 +24,7 @@
   // - 
   // a faire :
   // - script controle saisie
+  // - infotmation visuelle sur champs incorrect
   // ==========================================================================
 
   // --- Classes utilisees
@@ -39,22 +43,27 @@
     
     public function __construct($page, $membre) {
       //$this->def_titre("Connexion");
-      if (isset($_GET['a']) && $_GET['a'] == 'c')
+      $action = isset($_GET['a']) ? $_GET['a'] : 'undef';
+      if (isset($_GET['a']) && $_GET['a'] == 'c') {
         $page->javascripts[] = "js/generer_identifiant_connexion.js";
-      
+        $this->message_bouton_validation = "Valider création";
+      }
       $this->membre = $membre;
-      $this->message_bouton_validation = "Valider";
+     
       $this->confirmation_requise = true;
       
       // Parametrage de l'appel du script php qui traite
       // les donnees saisies ou modifiees grace au formulaire
+      $this->methode = 'post';
       $script_traitement = 'php/scripts/membre_info_maj.php?';
       $params = 'a=' . $_GET['a'] . '&o=' . $_GET['o'];
-      if (isset($_GET['a']) && $_GET['a'] == 'm')
+      if (isset($_GET['a']) && $_GET['a'] == 'm') {
         $params = $params . (isset($this->membre) ? '&mbr=' . $this->membre->code() : '');
+        $this->message_bouton_validation = "Valider modification";
+      }
       $script_traitement = $script_traitement . $params;
         
-      $action = 'a';
+      //$action = 'a';
       $id = 'form_mbr';
       
       parent::__construct($page, $script_traitement, $action, $id);
@@ -73,7 +82,7 @@
       
       try {
     
-        $item = new Champ_Cache("code_mbr"); // on en a besoin pour verification identifiant
+        $item = new Champ_Cache("mbr"); // on en a besoin pour verification identifiant
         $this->ajouter_champ($item);
         
         $item = new Champ_Civilite("gnr");
@@ -132,8 +141,8 @@
     public function initialiser_champs() {
       $ok = isset($this->membre);
       if ($ok) {
-        $this->champ('code_mbr')->def_valeur($this->membre->code());
-        $this->champ('id')->def_valeur($this->membre->identifiant);
+        $this->champ('mbr')->def_valeur($this->membre->code());
+        $this->champ('id')->def_valeur($this->membre->identifiant());
         $this->champ('gnr')->def_valeur($this->membre->genre);
         $this->champ('prn')->def_valeur($this->membre->prenom);
         $this->champ('nom')->def_valeur($this->membre->nom);
@@ -145,6 +154,8 @@
           $this->champ('nais')->def_valeur($val_date);
         }
         $this->champ('lic')->def_valeur($this->membre->num_licence);
+      } else {
+        die('membre pas defini');
       }
       return $ok;
     }

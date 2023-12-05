@@ -12,7 +12,7 @@
 //    PHP 8.2 et PHPUnit 9.5 sur macOS 13.2 ;
 // --------------------------------------------------------------------------
 // creation : 04-fev-2023 pchevaillier@gmail.com
-// revision :
+// revision : 03-dec-2023 pchevaillier@gmail.com verification_identite
 // --------------------------------------------------------------------------
 // commentaires :
 // -
@@ -80,22 +80,66 @@ class Enregistrement_ClubTest extends TestCase {
     $this->assertEquals($club->fuseau_horaire()->getName(), 'Europe/Paris');
   }
   
-  public function testVerifierIdentite(): void {
-    $id_club = 'AMP';
+  /**
+   *
+   */
+
+  public function testVerifierIdentiteBonMotPasse(): void {
+    $mot_passe = 'motdepassebidon';
+    $code_club = 1;
+    $club = new Club($code_club);
+    $this->enregistrement->def_club($club);
+    $this->enregistrement->lire();
+    $ok = false;
+    $ok = $this->enregistrement->verifier_identite($mot_passe);
+    $this->assertTrue($ok);
+  }
+
+  public function testVerifierIdentiteMauvaisMotPasse(): void {
     $mot_passe = 'cestPasLeBon';
     $code_club = 1;
     $club = new Club($code_club);
     $this->enregistrement->def_club($club);
+    $this->enregistrement->lire();
+    
     $ok = false;
     try {
-      $ok = $this->enregistrement->verifier_identite($id_club, $mot_passe);
-      $this->assertFalse($ok);
+      $ok = $this->enregistrement->verifier_identite($mot_passe);
     } catch (Erreur_Mot_Passe_Club $e) {
       $this->assertFalse($ok);
     }
-    
   }
-
+  
+  public function testVerifierIdentiteCodeClubErrone(): void {
+    $mot_passe = '';
+    $code_club = 12;
+    $club = new Club($code_club);
+    $this->enregistrement->def_club($club);
+    $this->enregistrement->lire();
+    
+    $ok = false;
+    try {
+      $ok = $this->enregistrement->verifier_identite($mot_passe);
+    } catch (Erreur_Club_Introuvable $e) {
+      $this->assertFalse($ok);
+    }
+  }
+  
+  public function testVerifierIdentiteIdentifiantClubErrone(): void {
+    $mot_passe = '';
+    $code_club = 1;
+    $club = new Club($code_club);
+    $this->enregistrement->def_club($club);
+    $this->enregistrement->lire();
+    $club->def_identifiant('AutreCLub');
+    
+    $ok = false;
+    try {
+      $ok = $this->enregistrement->verifier_identite($mot_passe);
+    } catch (Erreur_Identifiant_Club $e) {
+      $this->assertFalse($ok);
+    }
+  }
 }
 // ==========================================================================
 ?>

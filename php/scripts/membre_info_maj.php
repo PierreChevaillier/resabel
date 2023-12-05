@@ -2,7 +2,7 @@
   // ==========================================================================
   // contexte : Resabel - systeme de REServAtion de Bateau En Ligne
   // description : verification et mise a jour des informations sur un membre
-  // copyright (c) 2018-2019 AMP. Tous droits reserves.
+  // copyright (c) 2018-2023 AMP. Tous droits reserves.
   // --------------------------------------------------------------------------
   // utilisation : php - require_once <chemin_vers_ce_fichier.php>
   // dependances : formulaire_membre.php (ids des champs du formulaire)
@@ -12,6 +12,7 @@
   // creation : 28-dec-2018 pchevaillier@gmail.com
   // revision : 08-mai-2019 pchevaillier@gmail.com refonte : maj ET creation
   // revision : 25-dec-2019 pchevaillier@gmail.com impact refonte calendrier
+  // revision : 02-dec-2023 pchevaillier@gmail.com impact membre <>--> connexion
   // --------------------------------------------------------------------------
   // commentaires :
   // - en chantier
@@ -28,11 +29,13 @@
   // a faire :
   // -
   // ==========================================================================
-  session_start(); // doit etre la premiere instruction
   
-  set_include_path('./../../');
-  
-  // --------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
+set_include_path('./../../');
+
+include 'php/utilitaires/controle_session.php';
+include 'php/utilitaires/definir_locale.php';
+
   // --- connection a la base de donnees
   include 'php/bdd/base_donnees.php';
   
@@ -44,7 +47,10 @@
   
   require_once 'php/bdd/enregistrement_membre.php';
   require_once 'php/metier/membre.php';
-  
+
+require_once 'php/metier/connexion.php';
+require_once 'php/bdd/enregistrement_connexion.php';
+
   $ok = true;
   
   // --------------------------------------------------------------------------
@@ -57,7 +63,7 @@
   if (isset($_GET['a'])) {
     if ($_GET['a'] == 'm') {
       $action = 'm';
-      $code = $_GET['mbr'];
+      $code = intval($_GET['mbr']);
     } elseif ($_GET['a'] == 'c') {
       $action = 'c';
       $code = Enregistrement_Membre::generer_nouveau_code();
@@ -78,6 +84,11 @@
   $enreg_membre = new Enregistrement_Membre();
   $enreg_membre->def_membre($membre);
   
+$cnx = new Connexion($code);
+$membre->def_connexion($cnx);
+$enreg_cnx = new Enregistrement_Connexion();
+$enreg_cnx->def_connexion($cnx);
+
   if ($action == 'm') {
     try {
       $enreg_membre->lire();
@@ -86,9 +97,9 @@
     }
   } elseif ($action == 'c') {
     $mot_passe = Enregistrement_Membre::generer_mot_passe();
-    $membre->mot_passe = $mot_passe;
+    $cnx->def_mot_de_passe($mot_passe);
     if ($objet == 'n')
-      $membre->niveau = 1;
+      $membre->initialiser_debutant(); // def_niveau(Membre::NIVEAU_DEBUTANT);
   }
   
   // parametre de l'appel de la page du formulaire.
@@ -112,7 +123,7 @@
     $erreur = 0;
     if ($nCar2 < 3) {
       $erreur = 1;
-    } elseif (!$enreg_membre->verifier_identifiant_unique($x)) {
+    } elseif (!$enreg_cnx->verifier_identifiant_unique($x)) {
       // le nouvel identifiant saisi correspond a celui d'un autre membre
       // or il doit etre unique
       $erreur = 2;
@@ -127,7 +138,7 @@
       header("location: ../../membre.php?a=m&o=" . $objet . "&mbr=" . $code . "&r=" . $erreur . "&i=" . $iod . "&v=" . $x);
       exit();
     }
-    $membre->identifiant = $x;
+    $cnx->def_identifiant($x);
   }
   
   // --------------------------------------------------------------------------
@@ -169,7 +180,7 @@
       header("location: ../../membre.php?a=m&o=" . $objet . "&mbr=" . $code . "&r=" . $erreur . "&i=" . $iod . "&v=" . $x);
       exit();
     }
-    $membre->prenom = $x;
+    $membre->def_prenom($x);
   }
   
   // --------------------------------------------------------------------------
@@ -192,7 +203,7 @@
       header("location: ../../membre.php?a=m&o=" . $objet . "&mbr=" . $code . " &r=" . $erreur . "&i=" . $iod . "&v=" . $x);
       exit();
     }
-    $membre->nom = $x;
+    $membre->def_nom($x);
   }
   
   // --------------------------------------------------------------------------
@@ -243,7 +254,7 @@
   
   $iod = 'cmn';
   if (isset($_POST[$iod])) {
-    $membre->code_commune = $_POST[$iod];
+    $membre->code_commune = intval($_POST[$iod]);
   }
   
   $iod = 'nais';
@@ -261,11 +272,12 @@
   }
   
   // Niveau
-  $membre->niveau = (isset($_POST['niv'])) ? $_POST['niv'] : $membre->niveau;
+$niveau = isset($_POST['niv']) ? intval($_POST['niv']) : $membre->niveau();
+$membre->def_niveau($niveau);
   
   // chef de bord ?
-  $est_cdb = (isset($_POST['cdb'])) ? $_POST['cdb'] : $membre->est_chef_de_bord();
-  $membre->def_est_chef_de_bord($_est_cdb);
+  $est_cdb = isset($_POST['cdb']) ? $_POST['cdb'] : $membre->est_chef_de_bord();
+  $membre->def_est_chef_de_bord($est_cdb);
   
   // coherence  debutant / chef de bord
   if ($membre->est_debutant()) $membre->def_est_chef_de_bord(false);
@@ -276,8 +288,11 @@
   if ($ok) {
     if ($action == 'm')
       $mise_a_jour = $enreg_membre->modifier();
-    elseif ($action == 'c')
+    elseif ($action == 'c') {
       $mise_a_jour = $enreg_membre->ajouter();
+      if ($mise_a_jour)
+        $enreg_cnx->modifier_mot_de_passe(); // TODO: else...
+    }
 
     /*
     // --- La photo ---------------------------------------------------------------
@@ -394,5 +409,5 @@
   else
     header("location: ../../membre.php?" . $params . "&r=0&mbr=" . $code);
   exit();
-  // ==========================================================================
+// ============================================================================
 ?>

@@ -45,9 +45,12 @@
       // --- Creation dynamique de la page
       $feuilles_style = array();
       $feuilles_style[] = "css/resabel_ecran.css";
+      //$feuilles_style[] = "./../jquery-ui/1.13.2/jquery-ui.css";
       $nom_site = Site_Web::accede()->sigle() . " Resabel";
       $page = new Page_Membre($nom_site, "Information membre", $feuilles_style);
       
+$page->ajouter_script('./../jquery/3.6.3/jquery.min.js');
+//$page->ajouter_script('./../jquery-ui/1.13.2/jquery-ui.min.js');
       // --- Affichage de la page
       $page->initialiser();
       $page->afficher();

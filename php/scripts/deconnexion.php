@@ -30,7 +30,7 @@
   unset($_SESSION['prm']);
   unset($_SESSION['adm']);
   
-  header("location: ../../index.php");
+  header("location: ../../index.html");
   exit();
   // ==========================================================================
   ?>
