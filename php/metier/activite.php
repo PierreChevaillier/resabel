@@ -53,6 +53,19 @@
   require_once 'php/bdd/enregistrement_seance_activite.php';
    
   // --------------------------------------------------------------------------
+/**
+ * Informations sur la selection des activites enregistrees pour un site un jour donne.
+ *
+ * Permet de filtrer les activites (et les infomations afferentes) que l'on veut traiter en fonction :
+ * - d'une plage horaire
+ * - d'un site d'activite donne
+ * - d'un type de support d'activite (ou de tous les types)
+ * - d'un support d'activite donne (ou de tous les supports d'acitvite, en fonciton du filte sur le type de support
+ * Les informations collectees sont :
+ * - les information sur le(s) site(s) d'activite
+ * - les personnes autorisees a pratiquer une activite
+ * - les informations sur la permanence du jour
+ */
   class Activite_Journaliere {
         
     private ?Instant $date_jour = null;
@@ -68,9 +81,17 @@
     
     public ?Club $club = null;
     
-    protected $sites = array(); // sites du club
+    /**
+     * Sites en activite.
+     * Tous les sites actifs (si pas de filtre sur le site) ou le site correspondant au filtre
+     */
+    protected $sites = array();
     public final function nombre_sites(): int { return count($this->sites); }
     
+    /**
+     * Liste des activites (Activite_Site) enregistrees par site
+     * cle : code du site (int) ; valeur : liste des activites pour le site
+     */
     public $activite_sites = array();
     public final function nombre_activite_sites(): int { return count($this->activite_sites); }
     
@@ -97,7 +118,7 @@
     }
     
     protected function collecter_info_club(): bool {
-      $code_club = isset($_SESSION['clb']) ? $_SESSION['clb'] : 0;
+      $code_club = isset($_SESSION['clb']) ? $_SESSION['clb'] : 1;
       $club = new Club($code_club);
       $enreg = new Enregistrement_Club();
       $enreg->def_club($club);
@@ -150,6 +171,7 @@
     public $activite_journaliere = null; // referencement croise
     public ?Site_Activite $site = null;
    
+    // Attributs derives (facade)
     protected function jour() { return $this->activite_journaliere->date_jour(); }
     protected function latitude() { return $this->site->latitude; }
     protected function longitude() { return $this->site->longitude; }
@@ -160,7 +182,7 @@
     public $indisponibilites_support = array(); // cle : code_support ; valeurs : indispos
    
     public $seances_creneaux; // cle : creneau horaire ; valeurs : seances programmes
-    public $seances_support = array(); // cle : code_support ; valeurs : listes des seances programmees / creneau horaire
+    public $seances_support = array(); // cle : code_support ; valeurs : listes des seances programmees / support
     public $seances_personne = array(); // cle : creneau ; valeurs : codes des personnes participant a une activite sur ce creneau
     
     public $marees = array();
@@ -230,7 +252,7 @@
     }
     
     protected function collecter_info_supports_actifs() {
-      $supports = null;
+      $supports = array();
       $filtre = "code_site_base = " . $this->site->code() . " AND actif = 1 ";
       if ($this->activite_journaliere->filtre_type_support > 0)
         $filtre = $filtre . " AND support.code_type_support = " . $this->activite_journaliere->filtre_type_support;
@@ -366,6 +388,16 @@
       return false;
     }
 
+    public function personne_participe_activite_creneau(Seance_Activite $seance,
+                                                        Intervalle_Temporel $creneau) : bool {
+      $ok = true;
+      foreach ($seance->inscriptions as $x) {
+        $p = $x->participant;
+        if ($this->participe_activite_creneau($p, $creneau)) return false;
+      }
+      return $ok;
+    }
+    
     // prochain creneau pour lequel le support est disponible et qui n'a pas de seance programmee
     public function creneau_suivant_est_libre(int $code_support, int $index_creneau): bool {
       $condition = false;

@@ -21,6 +21,7 @@
   // revision: 30-dec-2019 pchevaillier@gmail.com liens vers pages d'accueil
   // ---------------------------------------------------------------------------
   // commentaires :
+  // N'est plus utilisee depuis version decembre 2023
   // - en chantier V2 - pas completement teste
   // - les informations de connexion sont stockees dans $_SESSION
   // attention :

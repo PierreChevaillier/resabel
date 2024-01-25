@@ -268,7 +268,7 @@
 
     static function collecter($critere_selection, $critere_tri, & $support_activites) {
       $status = false;
-      $support_activites = array();
+      //$support_activites = array();
       $selection = (strlen($critere_selection) > 0) ? " WHERE " . $critere_selection . " " : "";
       $tri = (strlen($critere_tri) > 0) ? " ORDER BY " . $critere_tri . " " : "";
       try {
@@ -298,6 +298,7 @@
           $support_activite->type->chef_de_bord_requis = ($donnee->cdb_requis == '1');
           $support_activites[$support_activite->code()] = $support_activite;
         }
+        return true;
       } catch (PDOException $e) {
         Base_Donnees::sortir_sur_exception(self::source(), $e);
       }

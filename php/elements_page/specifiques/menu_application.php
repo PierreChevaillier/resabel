@@ -21,9 +21,11 @@
   // revision : 25-dec-2019 pchevaillier@gmail.com impact refonte calendrier
   // revision : 29-dec-2019 pchevaillier@gmail.com reorganisation items menu
   // revision : 17-mar-2023 pchevaillier@gmail.com bootstrap v5.3
+// revision : 14-jan-2024 pchevaillier@gmail.com + menu competitions
   // --------------------------------------------------------------------------
   // commentaires :
   // attention :
+//  - certains liens sont specifiques AMP
   // a faire :
   //  - completer au fur et a mesure du developpement (nouvelles pages) 
   // - variables pour acronyme club et lien home-page
@@ -42,7 +44,7 @@
     private $session_pers = false;
     private $session_club = false;
     private $membre_actif = false;
-    private $jour;
+    private ?Instant $jour;
     
     public function initialiser() {
       $this->session_admin = isset($_SESSION['adm']) && $_SESSION['adm'];
@@ -130,7 +132,16 @@
       echo '<li><a class="dropdown-item" href="page_temporaire.php">Visiteurs</a></li>';
       echo '</ul></li>';
     }
-    
+
+  private function afficher_menu_competitions() {
+    echo '<li class="nav-item dropdown">';
+    echo '<a class="nav-link dropdown-toggle" href="#" id="mnu_compet" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Compétitions</a>';
+    echo '<ul class="dropdown-menu" aria-labelledby="mnu-compet">';
+    echo '<li><a class="dropdown-item" href="https://docs.google.com/spreadsheets/d/1jDx-ZHJd75ovZLKHATITXX3gjzHwaQwHk48lTsKuT6M/edit?usp=drive_link">Régates</a></li>';
+    echo '<li><a  class="dropdown-item" href="https://drive.google.com/drive/folders/1LRFUzREEHQZjcsy6BeK6UUhBeeoYA-3D?usp=drive_link">Entrainements</a></li>';
+    echo '</ul></li>';
+  }
+      
     protected function afficher_corps() {
       if ($this->membre_actif)
         echo '<li class="nav-item"><a class="nav-link" href="accueil_perso.php">Accueil</a></li>';
@@ -144,6 +155,8 @@
       if ($this->session_club || $this->membre_actif)
         $this->afficher_menu_inscription();
 
+      $this->afficher_menu_competitions();
+      
       $this->afficher_menu_club();
       
       $this->afficher_menu_personnes();

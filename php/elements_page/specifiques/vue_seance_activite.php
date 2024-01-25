@@ -531,8 +531,6 @@
       $menu = $menu . '<a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#' . $this->id_dialogue_action . '" onclick="return afficher_info_seance(\'' . $this->id_dialogue_action . '\', \''
           . $entete . '\', \'' . $details . '\');">Afficher informations</a>';
       
-      //$menu = $menu . '<a href="#" class="dropdown-item">Afficher infos</a>';
-      
       // --- Actions dependant du contexte
       //if ($this->mode_interactif) {
       $contexte = $this->afficheur->contexte_action();
@@ -570,8 +568,8 @@
           $html_info_participations = htmlspecialchars($this->formater_info_participations());
           $params = $this->seance->code() . ', \'' . $this->id_dialogue_action . '\', \'' . $html_info_seance . '\', \'' . $html_info_participations . '\', \'' . htmlspecialchars($this->formater_mail_participants()) . '\'';
           $menu = $menu . '<a class="dropdown-item" onclick="activer_controle_annulation_seance(' . $params . '); return false;" data-bs-toggle="modal" data-bs-target="#' . $this->id_dialogue_action . '">Annuler séance</a>';
-          $menu = $menu . '<a class="dropdown-item" onclick="return false;">Changer horaire</a>';
-          $menu = $menu . '<a class="dropdown-item" onclick="return false;">Changer support</a>';
+//          $menu = $menu . '<a class="dropdown-item" onclick="return false;">Changer horaire</a>';
+
           
           // possibilite report sur seance avant ou apres
           $code_support = $this->seance->code_support();
@@ -579,22 +577,30 @@
           if ($this->afficheur->activite_site->creneau_precedent_est_libre($code_support,
                                                                            $this->index_creneau)) {
             $nouveau_creneau = $this->afficheur->activite_site->creneaux_activite[$this->index_creneau - 1];
-            $params_nouveau_creneau = $params  . ', '
-              . '\'' . $nouveau_creneau->debut()->date_heure_sql() . '\', '
-              . '\'' . $nouveau_creneau->fin()->date_heure_sql() . '\'';
-            $menu = $menu . '<a class="dropdown-item" onclick="activer_controle_changer_horaire_seance('
-              . $params_nouveau_creneau . '); return false;" data-bs-toggle="modal" data-bs-target="#' . $this->id_dialogue_action . '">Passer sur créneau précédent</a>';
+            if ($this->afficheur->activite_site->personne_participe_activite_creneau($this->seance, $nouveau_creneau)) {
+              $params_nouveau_creneau = $params  . ', '
+                . '\'' . $nouveau_creneau->debut()->date_heure_sql() . '\', '
+                . '\'' . $nouveau_creneau->fin()->date_heure_sql() . '\'';
+              $menu = $menu . '<a class="dropdown-item" onclick="activer_controle_changer_horaire_seance('
+                . $params_nouveau_creneau . '); return false;" data-bs-toggle="modal" data-bs-target="#' . $this->id_dialogue_action . '">Passer sur créneau précédent</a>';
+            }
           }
           if ($this->afficheur->activite_site->creneau_suivant_est_libre($this->seance->code_support(),
                                                                          $this->index_creneau)) {
             $nouveau_creneau = $this->afficheur->activite_site->creneaux_activite[$this->index_creneau + 1];
-            $params_nouveau_creneau = $params  . ', '
-              . '\'' . $nouveau_creneau->debut()->date_heure_sql() . '\', '
-              . '\'' . $nouveau_creneau->fin()->date_heure_sql() . '\'';
-            $menu = $menu . '<a class="dropdown-item" onclick="activer_controle_changer_horaire_seance('
-              . $params_nouveau_creneau . '); return false;" data-bs-toggle="modal" data-bs-target="#' . $this->id_dialogue_action . '">Passer sur créneau suivant</a>';
-            //$menu = $menu . '<a class="dropdown-item" onclick="return false;">Passer sur créneau suivant</a>';
+            if ($this->afficheur->activite_site->personne_participe_activite_creneau($this->seance, $nouveau_creneau)) {
+              $params_nouveau_creneau = $params  . ', '
+                . '\'' . $nouveau_creneau->debut()->date_heure_sql() . '\', '
+                . '\'' . $nouveau_creneau->fin()->date_heure_sql() . '\'';
+              $menu = $menu . '<a class="dropdown-item" onclick="activer_controle_changer_horaire_seance('
+                . $params_nouveau_creneau . '); return false;" data-bs-toggle="modal" data-bs-target="#' . $this->id_dialogue_action . '">Passer sur créneau suivant</a>';
+            }
           }
+          
+          // Possibilite de changement du support de l'activite
+          $params = $params_seance . ', \'' . $this->id_dialogue_action . '\', \'' . $html_info_seance . '\', \'' . $html_info_participations . '\', \'' . htmlspecialchars($this->formater_mail_participants()) . '\'';
+          $menu = $menu . '<a class="dropdown-item" onclick="activer_controle_changer_support_seance('
+              . $params . '); return false;" data-bs-toggle="modal" data-bs-target="#' . $this->id_dialogue_action . '">Changer de support</a>';
         }
       }
       

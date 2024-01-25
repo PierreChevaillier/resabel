@@ -46,7 +46,7 @@
   $filtre_type_support = (isset($_GET['ts']))? $_GET['ts']: 0;
   
   // --- Recherche des supports d'activite
-  $supports = null;
+  $supports = array;
   Enregistrement_Support_Activite::collecter("code_site_base = " . $code_site . " AND actif = 1 ", " type DESC, code ASC", $supports);
   
   $choix_type_support = array();

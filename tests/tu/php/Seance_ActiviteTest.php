@@ -4,7 +4,7 @@
 //            Tests unitaires
 // description : Test unitaire de la classe Seance_activite et
 //  et de la classe Participation_Activite dont elle depend
-// copyright (c) 2023 AMP. Tous droits reserves.
+// copyright (c) 2023-2024 AMP. Tous droits reserves.
 // --------------------------------------------------------------------------
 // utilisation : phpunit --testdox <chemin_vers_ce_fichier_php>
 // dependances :
@@ -13,7 +13,7 @@
 //    PHP 8.2 et PHPUnit 9.5 sur macOS 13.2 ;
 // --------------------------------------------------------------------------
 // creation : 06-fev-2023 pchevaillier@gmail.com
-// revision :
+// revision : 23-jan-2024 pchevaillier@gmail.com + peut_accueillir_participants
 // --------------------------------------------------------------------------
 // commentaires :
 // -
@@ -265,6 +265,155 @@ class Seance_ActiviteTest extends TestCase {
     $this->assertFalse($this->seance->a_comme_responsable($membre));
 
   }
+  
+  /**
+   *
+   */
+  public function testAccueilParticipantsSupportSansLimiteCapacite(): void {
+    $code_support = 512;
+    $support_accueil = new Support_Activite($code_support);
+    $support_accueil->type = new Type_Support_Activite(1);
+    
+    $seance_accueil = new Seance_Activite();
+    $seance_accueil->def_support($support_accueil);
+    
+    // seance a acceuillir sans aucune participation (= aucune inscription)
+    // cas hors scenario d'usage
+    $this->assertTrue($seance_accueil->peut_accueillir_participants($this->seance));
+    
+    // seance a accueillir avec 1 participation
+    $participant = new Membre(101);
+    $this->seance->creer_participation($participant);
+    $this->assertTrue($seance_accueil->peut_accueillir_participants($this->seance));
+  }
+  
+  /**
+   *
+   */
+  public function testAccueilParticipantsSupportAvecLimiteCapaciteSansResponsableSeanceSurSeanceSansParticipation(): void {
+    $code_support = 512;
+    $support_accueil = new Support_Activite($code_support);
+    $type_support = new Type_Support_Activite(1);
+    $support_accueil->type = $type_support;
+    $type_support->nombre_personnes_max = 2;
+    
+    $seance_accueil = new Seance_Activite();
+    $seance_accueil->def_support($support_accueil);
+    
+    // seance a acceuillir sans aucune participation (= aucune inscription)
+    // cas hors scenario d'usage
+    $this->assertTrue($seance_accueil->peut_accueillir_participants($this->seance));
+    
+    // seance a accueillir avec nbre participation < capacite du support
+    $participant = new Membre(101);
+    $this->seance->creer_participation($participant);
+    $this->assertTrue($seance_accueil->peut_accueillir_participants($this->seance));
+    
+    // seance a accueillir avec nbre participation = capacite du support
+    $p2 = new Membre(102);
+    $this->seance->creer_participation($p2);
+    $this->assertTrue($seance_accueil->peut_accueillir_participants($this->seance));
+    
+    // seance a accueillir avec nbre participation > capacite du support
+    $p3 = new Membre(103);
+    $this->seance->creer_participation($p3);
+    $this->assertFalse($seance_accueil->peut_accueillir_participants($this->seance));
+  }
+ 
+  /**
+   *
+   */
+  public function testAccueilParticipantsSupportAvecLimiteCapaciteSansResponsableSeanceSurSeanceAvecParticipation(): void {
+    $code_support = 512;
+    $support_accueil = new Support_Activite($code_support);
+    $type_support = new Type_Support_Activite(1);
+    $support_accueil->type = $type_support;
+    $type_support->nombre_personnes_max = 2;
+    
+    $seance_accueil = new Seance_Activite();
+    $seance_accueil->def_support($support_accueil);
+    $p1 = new Membre(1);
+    $seance_accueil->creer_participation($p1);
+
+    // seance a acceuillir sans aucune participation (= aucune inscription)
+    // cas hors scenario d'usage
+    $this->assertTrue($seance_accueil->peut_accueillir_participants($this->seance));
+    
+    // seance a accueillir avec nbre participation = nbre place dispo - 1
+    $p2 = new Membre(2);
+    $this->seance->creer_participation($p2);
+    $this->assertTrue($seance_accueil->peut_accueillir_participants($this->seance));
+    
+    // seance a accueillir avec nbre participation = nbre place dispo
+    $p3 = new Membre(3);
+    $this->seance->creer_participation($p3);
+    $this->assertFalse($seance_accueil->peut_accueillir_participants($this->seance));
+  }
+  
+  /**
+   *
+   */
+  public function testAccueilParticipantsSupportAvecLimiteCapaciteSurSeanceAvecResponsable(): void {
+    // support d'activite recquierant 1 responsable
+    $code_support = 512;
+    $support_accueil = new Support_Activite($code_support);
+    $type_support = new Type_Support_Activite(1);
+    $support_accueil->type = $type_support;
+    $type_support->nombre_personnes_max = 2;
+    $type_support->requiert_responsable(true);
+    
+    
+    // seance d'accueil avec 1 responsable
+    $seance_accueil = new Seance_Activite();
+    $seance_accueil->def_support($support_accueil);
+    $p1 = new Membre(1);
+    $est_responsable = true;
+    $seance_accueil->creer_participation($p1, $est_responsable);
+
+    // seance a accueillir sans aucune participation
+    // cas hors scenario d'usage
+    $this->assertTrue($seance_accueil->peut_accueillir_participants($this->seance));
+    
+    // seance a accueillir avec nbre participation = nbre place dispo - 1 et sans responsable
+    $p2 = new Membre(2);
+    $this->seance->creer_participation($p2, $est_responsable);
+    $this->assertTrue($seance_accueil->peut_accueillir_participants($this->seance));
+  }
+  
+  /**
+   *
+   */
+  public function testAccueilParticipantsSupportAvecLimiteCapaciteSurSeanceSansResponsable(): void {
+    // support d'activite recquierant 1 responsable
+    $code_support = 512;
+    $support_accueil = new Support_Activite($code_support);
+    $type_support = new Type_Support_Activite(1);
+    $support_accueil->type = $type_support;
+    $type_support->nombre_personnes_max = 2;
+    $type_support->requiert_responsable(true);
+    
+    $est_responsable = true;
+    // seance d'accueil sans responsable
+    $seance_accueil = new Seance_Activite();
+    $seance_accueil->def_support($support_accueil);
+    $p1 = new Membre(1);
+    $seance_accueil->creer_participation($p1);
+
+    // seance a accueillir sans aucune participation
+    // cas hors scenario d'usage
+    $this->assertTrue($seance_accueil->peut_accueillir_participants($this->seance));
+    
+    // seance a accueillir avec nbre participation = nbre place dispo - 1 et avec responsable
+    $p2 = new Membre(2);
+    $this->seance->creer_participation($p2, $est_responsable);
+    $this->assertTrue($seance_accueil->peut_accueillir_participants($this->seance));
+    
+    // seance a accueillir avec nbre participation = nbre place dispo - 1 et sans responsable
+    $this->seance = new Seance_Activite();
+    $this->seance->creer_participation($p2);
+    $this->assertFalse($seance_accueil->peut_accueillir_participants($this->seance));
+
+  }
 }
-// ==========================================================================
+// ============================================================================
 ?>

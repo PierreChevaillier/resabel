@@ -3,7 +3,7 @@
   // contexte : Resabel - systeme de REServAtion de Bateau En Ligne
   // description : classe Enregistrement_Seance_activite :
   //               operations sur la base de donnees
-  // copyright (c) 2020-2023 AMP. Tous droits reserves.
+  // copyright (c) 2020-2024 AMP. Tous droits reserves.
   // --------------------------------------------------------------------------
   // utilisation : php - require_once <chemin_vers_ce_fichier.php>
   // dependances : cf. require_once + classe Base_Donnees
@@ -20,6 +20,7 @@
   // revision : 20-aug-2020 pchevaillier@gmail.com rollback si capture exception
   // revision : 08-fev-2023 pchevaillier@gmail.com + compter_participations, supprimer_seance
   // revision : 17-feb-2023 pchevaillier@gmail.com + changer_horaire
+// revision : 25-jan-2024 pchevaillier@gmail.com + changer_support + changer_seance
   // --------------------------------------------------------------------------
   // commentaires :
   // attention :
@@ -49,12 +50,12 @@
     }
     
     // ------------------------------------------------------------------------
-    static public function collecter(Site_Activite $site = NULL,
+    static public function collecter(?Site_Activite $site,
                          string $critere_selection,
                          string $critere_tri,
-                         array & $seances = null): bool {
+                         array & $seances): bool {
       $status = false;
-      if (is_null($seances)) $seances = array();
+      //if (is_null($seances)) $seances = array(); // pas utile
   
       $selection = (strlen($critere_selection) > 0) ? " WHERE " . $critere_selection . " " : "";
       $tri = (strlen($critere_tri) > 0) ? " ORDER BY " . $critere_tri . " " : " ";
@@ -94,6 +95,7 @@
             $participation->information = $donnee->info_participation;
           }
         }
+        $status = true;
       } catch (PDOException $e) {
             Base_Donnees::sortir_sur_exception(self::source(), $e);
       }
@@ -381,6 +383,38 @@
       }
       return $status;
     }
+    
+    static public function changer_support(int $code_seance, int $code_support): bool {
+      $status = false;
+      $bdd = Base_Donnees::acces();
+      try {
+        $requete = $bdd->prepare("UPDATE " . self::source() . " SET code_support = :code WHERE code = :code_seance");
+        $requete->bindParam(':code_seance', $code_seance, PDO::PARAM_INT);
+        $requete->bindParam(':code', $code_support, PDO::PARAM_INT);
+        $requete->execute();
+        $status = true;
+      } catch (PDOexception $e) {
+        Base_Donnees::sortir_sur_exception(self::source(), $e);
+      }
+      return $status;
+    }
+ 
+    static public function changer_seance(int $code_actuel, int $nouveau_code): bool {
+      $status = false;
+      $bdd = Base_Donnees::acces();
+      $source = Base_Donnees::$prefix_table . 'participations_activite';
+      try {
+        $requete = $bdd->prepare("UPDATE " . $source . " SET code_seance = :nouveau WHERE code_seance = :code_seance");
+        $requete->bindParam(':code_seance', $code_actuel, PDO::PARAM_INT);
+        $requete->bindParam(':nouveau', $nouveau_code, PDO::PARAM_INT);
+        $requete->execute();
+        $status = true;
+      } catch (PDOexception $e) {
+        Base_Donnees::sortir_sur_exception($source, $e);
+      }
+      return $status;
+    }
+
   }
   // ==========================================================================
 ?>

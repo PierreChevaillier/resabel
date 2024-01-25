@@ -76,7 +76,7 @@
     }
     
     protected function collecter_info_supports_actifs() {
-      $supports = null;
+      $supports = array();
       $site = $this->sites[$this->code_site_selectionne];
       Enregistrement_Support_Activite::collecter("code_site_base = " . $site->code() . " AND actif = 1 ", " type DESC, code ASC", $supports);
       $this->supports_activite =  $supports;

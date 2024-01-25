@@ -46,7 +46,7 @@
                          int $type_indisponibilite,
                          string $critere_selection,
                          string $critere_tri,
-                         array & $indisponibilites) {
+                         array & $indisponibilites): ? bool {
       $status = false;
       if (($type_indisponibilite < 1) || ($type_indisponibilite > 2)) {
         throw new Erreur_Type_Indisponibilite();
@@ -122,6 +122,7 @@
             
             $indisponibilites[] = $indisponibilite;
           }
+          $status = true;
         }
       } catch (PDOException $e) {
             Base_Donnees::sortir_sur_exception(self::source(), $e);

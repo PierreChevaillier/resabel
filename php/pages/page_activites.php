@@ -60,6 +60,7 @@
     public $afficheur_action = null; // ajout 23-fev-2020: afficheur modal / resultat actions
    
     public function __construct($nom_site_web, $nom_page, $liste_feuilles_style = null) {
+      $code_club = isset($_SESSION['clb']) ? $_SESSION['clb'] : 1;
       $this->activite_journaliere = new Activite_Journaliere();
       
       $jour = isset($_GET['j']) ? new Instant($_GET['j']): Calendrier::aujourdhui();

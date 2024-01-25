@@ -18,7 +18,7 @@
   // commentaires :
   // - En evolution
   // attention :
-  // - correspondance des types de site dans le nase de donnees et classes metier
+  // - correspondance des types de site dans le base de donnees et classes metier
   // a faire :
   // - creation avec juste les infos du site : creer_identite
   // - creation avec les informations associes : creer_avec_regime
@@ -38,11 +38,11 @@
       $this->site_activite = $site_activite;
     }
     
-    static function source() {
+    static function source(): string {
       return Base_Donnees::$prefix_table . 'sites_activite';
     }
     
-    public function lire_identite() {
+    public function lire_identite(): bool {
       $trouve = false;
       try {
         $bdd = Base_Donnees::acces();
@@ -80,7 +80,7 @@
      (une des classes derivees en fonction du code_type)
       et initialise tous les attributs
      */
-    public static function creer(int $code_site) {
+    public static function creer(int $code_site): ?Site_Activite {
       $site = null;
       try {
         $bdd = Base_Donnees::acces();
@@ -114,7 +114,9 @@
       return $site;
     }
     
-    static function collecter($critere_selection, $critere_tri, & $sites_activite) {
+    static function collecter(string $critere_selection,
+                              string $critere_tri,
+                              ? array & $sites_activite): bool {
       $status = false;
       $selection = (strlen($critere_selection) > 0) ? " WHERE " . $critere_selection . " " : "";
       $tri = (strlen($critere_tri) > 0) ? " ORDER BY " . $critere_tri . " " : "";
@@ -141,6 +143,7 @@
           
           $sites_activite[$site_activite->code()] = $site_activite;
         }
+        $status = true;
       } catch (PDOException $e) {
         Base_Donnees::sortir_sur_exception(self::source(), $e);
       }

@@ -2,7 +2,7 @@
   // ==========================================================================
   // contexte : Resabel - systeme de REServAtion de Bateau En Ligne
   // description : Classe Seance Activite et associees - Vue metier
-  // copyright (c) 2018-2023 AMP. Tous droits reserves.
+  // copyright (c) 2018-2024 AMP. Tous droits reserves.
   // --------------------------------------------------------------------------
   // utilisation : php - require_once <chemin_vers_ce_fichier.php>
   // dependances : 
@@ -16,6 +16,7 @@
   // revision : 08-mar-2020 pchevaillier@gmail.com a_comme_responsable
   // revision : 29-dec-2022 pchevaillier@gmail.com information
   // revision : 29-dec-2022 pchevaillier@gmail.com MaJ suite tests unitaires
+// revision : 23-jan-2024 pchevaillier@gmail.com + peut_accueillir_participants
   // --------------------------------------------------------------------------
   // commentaires :
   // - version minimale / pratique AMP
@@ -46,7 +47,7 @@
     public function code(): int { return $this->code; }
     public function def_code(int $code): void { $this->code = $code; }
     
-    public $plage_horaire;
+    public ?Intervalle_Temporel $plage_horaire;
     public function debut(): ?Instant {
       return $this->plage_horaire->debut();
     }
@@ -134,6 +135,30 @@
           return true;
       }
       return $resultat;
+    }
+    
+    public function peut_accueillir_participants(Seance_Activite $seance): bool {
+      $doublon = false;
+      foreach ($seance->inscriptions as $x) {
+        if ($this->a_comme_participant($x->participant)) {
+          $doublon = true;
+          break;
+        }
+      }
+      if ($doublon) return false;
+      
+      $places_dispo = (! $this->nombre_places_est_limite()
+                       || ($this->nombre_places_disponibles() >= $seance->nombre_participants()));
+      if (! $places_dispo)
+        return false;
+
+      $ok = true;
+      $cond_resp = ($this->responsable_requis() && ! $this->a_un_responsable());
+      $complet = ($this->nombre_places_disponibles() == $seance->nombre_participants());
+      if ($complet && $cond_resp) {
+        $ok = $seance->a_un_responsable();
+      }
+      return $ok;
     }
   }
   

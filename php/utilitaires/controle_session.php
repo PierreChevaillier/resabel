@@ -24,7 +24,7 @@
   // ==========================================================================
   session_start();
   if (!isset($_SESSION['usr']) && !isset($_SESSION['clb'])) {
-    header("location: index.php");
+    header("location: index.html");
     die();
   }
   //error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);

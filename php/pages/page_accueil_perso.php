@@ -65,7 +65,7 @@
   class Page_Accueil_Perso extends Page_Menu {
     
     private ?Instant $maintenant = null;
-    private function code_utilisateur() { return $this->contexte->utilisateur->code(); }
+    private function code_utilisateur(): int { return $this->contexte->utilisateur->code(); }
     private $contexte = null;
     
     private $sites = array();
@@ -90,7 +90,7 @@
       parent::__construct($nom_site_web, $nom_page, $liste_feuilles_style);
     }
 
-    protected function collecter_informations() {
+    protected function collecter_informations(): void {
       $this->collecter_info_sites();
       $this->collecter_info_permanence();
       $this->collecter_info_personnes();
@@ -98,11 +98,11 @@
       $this->collecter_info_seances_activite();
     }
     
-    protected function collecter_info_sites() {
+    protected function collecter_info_sites(): void {
       Enregistrement_Site_Activite::collecter("", " code_type ",  $this->sites);
     }
     
-    protected function collecter_info_permanence() {
+    protected function collecter_info_permanence(): void {
       $jour = $this->maintenant->jour();
       $sem = $jour->format("W");
       $annee = Calendrier::annee_semaine($jour);
@@ -112,15 +112,16 @@
       $enregistrement_permanence->lire();
      }
     
-    protected function collecter_info_personnes() {
+    protected function collecter_info_personnes(): void {
       $personnes = null;
       $criteres = array();
+      $criteres_selection['act'] = 1; // uniquement les membres actifs
       Enregistrement_Membre::collecter($criteres, '', '', $personnes);
       $this->personnes = $personnes;
     }
     
-    protected function collecter_info_supports() {
-      $supports = null;
+    protected function collecter_info_supports(): void {
+      $supports = array();
       Enregistrement_Support_Activite::collecter("", "", $supports);
       $this->supports_activite = $supports;
     }

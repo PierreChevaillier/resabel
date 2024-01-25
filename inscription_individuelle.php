@@ -36,7 +36,7 @@
       
       $possible = isset($_SESSION['prs']) && $_SESSION['prs'] && $_SESSION['usr'] && $_SESSION['act'];
       if (!$possible) {
-        header("location: index.php");
+        header("location: index.html");
         die("erreur : valeur non definie");
       }
       
