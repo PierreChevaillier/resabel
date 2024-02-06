@@ -21,6 +21,7 @@
   // revision : 08-fev-2023 pchevaillier@gmail.com + compter_participations, supprimer_seance
   // revision : 17-feb-2023 pchevaillier@gmail.com + changer_horaire
 // revision : 25-jan-2024 pchevaillier@gmail.com + changer_support + changer_seance
+// revision : 27-jan-2024 pchevaillier@gmail.com + creer
   // --------------------------------------------------------------------------
   // commentaires :
   // attention :
@@ -30,6 +31,8 @@
   
   require_once 'php/metier/calendrier.php';
   require_once 'php/metier/seance_activite.php';
+require_once 'php/metier/site_activite.php';
+require_once 'php/bdd/enregistrement_site_activite.php';
   
   // ==========================================================================
   class Information_Participation_Seance_Activite {
@@ -49,6 +52,53 @@
       return Base_Donnees::$prefix_table . 'seances_activite';
     }
     
+    static public function creer(int $code_seance): ?Seance_Activite {
+      $prefix = Base_Donnees::$prefix_table;
+      $source = self::source() . " AS seance"
+      . " INNER JOIN " . $prefix . "sites_activite AS site ON (site.code = seance.code_site)"
+      . " INNER JOIN " . $prefix . "participations_activite AS participation ON (participation.code_seance = seance.code) ";
+      
+      $requete = "SELECT seance.code AS code, seance.code_site AS code_site, seance.code_support AS code_support, seance.date_debut AS date_debut, seance.date_fin AS date_fin, seance.code_responsable AS code_responsable, seance.information AS info_seance, participation.code_membre AS code_participant, participation.information AS info_participation, site.nom as nom_site, site.code_type AS code_type_site FROM " . $source .  " WHERE seance.code = " . $code_seance;
+      
+      //echo '<p>', $requete, '</p>', PHP_EOL;
+      $seance = null;
+      try {
+        $bdd = Base_Donnees::acces();
+        $resultat = $bdd->query($requete);
+        $code_seance_courante = 0;
+        
+        // 1 donnee = 1 participation a la seance
+        while ($donnee = $resultat->fetch(PDO::FETCH_OBJ)) {
+          if ($donnee->code != $code_seance_courante) {
+            $seance = new Seance_Activite();
+            $seance->def_code($donnee->code);
+            $seances[] = $seance;
+            
+            if ($donnee->code_type_site == Enregistrement_Site_Activite::CODE_TYPE_SITE_MER) {
+              $seance->site = new Site_Activite_Mer($donnee->code_site);
+            } elseif ($donnee->code_type_site == Enregistrement_Site_Activite::CODE_TYPE_SALLE_SPORT) {
+              $seance->site = new Salle_Sport($donnee->code_site);
+            }
+            $seance->site->def_nom($donnee->nom_site);
+            
+            $seance->support = new Support_activite($donnee->code_support);
+            $seance->definir_horaire(new Instant($donnee->date_debut), new Instant($donnee->date_fin));
+            if (!is_null($donnee->code_responsable) && strlen($donnee->code_responsable) > 0)
+              $seance->responsable = new Membre($donnee->code_responsable);
+            $seance->information = $donnee->info_seance;
+            $code_seance_courante = $donnee->code;
+          }
+          $participant = new Membre($donnee->code_participant);
+          $participation = $seance->creer_participation($participant, false);
+          $participation->information = $donnee->info_participation;
+        }
+        $status = true;
+      } catch (PDOException $e) {
+        Base_Donnees::sortir_sur_exception(self::source(), $e);
+      }
+      return $seance;
+    }
+    
     // ------------------------------------------------------------------------
     static public function collecter(?Site_Activite $site,
                          string $critere_selection,
@@ -60,9 +110,13 @@
       $selection = (strlen($critere_selection) > 0) ? " WHERE " . $critere_selection . " " : "";
       $tri = (strlen($critere_tri) > 0) ? " ORDER BY " . $critere_tri . " " : " ";
       
-      $source = self::source() . " AS seance INNER JOIN rsbl_sites_activite AS site ON (site.code = seance.code_site) INNER JOIN rsbl_participations_activite AS participation ON (participation.code_seance = seance.code) ";
+      //$source = self::source() . " AS seance INNER JOIN rsbl_sites_activite AS site ON (site.code = seance.code_site) INNER JOIN rsbl_participations_activite AS participation ON (participation.code_seance = seance.code) ";
+      $prefix = Base_Donnees::$prefix_table;
+      $source = self::source() . " AS seance"
+      . " INNER JOIN " . $prefix . "sites_activite AS site ON (site.code = seance.code_site)"
+      . " INNER JOIN " . $prefix . "participations_activite AS participation ON (participation.code_seance = seance.code) ";
       
-      $requete = "SELECT seance.code AS code, seance.code_site AS code_site, seance.code_support AS code_support, seance.date_debut AS date_debut, seance.date_fin AS date_fin, seance.code_responsable AS code_responsable, seance.information AS info_seance, participation.code_membre AS code_participant, participation.information AS info_participation, site.code_type AS code_type_site FROM " . $source . $selection . $tri;
+      $requete = "SELECT seance.code AS code, seance.code_site AS code_site, seance.code_support AS code_support, seance.date_debut AS date_debut, seance.date_fin AS date_fin, seance.code_responsable AS code_responsable, seance.information AS info_seance, participation.code_membre AS code_participant, participation.information AS info_participation, site.nom as nom_site, site.code_type AS code_type_site FROM " . $source . $selection . $tri;
       
       //echo '<p>', $requete, '</p>', PHP_EOL;
       try {
@@ -77,12 +131,13 @@
               $seance->def_code($donnee->code);
               $seances[] = $seance;
               
-              if ($donnee->code_type_site == 1) {
+              if ($donnee->code_type_site == Enregistrement_Site_Activite::CODE_TYPE_SITE_MER) {
                 $seance->site = new Site_Activite_Mer($donnee->code_site);
-              } elseif ($donnee->code_type_site == 2) {
+              } elseif ($donnee->code_type_site == Enregistrement_Site_Activite::CODE_TYPE_SALLE_SPORT) {
                 $seance->site = new Salle_Sport($donnee->code_site);
               }
-    
+              $seance->site->def_nom($donnee->nom_site);
+              
               $seance->support = new Support_activite($donnee->code_support);
               $seance->definir_horaire(new Instant($donnee->date_debut), new Instant($donnee->date_fin));
               if (!is_null($donnee->code_responsable) && strlen($donnee->code_responsable) > 0)

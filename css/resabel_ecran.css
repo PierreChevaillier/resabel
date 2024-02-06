@@ -83,6 +83,19 @@ p.lead {
   text-align: center;
 }
 
+/*
+ * source = https://www.w3docs.com/snippets/css/how-to-make-a-div-vertically-scrollable.html
+ */
+div.rsbl-scroll {
+  background-color: #fed9ff;
+  width: 600px;
+  height: 250px;
+  overflow: scroll;
+  /* overflow-y: auto; */
+  /*text-align: center; $/
+  padding: 20px;
+}
+
 /* --- Elements identifies --------------------------------------------------- */
 
 #menu_nav li a:hover {

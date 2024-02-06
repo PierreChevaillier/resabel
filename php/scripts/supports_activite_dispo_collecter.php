@@ -78,7 +78,7 @@ $ok = !is_null($seance) && $ok;
 $supports = array();
 $criteres = "support.code_site_base = " .  $site->code()
   . " AND support.actif = 1 ";
-Enregistrement_Support_Activite::collecter($criteres, " type DESC, code ASC", $supports);
+Enregistrement_Support_Activite::collecter($criteres, " support.code_type_support DESC, support.code ASC", $supports);
 
 // associer les informations completes sur le support a la seance
 $seance->def_support($supports[$seance->code_support()]);

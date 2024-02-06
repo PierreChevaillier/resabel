@@ -253,13 +253,13 @@
     
     protected function collecter_info_supports_actifs() {
       $supports = array();
-      $filtre = "code_site_base = " . $this->site->code() . " AND actif = 1 ";
+      $filtre = "code_site_base = " . $this->site->code() . " AND support.actif = 1 ";
       if ($this->activite_journaliere->filtre_type_support > 0)
         $filtre = $filtre . " AND support.code_type_support = " . $this->activite_journaliere->filtre_type_support;
       if ($this->activite_journaliere->filtre_support > 0)
         $filtre = $filtre . " AND support.code = " . $this->activite_journaliere->filtre_support;
       
-      Enregistrement_Support_Activite::collecter($filtre, " type DESC, code ASC", $supports);
+      Enregistrement_Support_Activite::collecter($filtre, " support.code_type_support DESC, support.code ASC", $supports);
       $this->site->supports_activite =  $supports;
     }
     

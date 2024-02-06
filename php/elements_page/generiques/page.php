@@ -6,7 +6,7 @@
   // dependances : chemin vers bootstrap
   // suppression dependances jquery, popper
   // utilise avec : PHP 8.2 sur macOS 13.2
-  // copyright (c) 2017-2023 AMP. Tous droits reserves.
+  // copyright (c) 2017-2024 AMP. Tous droits reserves.
   // --------------------------------------------------------------------------
   // creation: 04-jun-2017 pchevaillier@gmail.com
   // revision: 17-jun-2018 pchevaillier@gmail.com adaptation resabel V2
@@ -17,6 +17,7 @@
   // revision: 28-mar-2020 pchevaillier@gmail.com script / activation tooltips Bootstrap
   // revision: 13-avr-2020 pchevaillier@gmail.com ajouter_script pour eviter doublons
   // revision : 17-mar-2023 pchevaillier@gmail.com passage a bootstrap V5 en local
+// revision: 06-fev-2024 pchevaillier@gmail.com + fonction_onload
   // --------------------------------------------------------------------------
   // commentaires :
   // - https://getbootstrap.com/docs/4.1/getting-started/introduction/
@@ -51,6 +52,8 @@
       }
       return !$existe; // <=> ajout effectue
     }
+    
+    public $fonction_onload = "";
     
     public $prive = true;
     
@@ -179,6 +182,9 @@
   }
 
   protected function afficher_fin() {
+    if (strlen($this->fonction_onload) > 0) {
+      echo PHP_EOL . '<script>window.onload = ' . $this->fonction_onload . PHP_EOL . '</script>' . PHP_EOL;
+    }
   	echo '</body>';
   }
 

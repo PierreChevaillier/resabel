@@ -20,6 +20,7 @@
   // commentaires :
   // attention :
   // a faire :
+// - TODO: utiliser Enregistrement_Site_Activite::creer
   // ==========================================================================
   set_include_path('./../../');
   
@@ -89,21 +90,11 @@ require_once 'php/bdd/enregistrement_site_activite.php';
     // ou que l'on change juste le support de la seance
     
     // --- le site d'activite
-    $site = null;
-    $sites = array();
-    $criteres = 'site.code = ' . $info_participation->code_site;
-    Enregistrement_Site_Activite::collecter($criteres, "", $sites);
-    foreach ($sites as $sa)
-      $site = $sa;
+    $site = Enregistrement_Site_Activite::creer($info_participation->code_site);
     $ok = !is_null($site);
     
     // (1) obtenir les informations sur la seance
-    $seance = null;
-    $seances = array();
-    $criteres = ' seance.code = ' . $info_participation->code_seance . ' ';
-    Enregistrement_Seance_Activite::collecter($site, $criteres, "", $seances);
-    foreach ($seances as $s)
-      $seance = $s;
+    $seance = Enregistrement_Seance_Activite::creer($info_participation->code_seance);
     $ok = !is_null($seance);
     
     if ($ok) {

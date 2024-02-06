@@ -32,6 +32,10 @@
   
   // ==========================================================================
   class Enregistrement_Site_Activite {
+    
+    const CODE_TYPE_SITE_MER = 1;
+    const CODE_TYPE_SALLE_SPORT = 2;
+    
     private $site_activite = null;
     public function site_activite() { return $this->site_activite; }
     public function def_site_activite($site_activite) {
@@ -91,11 +95,11 @@
          
         if ($donnee = $requete->fetch(PDO::FETCH_OBJ)) {
           // Il faut trouver le type de l'objet a instancier
-          if ($donnee->code_type == 1) {
+          if ($donnee->code_type == self::CODE_TYPE_SITE_MER) {
             $site = new Site_Activite_Mer($code_site);
             $site->hauteur_maree_min = $donnee->hauteur_maree_min;
             $site->hauteur_maree_max = $donnee->hauteur_maree_max;
-          } elseif ($donnee->code_type == 2) {
+          } elseif ($donnee->code_type == self::CODE_TYPE_SALLE_SPORT) {
             $site = new Salle_Sport($code_site);
           } else {
             throw new Erreur_Type_Site_Activite();
@@ -127,9 +131,9 @@
         $resultat = $bdd->query($requete);
         while ($donnee = $resultat->fetch(PDO::FETCH_OBJ)) {
           $site_activite = null;
-          if ($donnee->code_type == 1) {
+          if ($donnee->code_type == self::CODE_TYPE_SITE_MER) {
             $site_activite = new Site_Activite_Mer($donnee->code);
-          } elseif ($donnee->code_type == 2) {
+          } elseif ($donnee->code_type == self::CODE_TYPE_SALLE_SPORT) {
              $site_activite = new Salle_Sport($donnee->code);
           } else {
             throw new Erreur_Type_Site_Activite();

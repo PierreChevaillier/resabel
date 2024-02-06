@@ -103,6 +103,7 @@
     
     static function creer(Page $page, Seance $objet_metier) {
       $vue = null;
+      $this->seance = $seance;
       /*
       if (is_a($objet_metier, 'Regime_Diurne'))
         $vue = new Afficheur_Regime_Diurne($page);
@@ -188,7 +189,9 @@
 
       $str_participant = ""; //utf8_encode(''); //$personne->prenom . " " . $personne->nom;
       $code_interacteur = ""; //utf8_encode('');
-      
+
+      $id = $this->generer_id($rang);
+
       if ($this->est_interactif) {
         $code_interacteur = $code_interacteur . $this->generer_code_interacteur($personne);
 /*
@@ -202,9 +205,10 @@
         }
       */
       } else {
-         $str_participant = $personne->prenom . " " . $personne->nom;
+         $str_participant = '<span id="equip_' . $id . '">'
+          . $personne->prenom . ' ' . $personne->nom . '</span>';
       }
-      $code_html = $code_html . "<td id=\"" . $this->generer_id($rang) . "\" style =\"width:" . $this->largeur . "px;color:" . $couleur_texte . ";background-color:" . $couleur_fond . ";text-align:center;padding:1px\"><div style=\"min-height:31px\">" . $str_participant . ' ' . $code_interacteur . "</div></td>";
+      $code_html = $code_html . "<td id=\"" . $id . "\" style =\"width:" . $this->largeur . "px;color:" . $couleur_texte . ";background-color:" . $couleur_fond . ";text-align:center;padding:1px\"><div style=\"min-height:31px\">" . $str_participant . ' ' . $code_interacteur . "</div></td>";
       return true;
     }
     
@@ -273,25 +277,6 @@
 
       }
       $code = $code . $menu . '</div></div>';
-      
-      /*
-      $menu = '<div class="list-group">';
-      $menu = $menu . '<a href="#" class="list-group-item list-group-item-action active">Afficher infos</a><a href="#" class="list-group-item list-group-item-action">Passer équipier</a>';
-      
-      $params = $this->params_action_seance . ', ' . $personne->code() . ', ' . $resp;
-               $code_action = "di";
-               $params = $params . ', \'' . $code_action . '\'';
-      
-      $menu = $menu . '<a href="https://www.enib.fr" class="list-group-item list-group-item-action">ZZZZ Annulation inscription</a>';
-      $menu = $menu . '<a href="#" class="list-group-item list-group-item-action">Changer horaire</a><a href="#" class="list-group-item list-group-item-action">Changer support</a>';
-      $menu = $menu . '</div>';
-      //$menu = addslashes($menu);
-      $menu = htmlspecialchars($menu);
-      $code = $code . '<button class="btn btn-sm btn-outline-primary">';
-      $code = $code . '<a tabindex="0" data-html="true" data-container="body" data-trigger="focus" data-toggle="popover" data-placement="top" title="<strong>Actions</strong>" data-content="' . $menu . '"><img src="../../assets/icons/list.svg" alt="!" width="20" height="20"></a>';
-      $code = $code . '</button>';
-      */
-      
       return $code;
     }
     
@@ -325,15 +310,18 @@
           }
         }
       }
-      $code_html = $code_html . "<td id=\"" . $this->generer_id(0) . "\" style =\"width:" . $this->largeur . "px;color:" . $this->couleur_texte_resp . ";background-color:" . $this->couleur_fond_resp . ";text-align:center;padding:1px\"><div style=\"min-height:31px\">" . $str_resp . $code_interacteur . "</div></td>";
+      $id = $this->generer_id(0);
+      $str_resp = '<span id="resp_' . $id . '"> ' . $str_resp . '</span> ';
+      $code_html = $code_html . "<td id=\"" . $id . "\" style =\"width:" . $this->largeur . "px;color:" . $this->couleur_texte_resp . ";background-color:" . $this->couleur_fond_resp . ";text-align:center;padding:1px\"><div style=\"min-height:31px\">" . $str_resp . $code_interacteur . "</div></td>";
       
       //$code_html = $code_html . "<td width=\"" . $this->largeur . "px\" bgcolor=\"" . $this->couleur_fond_resp . "\" align=\"center\">" . $str_resp . "</td>";
       return;
     }
 
     protected function formater_place_libre(int $rang, String & $code_html) {
-      $code_html = $code_html . "<td id=\"" . $this->generer_id($rang) . "\" style =\"width:" . $this->largeur . "px;min-height:300px;color:" . $this->couleur_texte_place_libre . ";background-color:" . $this->couleur_fond_place_libre . ";text-align:center;padding:1px\"><div style=\"min-height:31px\">";
-      $code_html = $code_html . "&nbsp;";
+      $id = $this->generer_id($rang);
+      $code_html = $code_html . "<td id=\"" . $id . "\" style =\"width:" . $this->largeur . "px;min-height:300px;color:" . $this->couleur_texte_place_libre . ";background-color:" . $this->couleur_fond_place_libre . ";text-align:center;padding:1px\"><div style=\"min-height:31px\">";
+      $code_html = $code_html . '<span id="equip_' . $id . '"> </span>';
       $code_interacteur = ""; //utf8_encode('');
       if ($this->est_interactif) {
         $inscription_possible = $this->contexte_action()->inscription_individuelle()
@@ -411,7 +399,7 @@
      }
      
      protected function afficher_corps() {
-       $code_html = utf8_encode('');
+       $code_html = '';
        echo $code_html;
        return;
      }
@@ -563,10 +551,39 @@
           $menu = $menu . '<a class="dropdown-item" onclick="activer_formulaire(' . $params . '); return false;" >Inscrire équipier</a>';
         }
         
+        if ($contexte->code_action() == 'ie' && $this->seance->nombre_places_disponibles() > 0) {
+          // url retour = activites.php?a=ie&j=2024-01-27&sa=1&pc=PT09H30M&dc=PT10H30M&ts=0&s=0
+          // cf. page_activites.php
+          // ce qu'il faut pour pour revenir sur la page courante (selection pour recherche dispo)
+          $code_param_url = "?a=ie&j=" . $_GET['j']
+            . "&sa=" . $this->activite_site->site->code()
+            . "&pc=" . $_GET['pc']
+            . "&dc=" . $_GET['dc']
+            . "&ts=" . $_GET['ts']
+            . "&s=" . $_GET['s'];
+          // et ce qu'il faut pour savoir sur quelle seance on agit
+          $code_param_url = $code_param_url
+            . "&seance=" . $this->seance->code() /* egal zero si pas de seance */
+          . "&support=" . $this->seance->code_support()
+          . "&hd=" . $this->seance->debut()->valeur_cle_horaire()
+          . "&hf=" . $this->seance->fin()->valeur_cle_horaire()
+          ;
+        http://localhost/resabel-v2/resabel/inscription_equipage.php?a=ie&j=2024-01-27&sa=1&pc=PT09H30M&dc=PT10H30M&ts=0&s=0&seance=0&support=1&hd=PT09H30M&hf=PT10H30M
+          $menu = $menu
+            . '<a class="dropdown-item" href ="inscription_equipage.php'
+            . $code_param_url
+            .  '" >Inscrire équipage</a>';
+        }
+        
         if ($this->seance->nombre_participants() > 0) {
           $html_info_seance = htmlspecialchars($this->formater_info_seance());
           $html_info_participations = htmlspecialchars($this->formater_info_participations());
-          $params = $this->seance->code() . ', \'' . $this->id_dialogue_action . '\', \'' . $html_info_seance . '\', \'' . $html_info_participations . '\', \'' . htmlspecialchars($this->formater_mail_participants()) . '\'';
+          $params = $this->seance->code()
+            . ', \'' . $this->id_dialogue_action
+            . '\', \'' . $html_info_seance
+            . '\', \'' . $html_info_participations
+            . '\', \'' . htmlspecialchars($this->formater_mail_participants())
+            . '\'';
           $menu = $menu . '<a class="dropdown-item" onclick="activer_controle_annulation_seance(' . $params . '); return false;" data-bs-toggle="modal" data-bs-target="#' . $this->id_dialogue_action . '">Annuler séance</a>';
 //          $menu = $menu . '<a class="dropdown-item" onclick="return false;">Changer horaire</a>';
 
