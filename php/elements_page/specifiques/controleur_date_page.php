@@ -12,6 +12,7 @@
   // --------------------------------------------------------------------------
   // creation : 06-jul-2019 pchevaillier@gmail.com
   // revision : 21-mar-2023 pchevaillier@gmail.com bootstrap 5.2 + Menu_Navigation_Date
+// revision : 19-fev-2024 pchevaillier@gmail.com correction definir_parametres_url()
   // --------------------------------------------------------------------------
   // commentaires :
   // - ergonomie de Menu_navigation_Date sans doute meilleure que Selecteur_Date
@@ -76,8 +77,14 @@
     protected function definir_parametres_url(): void {
       if (count($this->parametres) == 0) return;
       $code_html = "";
+      $premier = true;
       foreach ($this->parametres as $cle => $valeur) {
-        $code_html = $code_html . "&" . $cle . "=" . $valeur;
+        if ($premier) {
+          $code_html = $code_html . "?" . $cle . "=" . $valeur;
+          $premier = false;
+        } else {
+          $code_html = $code_html . "&" . $cle . "=" . $valeur;
+        }
       }
       $this->code_html_parametres = $code_html;
     }

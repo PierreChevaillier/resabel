@@ -9,7 +9,8 @@
  * utilisation : navigateur web
  * dependances :
  * - voir directives include et require_once
- * - parametres $SESSION et $GET
+ * - parametres $_SESSION et $_GET
+ * - bootstrap 5.x
  * utilise avec :
  * - depuis 2023 :
  *   PHP 8.2 sur macOS 13.x
@@ -17,6 +18,7 @@
  * ----------------------------------------------------------------------------
  * creation : 09-jun-2019 pchevaillier@gmail.com maquette
  * revision : 26-jan-2024 pchevaillier@gmail.com init fonctionalites
+ * revision : 15-fev-2024 pchevaillier@gmail.com + bouton abandon/retour
  * ----------------------------------------------------------------------------
  * commentaires :
  * -
@@ -47,7 +49,7 @@ require_once 'php/elements_page/generiques/page.php';
 // --- Classes des elements de la page
 require_once 'php/elements_page/generiques/element.php';
 require_once 'php/elements_page/generiques/entete_section.php';
-
+require_once 'php/elements_page/generiques/modal.php';
 
 require_once 'php/metier/calendrier.php';
 require_once 'php/elements_page/specifiques/vue_seance_activite.php';
@@ -90,7 +92,6 @@ $ok = Enregistrement_Membre::collecter($criteres, '', '', $personnes_actives);
 // (2) les seances progammees recoupant le creneau horaire
 $seances = array();
 $critere_selection = " date_debut < '" . $fin->date_heure_sql() . "' AND date_fin > '" . $debut->date_heure_sql() . "'";
-//$critere_selection = " date_debut = '" . $debut->date_heure_sql() . "' AND date_fin = '" . $fin->date_heure_sql() . "'";
 $critere_tri =  "";
 Enregistrement_Seance_Activite::collecter(null,
                                           $critere_selection,
@@ -181,6 +182,18 @@ $code_aff = $code_aff . '</div></div></div>';
 $afficheur->def_code($code_aff);
 $page->ajoute_contenu($afficheur);
 
+// --- bouton d'annulation (= retour a la page precedente)
+$code_html = '<div><button class="btn btn-warning" onclick="window.location=document.referrer;">Abandonner saisie</button></div>';
+$div_bouton = new Element_Code();
+$page->ajoute_contenu($div_bouton);
+$div_bouton->def_code($code_html);
+
+// --- Boite modale pour affichage info requete
+$afficheur_action = new Element_Modal();
+$page->ajoute_contenu($afficheur_action);
+$afficheur_action->def_id('aff_act');
+$afficheur_action->def_titre('Inscription(s)');
+
 // --- formulaire de saisie de l'equipage
 $formulaire = new Formulaire_Saisie_Equipage($page, 'form_ie');
 $page->ajoute_contenu($formulaire);
@@ -194,26 +207,7 @@ $formulaire->seance = $seance;
 $formulaire->personnes_actives = $personnes_actives;
 $formulaire->personnes_occupees = $personnes_occupees;
 
-// Selection du responsable de l'activite
-/*
-if ($seance->responsable_requis() && ! $seance->a_un_responsable()) {
-  $champ_resp = new Champ_Selection('resp');
-  $formulaire->ajouter_champ($champ_resp);
-  foreach ($personnes_actives as $p) {
-    if ($p->est_chef_de_bord() && !array_key_exists($p->code(), $personnes_occupees))
-      $champ_resp->options[$p->code()] = $p->prenom() . ' '. $p->nom();
-  }
-}
-*/
-
-// --- Explications sur ce qu'il y aura sur la page
-$doc = new Element_Code();
-$code_html = '<div>' . PHP_EOL;
-//$code_html = $code_html . '<p>N places équipier : ' . $n_places_equipier . ' </p>' . PHP_EOL;
-$code_html = $code_html . '</div>' . PHP_EOL;
-$doc->def_code($code_html);
-$page->ajoute_contenu($doc);
-
+// ----------------------------------------------------------------------------
 // --- Affichage de la page
 $page->initialiser();
 $page->afficher();

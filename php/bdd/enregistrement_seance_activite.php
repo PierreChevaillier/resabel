@@ -22,6 +22,7 @@
   // revision : 17-feb-2023 pchevaillier@gmail.com + changer_horaire
 // revision : 25-jan-2024 pchevaillier@gmail.com + changer_support + changer_seance
 // revision : 27-jan-2024 pchevaillier@gmail.com + creer
+// revision : 19-fev-2024 modif ajouter_participation : code_seance == 0 => c'est une noubelle seance
   // --------------------------------------------------------------------------
   // commentaires :
   // attention :
@@ -29,8 +30,8 @@
   // -
   // ==========================================================================
   
-  require_once 'php/metier/calendrier.php';
-  require_once 'php/metier/seance_activite.php';
+require_once 'php/metier/calendrier.php';
+require_once 'php/metier/seance_activite.php';
 require_once 'php/metier/site_activite.php';
 require_once 'php/bdd/enregistrement_site_activite.php';
   
@@ -187,20 +188,23 @@ require_once 'php/bdd/enregistrement_site_activite.php';
       
       // test si seance existe deja
       $nouvelle_seance = false;
-      try {
-        $requete= $bdd->prepare("SELECT COUNT(*) as n FROM " . self::source() . " WHERE code = :code_seance");
-        $code_seance = $infos->code_seance;
-        $requete->bindParam(':code_seance', $code_seance, PDO::PARAM_INT);
-        $requete->execute();
-        if ($resultat = $requete->fetch(PDO::FETCH_OBJ)) {
-         $nouvelle_seance = ($resultat->n == 0);
+      if ($infos->code_seance == 0) {
+        $nouvelle_seance = true;
+     } else {
+        try {
+          $requete= $bdd->prepare("SELECT COUNT(*) as n FROM " . self::source() . " WHERE code = :code_seance");
+          $code_seance = $infos->code_seance;
+          $requete->bindParam(':code_seance', $code_seance, PDO::PARAM_INT);
+          $requete->execute();
+          if ($resultat = $requete->fetch(PDO::FETCH_OBJ)) {
+           $nouvelle_seance = ($resultat->n == 0);
+          }
+        } catch (PDOexception $e) {
+          $bdd->rollBack();
+          //Base_Donnees::sortir_sur_exception(self::source(), $e);
+          return 2;
         }
-      } catch (PDOexception $e) {
-        $bdd->rollBack();
-        //Base_Donnees::sortir_sur_exception(self::source(), $e);
-        return 2;
       }
-    
       // si nouvelle seance = creation seance
       $code_seance = $infos->code_seance;
       if ($nouvelle_seance) {

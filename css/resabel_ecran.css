@@ -87,8 +87,9 @@ p.lead {
  * source = https://www.w3docs.com/snippets/css/how-to-make-a-div-vertically-scrollable.html
  */
 div.rsbl-scroll {
+  padding-left: 10px;
   background-color: #fed9ff;
-  width: 600px;
+  /* width: 600px; */
   height: 250px;
   overflow: scroll;
   /* overflow-y: auto; */
