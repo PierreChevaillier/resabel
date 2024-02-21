@@ -40,11 +40,11 @@
   // --------------------------------------------------------------------------
   class Contexte_Action_Seance {
     public $page = null;
-    private $session_admin = false;
+    public $session_admin = false;
     public $session_pers = false;
-    private $session_club = false;
-    private $membre_actif = false;
-    private $responsable = false;
+    public $session_club = false;
+    public $membre_actif = false;
+    public $responsable = false;
     public $utilisateur = null;
     private $action = '';
     public function code_action() { return $this->action; }
@@ -73,7 +73,9 @@
       $this->page->ajouter_script("js/requete_info_personne.js");
       
       // test si session permet de faire des actions sur les seances d'activite
+      // TODO: logique a revoir/affiner
       $this->session_interactive = ($this->session_club || $this->session_admin || ($this->action == 'ie'));
+      if ($this->action == 'l') $this->session_interactive = false; // TODO: pour voir...
       if (!$this->session_interactive && $this->session_pers) {
         $permanence = null;
         Permanence::cette_semaine($permanence);
@@ -138,7 +140,7 @@
     protected $couleur_texte_equipier = "Black";
     
     protected $couleur_fond_debutant = "LightCyan"; //"#136BAC";
-    protected $couleur_texte_debutant = "white";
+    protected $couleur_texte_debutant = "DarkSlateBlue"; //white";
     
     protected $couleur_fond_place_libre = " #DAF7A6"; //LightCyan";
     protected $couleur_texte_place_libre = "Black";
@@ -162,12 +164,13 @@
     
     public function initialiser() { }
     
-    public function generer_id(int $rang) {
+    public function generer_id(int $rang): string {
       return $this->seance->support->code() . '_' . $this->seance->debut()->date_heure_sql() . '_' . $rang;
     }
     
     protected function afficher_debut() {
       echo "\n<div style=\"padding:4px\">\n";
+      //echo '<div class="row h-100 justify-content-center align-items-center">';
     }
     
     protected function afficher_fin() {
@@ -178,7 +181,7 @@
     
     protected function formater_participant(Participation_Activite $p,
                                             int $rang,
-                                            String & $code_html) {
+                                            String & $code_html): bool {
       $personne = $p->participant;
       if (($this->seance->a_un_responsable()) && ($personne->code() == $this->seance->responsable->code()))
         return false;
@@ -194,31 +197,28 @@
 
       if ($this->est_interactif) {
         $code_interacteur = $code_interacteur . $this->generer_code_interacteur($personne);
-/*
-        $desinscription_possible = ($personne->code() == $this->contexte_action()->utilisateur->code());
-        if ($desinscription_possible) {
-          $resp = 0;
-          $params = $this->params_action_seance . ', ' . $personne->code() . ', ' . $resp;
-          $code_action = "di";
-          $params = $params . ', \'' . $code_action . '\'';
-          $code_interacteur = '&nbsp;<span><img src="../../assets/icons/x-square.svg" alt="X" width="24" height="24" class="rsbl-tooltip" data-toggle="modal" data-target="#' . $this->id_dialogue_action . '" title="Annulation inscription" onclick="requete_inscription_individuelle(' . $params . ');"></span>';
-        }
-      */
       } else {
          $str_participant = '<span id="equip_' . $id . '">'
           . $personne->prenom . ' ' . $personne->nom . '</span>';
       }
-      $code_html = $code_html . "<td id=\"" . $id . "\" style =\"width:" . $this->largeur . "px;color:" . $couleur_texte . ";background-color:" . $couleur_fond . ";text-align:center;padding:1px\"><div style=\"min-height:31px\">" . $str_participant . ' ' . $code_interacteur . "</div></td>";
+      $code_html = $code_html . "<div id=\"" . $id . "\" style =\"width:" . $this->largeur . "px;color:" . $couleur_texte . ";background-color:" . $couleur_fond . ";text-align:center;padding:1px\"><div style=\"min-height:31px\">" . $str_participant . ' ' . $code_interacteur . "</div></div>";
       return true;
     }
     
-    protected function generer_code_interacteur(Membre $participant) {
+    protected function generer_code_interacteur(Membre $participant): string {
       $code = ""; //utf8_encode('');
       $code = $code . '<div class="dropdown">';
        
       // --- le menu pour interagir : effectuer une action sur la participation a l'activite
-      $texte_bouton = ""; //utf8_encode('');
-      $texte_bouton = substr($participant->prenom . ' ' . $participant->nom, 0, 22);
+      $couleur_texte = ($participant->est_debutant()) ?  $this->couleur_texte_debutant :  $this->couleur_texte_equipier;
+      $couleur_texte = ($this->seance->responsable_requis() && !$this->seance->a_un_responsable() && $participant->est_chef_de_bord()) ?  $this->couleur_texte_cdb :  $couleur_texte;
+      $couleur_fond = ($participant->est_debutant()) ? $this->couleur_fond_debutant :  $this->couleur_fond_equipier;
+      
+      $texte_bouton = '<span style="color:' . $couleur_texte
+        . ';background-color:' . $couleur_fond
+        .';">'; //utf8_encode('');
+      $texte_bouton = $texte_bouton . substr($participant->prenom . ' ' . $participant->nom, 0, 22);
+      $texte_bouton = $texte_bouton . '</span>';
       $id_menu = 'mnu_particip_' . $this->seance->support->code() . '_' . $this->seance->debut()->date_heure_sql() . '_' . $participant->code();
       $code = $code . '<button class="btn btn-outline-dark btn-sm dropdown-toggle" type="button" style="min-width:196px;" id="' . $id_menu . '" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' . $texte_bouton . '</button>';
        
@@ -312,7 +312,8 @@
       }
       $id = $this->generer_id(0);
       $str_resp = '<span id="resp_' . $id . '"> ' . $str_resp . '</span> ';
-      $code_html = $code_html . "<td id=\"" . $id . "\" style =\"width:" . $this->largeur . "px;color:" . $this->couleur_texte_resp . ";background-color:" . $this->couleur_fond_resp . ";text-align:center;padding:1px\"><div style=\"min-height:31px\">" . $str_resp . $code_interacteur . "</div></td>";
+      
+      $code_html = $code_html . "<div id=\"" . $id . "\" style =\"width:" . $this->largeur . "px;color:" . $this->couleur_texte_resp . ";background-color:" . $this->couleur_fond_resp . ";text-align:center;padding:1px\"><div style=\"min-height:31px\">" . $str_resp . $code_interacteur . "</div></div>";
       
       //$code_html = $code_html . "<td width=\"" . $this->largeur . "px\" bgcolor=\"" . $this->couleur_fond_resp . "\" align=\"center\">" . $str_resp . "</td>";
       return;
@@ -320,7 +321,7 @@
 
     protected function formater_place_libre(int $rang, String & $code_html) {
       $id = $this->generer_id($rang);
-      $code_html = $code_html . "<td id=\"" . $id . "\" style =\"width:" . $this->largeur . "px;min-height:300px;color:" . $this->couleur_texte_place_libre . ";background-color:" . $this->couleur_fond_place_libre . ";text-align:center;padding:1px\"><div style=\"min-height:31px\">";
+      $code_html = $code_html . "<div id=\"" . $id . "\" style =\"width:" . $this->largeur . "px;min-height:31px;color:" . $this->couleur_texte_place_libre . ";background-color:" . $this->couleur_fond_place_libre . ";text-align:center;padding:1px\"><div style=\"min-height:31px\">";
       $code_html = $code_html . '<span id="equip_' . $id . '"> </span>';
       $code_interacteur = ""; //utf8_encode('');
       if ($this->est_interactif) {
@@ -347,7 +348,7 @@
           $this->pas_encore_controle_vide = false;
         }
       }
-      $code_html = $code_html . $code_interacteur . "</div></td>";
+      $code_html = $code_html . $code_interacteur . "</div></div>";
       return;
     }
     
@@ -360,23 +361,23 @@
        //$this->afficher_debut();
        $code_html = ""; //utf8_encode('');
        $code_html = $code_html . "\n<div style=\"padding:2px;\">\n";
-       $code_html = $code_html . "\n\t<table class=\"table table-bordered table-condensed\" style=\"width:"
-                    . ($this->largeur + 0) . "px;\"><tbody>\n";
+       //$code_html = $code_html . "\n\t<table class=\"table table-bordered table-condensed\" style=\"width:"
+       //             . ($this->largeur + 0) . "px;\"><tbody>\n";
     
-       // le responsable TODO : tester si activite avec responsable participant
+       // le responsable
        if ($this->seance->responsable_requis()) {
-         $code_html = $code_html . "\t\t<tr>";
+         //$code_html = $code_html . "\t\t<tr>";
          $this->formater_responsable($code_html);
-         $code_html = $code_html . "\t\t</tr>\n";
+         //$code_html = $code_html . "\t\t</tr>\n";
        }
        
        // les equipiers
        $rang = 1;
        $ajout = false;
        foreach ($this->seance->inscriptions as $participation) {
-         $code_html = $code_html . "<tr>";
+         //$code_html = $code_html . "<tr>";
          $ajout = $this->formater_participant($participation, $rang, $code_html);
-         $code_html = $code_html . "</tr>\n";
+         //$code_html = $code_html . "</tr>\n";
          if ($ajout) $rang++;
        }
     
@@ -386,13 +387,13 @@
          $n_vides -= 1;
        
        for ($v = 0; $v < $n_vides; $v++) {
-         $code_html = $code_html .  "<tr>";
+         //$code_html = $code_html .  "<tr>";
          $this->formater_place_libre($rang, $code_html);
-         $code_html = $code_html . "</tr>\n";
+         //$code_html = $code_html . "</tr>\n";
          $rang++;
        }
     
-       $code_html = $code_html . "\t</tbody></table>\n";
+       //$code_html = $code_html . "\t</tbody></table>\n";
        $code_html = $code_html . "</div>\n";
        return $code_html;
        
@@ -412,18 +413,106 @@
     public $seance = null; // objet metier
     public $page = null; // pour ajouter des javascripts
     public $activite_site = null; // contexte : activite du site sur la periode
-    protected $mode_interactif = false;
     protected $afficheur = null;
     protected $id_dialogue_action = "";
     
+    protected $site_ouvert = true;
+    protected $support_disponible = true;
+    
+    protected function contexte(): ?Contexte_Action_Seance {
+      return $this->afficheur->contexte_action();
+    }
+    
     public function __construct(Afficheur_Seance_Activite $afficheur, int $index_creneau) {
-      $this->page = $afficheur->page();
       $this->index_creneau = $index_creneau;
+      $this->afficheur = $afficheur;
+      $this->page = $afficheur->page();
       $this->seance = $afficheur->seance();
       $this->activite_site = $afficheur->activite_site;
-      $this->mode_interactif = $afficheur->est_interactif;
-      $this->afficheur = $afficheur;
+      
+      $this->site_ouvert = !$this->activite_site->site_ferme_creneau($this->seance->debut(),
+                                                                     $this->seance->fin());
+      $this->support_disponible = !$this->activite_site->support_indisponible_creneau($this->seance->support,
+                                                                                       $this->seance->debut(),
+                                                                                       $this->seance->fin());
+      
       $this->id_dialogue_action = "aff_act_" . $this->activite_site->site->code();
+    }
+    
+    // Regles 'metier' definissant les actions possibles
+    
+    protected function possible_contacter_participants() : bool {
+      return $this->contexte()->session_pers;
+    }
+    
+    protected function possible_inscrire_responsable(): bool {
+      $action = $this->contexte()->code_action();
+      if ($action == 'l') return false;
+      
+      if (!$this->seance->responsable_requis()) return false;
+      $pas_de_place = $this->seance->a_un_responsable();
+      if ($pas_de_place) return false;
+      
+      $activite_possible = $this->site_ouvert && $this->support_disponible;
+      if (!$activite_possible) return false;
+      
+      $profil_utilisateur = $this->contexte()->session_admin || $this->contexte()->session_club || $this->contexte()->membre_actif;
+      if (!$profil_utilisateur) return false;
+      
+      $est_participant = $this->contexte()->membre_actif && $this->seance->a_comme_participant($this->contexte()->utilisateur);
+      
+      $action_possible = (($action == 'ie') || (($action == 'ii') && $est_participant));
+      return $action_possible;
+    }
+
+    protected function possible_inscrire_equipier(): bool {
+      
+      $action = $this->contexte()->code_action();
+      if ($action == 'l') return false;
+
+      $pas_de_place = $this->seance->nombre_places_est_limite() && $this->seance->nombre_places_equipiers_disponibles() == 0;
+      if ($pas_de_place) return false;
+      
+      $activite_possible = $this->site_ouvert && $this->support_disponible;
+      if (!$activite_possible) return false;
+      
+      $profil_utilisateur = $this->contexte()->session_admin || $this->contexte()->session_club || $this->contexte()->membre_actif;
+      if (!$profil_utilisateur) return false;
+      
+      $est_participant = $this->contexte()->membre_actif && $this->seance->a_comme_participant($this->contexte()->utilisateur);
+      
+      $action_possible = (($action == 'ie') || (($action == 'ii') && $est_participant));
+      return $action_possible;
+    }
+    
+    protected function possible_inscrire_equipage(): bool {
+      $possible = $this->possible_inscrire_responsable() || $this->possible_inscrire_equipier();
+      return $possible;
+    }
+
+    protected function possible_annuler_seance(): bool {
+
+      $action = $this->contexte()->code_action();
+      if ($action == 'l') return false;
+
+      if ($this->seance->nombre_participants()  == 0) return false;
+            
+      $profil_utilisateur = $this->contexte()->session_admin || $this->contexte()->session_club || $this->contexte()->membre_actif;
+      if (!$profil_utilisateur) return false;
+      
+      $est_participant = $this->contexte()->membre_actif && $this->seance->a_comme_participant($this->contexte()->utilisateur);
+      
+      $action_possible = (($action == 'ie') || (($action == 'ii') && $est_participant));
+      return $action_possible;
+    }
+    
+    protected function possible_changer_creneau(): bool {
+      return $this->possible_annuler_seance();
+    }
+    
+    protected function possible_changer_support(): bool {
+      $autres_support = count($this->activite_site->site->supports_activite) > 1;
+      return ($autres_support && $this->possible_annuler_seance());
     }
     
     protected function formater_info_seance() {
@@ -470,25 +559,41 @@
       return $code;
     }
     
-    public function formater_menu_action() {
-      $code = "";
-
-      $code = $code . '<div class="dropdown">';
+    protected function formater_bouton_menu_action_seance(): string  {
+      $code_html = '<div class="dropdown">';
       
-      // --- le bouton pour interagir
-      $texte_bouton = "";
+      $texte_bouton = '';
       if (is_a($this->seance->support, 'Bateau'))
         $code_support = $this->seance->support->numero();
       else
         $code_support = $this->seance->support->nom();
-      $texte_bouton = $texte_bouton . $code_support . ' à ' . $this->seance->debut()->heure_texte();
-      $id_menu = 'mnu_seance_' . $this->seance->support->code() . '_' . $this->seance->debut()->date_heure_sql();
-      $code = $code . '<button class="btn btn-outline-primary btn-sm dropdown-toggle" type="button" id="' . $id_menu . '" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' . $texte_bouton . '</button>';
+      $texte_bouton = $texte_bouton . $code_support
+        . ' à ' . $this->seance->debut()->heure_texte();
       
-      $code = $code . '<div class="dropdown-menu" aria-labelledby="' . $id_menu . '">';
+      $id_menu = 'mnu_seance_' . $this->seance->support->code() . '_' . $this->seance->debut()->date_heure_sql();
+      
+      $code_html = $code_html
+        . '<button class="btn btn-outline-primary btn-sm dropdown-toggle" type="button" id="' . $id_menu
+        . '" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">'
+        . $texte_bouton . '</button>';
+      $code_html = $code_html . '<div class="dropdown-menu" aria-labelledby="' . $id_menu . '">';
+      return $code_html;
+    }
+    
+    public function formater_menu_action() {
+      // parametres communs a tous les scripts agissant sur la seance
+      $params_seance = $this->seance->code() . ', '
+                      . $this->activite_site->site->code() . ', '
+                      . $this->seance->code_support() . ', '
+                      . '\'' . $this->seance->debut()->date_heure_sql() . '\', '
+                      . '\'' . $this->seance->fin()->date_heure_sql() . '\'';
+
+      $code = '';
+      // --- le bouton pour interagir
+      $code = $code . $this->formater_bouton_menu_action_seance();
      
       // --- Actions du menu toujours possibles
-      $menu = ""; //utf8_encode('');
+      $menu = "";
       
       // copie de page_accueil_perso.php
       $details = ""; //utf8_encode("");
@@ -514,85 +619,68 @@
         $details = $details . " " . $aff_mail->formatter("Je te contacte ", $sujet);
         $details = $details . "<br />";
       }
-      $details = htmlspecialchars($details); // indispensable car il ya des " dans $details
+      $details = htmlspecialchars($details); // indispensable car il y a des " dans $details
       $modal_id = "aff_act";
       $menu = $menu . '<a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#' . $this->id_dialogue_action . '" onclick="return afficher_info_seance(\'' . $this->id_dialogue_action . '\', \''
           . $entete . '\', \'' . $details . '\');">Afficher informations</a>';
       
       // --- Actions dependant du contexte
-      //if ($this->mode_interactif) {
-      $contexte = $this->afficheur->contexte_action();
-      $action_autorisee = $contexte->session_interactive;
-      $action_possible = true;
-      if (!$action_autorisee && $contexte->session_pers) {
-        $action_possible = $this->seance->a_comme_participant($contexte->utilisateur);
+      if ($this->possible_inscrire_responsable()) {
+        $rang = 0;
+        $id_participation = $this->afficheur->generer_id($rang);
+        $params = $params_seance . ', \'' . $id_participation . '\', ' . $rang;
+        $menu = $menu . '<a class="dropdown-item" onclick="activer_formulaire(' . $params . '); return false; " >Inscrire Chef de bord</a>';
       }
       
-      if ($action_possible) {
-        // parametres communs a tous les scripts agissant sur la seance
-        $params_seance = $this->seance->code() . ', '
-                        . $this->activite_site->site->code() . ', '
-                        . $this->seance->code_support() . ', '
-                        . '\'' . $this->seance->debut()->date_heure_sql() . '\', '
-                        . '\'' . $this->seance->fin()->date_heure_sql() . '\'';
+      if ($this->possible_inscrire_equipier()) {
+        $rang = $this->seance->nombre_participants() + ($this->seance->a_un_responsable() ? 0:1);
+        $id_participation = $this->afficheur->generer_id($rang);
+        $params = $params_seance . ', \'' . $id_participation . '\', ' . $rang;
+        $menu = $menu . '<a class="dropdown-item" onclick="activer_formulaire(' . $params . '); return false;" >Inscrire équipier</a>';
+      }
+      
+      if ($this->possible_inscrire_equipage()) {
+        // url retour = activites.php?a=ie&j=2024-01-27&sa=1&pc=PT09H30M&dc=PT10H30M&ts=0&s=0
+        // cf. page_activites.php
+        // ce qu'il faut pour pour revenir sur la page courante (selection pour recherche dispo)
+        $code_param_url = "?a=ie&j=" . $_GET['j']
+          . "&sa=" . $this->activite_site->site->code()
+          . "&pc=" . $_GET['pc']
+          . "&dc=" . $_GET['dc']
+          . "&ts=" . $_GET['ts']
+          . "&s=" . $_GET['s'];
+        // et ce qu'il faut pour savoir sur quelle seance on agit
+        $code_param_url = $code_param_url
+          . "&seance=" . $this->seance->code() /* egal zero si pas de seance */
+        . "&support=" . $this->seance->code_support()
+        . "&hd=" . $this->seance->debut()->valeur_cle_horaire()
+        . "&hf=" . $this->seance->fin()->valeur_cle_horaire()
+        ;
+        $menu = $menu
+          . '<a class="dropdown-item" href ="inscription_equipage.php'
+          . $code_param_url
+          .  '" >Inscrire équipage</a>';
+      }
+      
+      if ($this->seance->nombre_participants() > 0) {
+        $html_info_seance = htmlspecialchars($this->formater_info_seance());
+        $html_info_participations = htmlspecialchars($this->formater_info_participations());
+        $params = $this->seance->code()
+          . ', \'' . $this->id_dialogue_action
+          . '\', \'' . $html_info_seance
+          . '\', \'' . $html_info_participations
+          . '\', \'' . htmlspecialchars($this->formater_mail_participants())
+          . '\'';
         
-        if ($this->seance->responsable_requis() && ! $this->seance->a_un_responsable()) {
-          // inscription d'une personne en tant que chef de bord de la seance
-          $rang = 0;
-          $id_participation = $this->afficheur->generer_id($rang);
-          $params = $params_seance . ', \'' . $id_participation . '\', ' . $rang;
-          $menu = $menu . '<a class="dropdown-item" onclick="activer_formulaire(' . $params . '); return false; " >Inscrire Chef de bord</a>';
-        }
-        $place_equipier = $this->seance->nombre_places_disponibles() > ($this->seance->a_un_responsable() ? 0:1);
-        if ($place_equipier) {
-          $rang = $this->seance->support->capacite() - $this->seance->nombre_places_disponibles() + ($this->seance->a_un_responsable() ? 0:1);
-          $id_participation = $this->afficheur->generer_id($rang);
-          $params = $params_seance . ', \'' . $id_participation . '\', ' . $rang;
-          $menu = $menu . '<a class="dropdown-item" onclick="activer_formulaire(' . $params . '); return false;" >Inscrire équipier</a>';
-        }
-        
-        if ($contexte->code_action() == 'ie' && $this->seance->nombre_places_disponibles() > 0) {
-          // url retour = activites.php?a=ie&j=2024-01-27&sa=1&pc=PT09H30M&dc=PT10H30M&ts=0&s=0
-          // cf. page_activites.php
-          // ce qu'il faut pour pour revenir sur la page courante (selection pour recherche dispo)
-          $code_param_url = "?a=ie&j=" . $_GET['j']
-            . "&sa=" . $this->activite_site->site->code()
-            . "&pc=" . $_GET['pc']
-            . "&dc=" . $_GET['dc']
-            . "&ts=" . $_GET['ts']
-            . "&s=" . $_GET['s'];
-          // et ce qu'il faut pour savoir sur quelle seance on agit
-          $code_param_url = $code_param_url
-            . "&seance=" . $this->seance->code() /* egal zero si pas de seance */
-          . "&support=" . $this->seance->code_support()
-          . "&hd=" . $this->seance->debut()->valeur_cle_horaire()
-          . "&hf=" . $this->seance->fin()->valeur_cle_horaire()
-          ;
-        http://localhost/resabel-v2/resabel/inscription_equipage.php?a=ie&j=2024-01-27&sa=1&pc=PT09H30M&dc=PT10H30M&ts=0&s=0&seance=0&support=1&hd=PT09H30M&hf=PT10H30M
-          $menu = $menu
-            . '<a class="dropdown-item" href ="inscription_equipage.php'
-            . $code_param_url
-            .  '" >Inscrire équipage</a>';
-        }
-        
-        if ($this->seance->nombre_participants() > 0) {
-          $html_info_seance = htmlspecialchars($this->formater_info_seance());
-          $html_info_participations = htmlspecialchars($this->formater_info_participations());
-          $params = $this->seance->code()
-            . ', \'' . $this->id_dialogue_action
-            . '\', \'' . $html_info_seance
-            . '\', \'' . $html_info_participations
-            . '\', \'' . htmlspecialchars($this->formater_mail_participants())
-            . '\'';
+        if ($this->possible_annuler_seance()) {
           $menu = $menu . '<a class="dropdown-item" onclick="activer_controle_annulation_seance(' . $params . '); return false;" data-bs-toggle="modal" data-bs-target="#' . $this->id_dialogue_action . '">Annuler séance</a>';
-//          $menu = $menu . '<a class="dropdown-item" onclick="return false;">Changer horaire</a>';
-
-          
-          // possibilite report sur seance avant ou apres
+        }
+        
+        if ($this->possible_changer_creneau()) {
           $code_support = $this->seance->code_support();
           $nouveau_creneau = null;
           if ($this->afficheur->activite_site->creneau_precedent_est_libre($code_support,
-                                                                           $this->index_creneau)) {
+                                                                         $this->index_creneau)) {
             $nouveau_creneau = $this->afficheur->activite_site->creneaux_activite[$this->index_creneau - 1];
             if ($this->afficheur->activite_site->personne_participe_activite_creneau($this->seance, $nouveau_creneau)) {
               $params_nouveau_creneau = $params  . ', '
@@ -602,25 +690,25 @@
                 . $params_nouveau_creneau . '); return false;" data-bs-toggle="modal" data-bs-target="#' . $this->id_dialogue_action . '">Passer sur créneau précédent</a>';
             }
           }
-          if ($this->afficheur->activite_site->creneau_suivant_est_libre($this->seance->code_support(),
-                                                                         $this->index_creneau)) {
-            $nouveau_creneau = $this->afficheur->activite_site->creneaux_activite[$this->index_creneau + 1];
-            if ($this->afficheur->activite_site->personne_participe_activite_creneau($this->seance, $nouveau_creneau)) {
-              $params_nouveau_creneau = $params  . ', '
-                . '\'' . $nouveau_creneau->debut()->date_heure_sql() . '\', '
-                . '\'' . $nouveau_creneau->fin()->date_heure_sql() . '\'';
-              $menu = $menu . '<a class="dropdown-item" onclick="activer_controle_changer_horaire_seance('
-                . $params_nouveau_creneau . '); return false;" data-bs-toggle="modal" data-bs-target="#' . $this->id_dialogue_action . '">Passer sur créneau suivant</a>';
-            }
+        if ($this->afficheur->activite_site->creneau_suivant_est_libre($this->seance->code_support(),
+                                                                       $this->index_creneau)) {
+          $nouveau_creneau = $this->afficheur->activite_site->creneaux_activite[$this->index_creneau + 1];
+          if ($this->afficheur->activite_site->personne_participe_activite_creneau($this->seance, $nouveau_creneau)) {
+            $params_nouveau_creneau = $params  . ', '
+              . '\'' . $nouveau_creneau->debut()->date_heure_sql() . '\', '
+              . '\'' . $nouveau_creneau->fin()->date_heure_sql() . '\'';
+            $menu = $menu . '<a class="dropdown-item" onclick="activer_controle_changer_horaire_seance('
+              . $params_nouveau_creneau . '); return false;" data-bs-toggle="modal" data-bs-target="#' . $this->id_dialogue_action . '">Passer sur créneau suivant</a>';
           }
-          
-          // Possibilite de changement du support de l'activite
-          $params = $params_seance . ', \'' . $this->id_dialogue_action . '\', \'' . $html_info_seance . '\', \'' . $html_info_participations . '\', \'' . htmlspecialchars($this->formater_mail_participants()) . '\'';
-          $menu = $menu . '<a class="dropdown-item" onclick="activer_controle_changer_support_seance('
-              . $params . '); return false;" data-bs-toggle="modal" data-bs-target="#' . $this->id_dialogue_action . '">Changer de support</a>';
         }
       }
-      
+        
+        if ($this->possible_changer_support()) {
+        $params = $params_seance . ', \'' . $this->id_dialogue_action . '\', \'' . $html_info_seance . '\', \'' . $html_info_participations . '\', \'' . htmlspecialchars($this->formater_mail_participants()) . '\'';
+        $menu = $menu . '<a class="dropdown-item" onclick="activer_controle_changer_support_seance('
+            . $params . '); return false;" data-bs-toggle="modal" data-bs-target="#' . $this->id_dialogue_action . '">Changer de support</a>';
+      }
+      }
       $code = $code . $menu . '</div></div>';
       return $code;
     }

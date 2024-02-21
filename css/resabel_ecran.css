@@ -45,6 +45,22 @@ footer {
   font-size: small;
 }
 
+form.rsbl-form {
+  background-color:#F8F8FF; //GostWhite;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+input.form-control {
+  background-color:#FFFAF0; //FloralWhite;
+}
+
+select.form-control {
+  background-color:#FFFAF0; //FloralWhite;
+}
+
 /*
 h1, h2, h3, h4 {
   color: rgb(63,177,208);
@@ -59,9 +75,7 @@ label {
   color: rgb(183, 30, 44);
 }
 
-input.form-control {
-  background-color: #c5dafc;
-}
+
 
 p.lead {
   color: rgb(221,52,47);
@@ -93,7 +107,7 @@ div.rsbl-scroll {
   height: 250px;
   overflow: scroll;
   /* overflow-y: auto; */
-  /*text-align: center; $/
+  /*text-align: center; */
   padding: 20px;
 }
 

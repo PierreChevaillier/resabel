@@ -79,7 +79,7 @@
     public function formatter($message, $sujet) {
       $club = isset($_SESSION['id_clb']) ? $_SESSION['id_clb'] : "";
       $signature = isset($_SESSION['n_usr']) ? $_SESSION['n_usr'] : $club;
-      $code_html = "<a href=\"mailto:" . $this->personne->courriel . "?subject=" . $club . " Pour " . $this->personne->prenom . " " . $this->personne->nom . " : " . $sujet . "&body=Bonjour " . $this->personne->prenom . ",%0D%0A%0D%0A " . $message . "%0D%0A%0D%0A" . $signature . "\">" . $this->personne->courriel . "</a>";
+      $code_html = "<a href=\"mailto:" . $this->personne->courriel . "?subject=" . $club . " Pour " . $this->personne->prenom . " " . $this->personne->nom . " : " . $sujet . "&body=Bonjour " . $this->personne->prenom . ",%0D%0A%0D%0A " . $message . "%0D%0A%0D%0A" . 'Message généré par Resabel pour ' . $signature . "\">" . $this->personne->courriel . "</a>";
       return $code_html;
     }
   }

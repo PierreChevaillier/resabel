@@ -128,6 +128,14 @@
       return $resultat; 
     }
     
+    public function nombre_places_equipiers_disponibles(): ?int {
+      $resultat = $this->nombre_places_disponibles(); // null si pas de limite de capacite
+      if (!is_null($resultat) && $resultat > 0) {
+        $resultat -= ($this->responsable_requis() && $this->a_un_responsable()) ? 1: 0;
+      }
+      return $resultat;
+    }
+    
     public function a_comme_participant(Membre $personne): bool {
       $resultat = false;
       foreach ($this->inscriptions as $p) {

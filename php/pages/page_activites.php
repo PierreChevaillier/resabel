@@ -167,6 +167,7 @@
     }
 
     protected function definir_affichage_filtre() {
+      // pas encore utilise
       $cadre = new Conteneur_Repliable();
       $cadre->def_id('cadre_filtre');
       $cadre->def_titre("Filtre sélection");

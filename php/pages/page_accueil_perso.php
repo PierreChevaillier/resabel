@@ -179,19 +179,6 @@
       $this->definir_affichage_permanence();
       $this->definir_affichage_marees();
       
-       // --- Contenu temporaire
-      // --- Explications sur ce qu'il y aura sur la page
-      /*
-      $doc = new Element_Code();
-      $code_html = '<div>' . PHP_EOL;
-      $code_html = $code_html . 'Cette page donne aussi des informations sur <ul><li>date - lever - coucher soleil</li><li>les éventuelles fermetures de site</li></ul>' . PHP_EOL;
-      $code_html = $code_html . '<p>Elle donne accès au formulaire d\'inscription individuelle et équipage (idem menu inscription)</p>' . PHP_EOL;
-      $code_html = $code_html . '<p>Si la personne est de permanence, cela est indiqué.</p>' . PHP_EOL;
-      $code_html = $code_html . '<p>Si la personne doit renouveler prochainement sa licence, cela est indiqué.</p>' . PHP_EOL;
-      $code_html = $code_html . '</div>' . PHP_EOL;
-      $doc->def_code($code_html);
-      $this->ajoute_contenu($doc);
-    */
       $element = new Entete_Section();
       $element->def_titre("Participations à des séances d'activité");
       $this->ajoute_contenu($element);

@@ -12,7 +12,7 @@
  * ----------------------------------------------------------------------------
  * creation : 31-jan-2024 pchevaillier@gmail.com
  * revision : 19-fev-2024 pchevaillier@gmail.com
- * ----------------------------------------------------------------------------
+ * ----------------------------------------------------------------------------http://localhost/resabel-v2/resabel/activites.php?a=ii&j=2024-02-19&sa=1&pc=PT08H30M&dc=PT09H30M&ts=0&s=0
  * commentaires :
  * - en construction
  * attention :

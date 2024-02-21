@@ -88,7 +88,11 @@
           $sous_classe = '';
           if ($support->est_pour_competition()) $sous_classe = 'compet';
           elseif ($support->est_pour_loisir()) $sous_classe = 'loisir';
-          echo '<td class="cel_bateau ' . $sous_classe . '"><div class="num_bateau">'. $support->numero() . '</div><div class="nom_bateau">' .  $support->nom() . '</div></td>';
+          echo '<td class="cel_bateau ' . $sous_classe . '">';
+          echo '<div class="row h-100 justify-content-center align-items-center">';
+          echo '<div class="num_bateau">'. $support->numero() . '</div><div class="nom_bateau">' .  $support->nom() . '</div>';
+          echo '</div>';
+          echo '</td>';
         } elseif (is_a($support, 'Plateau_Ergo'))  {
           echo '<td>' . $support->nom() . '</td>';
         }
@@ -109,7 +113,7 @@
           $classe = $classe . ' cel_seance';
           $classe = trim($classe); 
           echo '<td id="', $id, '" class="', $classe, '" style="padding:1px;text-align:center;">';
-        
+          
           $this->afficher_seance($seance, $i);
           echo '</td>';
         }
