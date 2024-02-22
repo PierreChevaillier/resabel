@@ -45,16 +45,16 @@
     public $pour_competition = true; // pour l'instant pas de distinction au niveau des membres
     
     private $code = 0; // identifiant interne non modifiable
-    public function code() { return $this->code; }
-    public function def_code($valeur) { $this->code = $valeur;}
+    public function code(): int { return $this->code; }
+    public function def_code(int $valeur) { $this->code = $valeur;}
     
     private $numero; // identifiant pour utilisateur
     public function numero() { return $this->numero; }
     public function def_numero($valeur) { $this->numero = $valeur;}
     
     private $nom = ""; // utf8
-    public function nom() { return $this->nom; }
-    public function def_nom($valeur) { $this->nom = $valeur; }
+    public function nom(): string { return $this->nom; }
+    public function def_nom(string $valeur): void { $this->nom = $valeur; }
     
     public $modele = "";
     public $constructeur = "";
@@ -114,8 +114,8 @@
     public function def_code(int $valeur):void { $this->code = $valeur;}
     
     private $nom = ""; // utf8
-    public function nom() { return $this->nom; }
-    public function def_nom($valeur) { $this->nom = $valeur; }
+    public function nom(): string { return $this->nom; }
+    public function def_nom(string $valeur) { $this->nom = $valeur; }
     
     public function __construct(int $code) {
       $this->code = $code;

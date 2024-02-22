@@ -115,6 +115,13 @@
       return count($this->inscriptions);
     }
     
+    public function nombre_equipiers(): int {
+      $nombre = $this->nombre_participants();
+      if ($this->responsable_requis() && $this->a_un_responsable())
+        $nombre -= 1;
+      return $nombre;
+    }
+    
     public function nombre_places_est_limite(): bool {
       $condition = !is_null($this->support->capacite());
       return $condition;
@@ -131,7 +138,8 @@
     public function nombre_places_equipiers_disponibles(): ?int {
       $resultat = $this->nombre_places_disponibles(); // null si pas de limite de capacite
       if (!is_null($resultat) && $resultat > 0) {
-        $resultat -= ($this->responsable_requis() && $this->a_un_responsable()) ? 1: 0;
+        if ($this->responsable_requis() && !$this->a_un_responsable())
+          $resultat -= 1;
       }
       return $resultat;
     }
@@ -155,11 +163,15 @@
       }
       if ($doublon) return false;
       
-      $places_dispo = (! $this->nombre_places_est_limite()
-                       || ($this->nombre_places_disponibles() >= $seance->nombre_participants()));
+      $places_dispo = ((!$this->nombre_places_est_limite()) || ($this->nombre_places_disponibles() >= $seance->nombre_participants()));
       if (! $places_dispo)
         return false;
 
+      if ($this->nombre_places_est_limite()) {
+        if ($this->nombre_places_equipiers_disponibles() >= $seance->nombre_equipiers())
+          return false;
+      }
+ 
       $ok = true;
       $cond_resp = ($this->responsable_requis() && ! $this->a_un_responsable());
       $complet = ($this->nombre_places_disponibles() == $seance->nombre_participants());

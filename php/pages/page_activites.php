@@ -135,23 +135,6 @@
       $nav_date->def_id('nav_dte');
       $nav_date->def_titre("Date");
       
-/*
-      $sel_jour = new Selecteur_Date();
-      $sel_jour->def_page($this);
-      $this->javascripts[] = "js/convert_date_timestamp.js";
-      $sel_jour->def_id('sel_date');
-      $sel_jour->date_ref = $date_ref;
-      $sel_jour->page_cible = $url;
-      $sel_jour->parametres = $params;
-      $nav_date->ajouter_colonne($sel_jour, 'col-md-4');
-
-      $nav_jour = new Navigateur_Date();
-      $nav_jour->date_ref = $date_ref;
-      $nav_jour->page_cible = $url;
-      $nav_jour->parametres = $params;
-      
-      $nav_date->ajouter_colonne($nav_jour, 'col-md-8');
- */
     }
     
     protected function definir_affichage_permanence() {

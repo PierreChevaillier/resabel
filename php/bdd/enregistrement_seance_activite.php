@@ -139,7 +139,7 @@ require_once 'php/bdd/enregistrement_site_activite.php';
               }
               $seance->site->def_nom($donnee->nom_site);
               
-              $seance->support = new Support_activite($donnee->code_support);
+              $seance->support = new Support_Activite($donnee->code_support);
               $seance->definir_horaire(new Instant($donnee->date_debut), new Instant($donnee->date_fin));
               if (!is_null($donnee->code_responsable) && strlen($donnee->code_responsable) > 0)
                 $seance->responsable = new Membre($donnee->code_responsable);

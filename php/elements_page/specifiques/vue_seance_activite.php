@@ -102,6 +102,8 @@
   abstract class Afficheur_Seance_Activite extends Element {
     
     public $est_interactif = true;
+    protected $site_ouvert = true;
+    protected $support_disponible = true;
     
     static function creer(Page $page, Seance $objet_metier) {
       $vue = null;
@@ -153,6 +155,15 @@
       $this->def_page($page);
       $this->seance = $seance;
       $this->activite_site = $activite_site;
+      
+      if (! is_null($this->activite_site)) {
+        $this->site_ouvert = !$this->activite_site->site_ferme_creneau($this->seance->debut(),
+                                                                     $this->seance->fin());
+        $this->support_disponible = !$this->activite_site->support_indisponible_creneau($this->seance->support,
+                                                                                       $this->seance->debut(),
+                                                                                       $this->seance->fin());
+      }
+      
       $this->id_dialogue_action = "aff_act_" . $this->seance->site->code(); //$this->activite_site->site->code();
       $this->params_action_seance = '\'' . $this->id_dialogue_action . '\', '
       . $this->seance->code() . ', '
@@ -216,7 +227,7 @@
       
       $texte_bouton = '<span style="color:' . $couleur_texte
         . ';background-color:' . $couleur_fond
-        .';">'; //utf8_encode('');
+        .';">';
       $texte_bouton = $texte_bouton . substr($participant->prenom . ' ' . $participant->nom, 0, 22);
       $texte_bouton = $texte_bouton . '</span>';
       $id_menu = 'mnu_particip_' . $this->seance->support->code() . '_' . $this->seance->debut()->date_heure_sql() . '_' . $participant->code();
@@ -225,11 +236,13 @@
       $code = $code . '<div class="dropdown-menu" aria-labelledby="' . $id_menu . '">';
       
       // --- Actions du menu toujours possibles
-      $menu = ""; //utf8_encode('');
+      $menu = "";
       $params = $participant->code() . ', \'' . $this->id_dialogue_action . '\'';
       $menu = $menu . '<a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#' . $this->id_dialogue_action . '" onclick="requete_info_personne(' . $params . '); return false;">Afficher infos</a>';
       
       // --- Actions dependant du contexte
+      $dispo = $this->site_ouvert && $this->support_disponible;
+      
       $resp = $this->seance->a_comme_responsable($participant) ? 1:0;
       $action_autorisee = $this->contexte_action()->session_interactive;
       
@@ -249,11 +262,12 @@
       }
       
       // Passage du role responsable au role equipier. Possible si
+      // - site ouvert et support disponible
       // - action autorisee
       // - ET le participant est le responsable
       // - ET il y a une place libre
       $place_libre_equipier = $this->seance->nombre_places_disponibles() > ($this->seance->a_un_responsable() ? 0:1);
-      $passage_possible = $action_autorisee && $resp && $place_libre_equipier;
+      $passage_possible = $dispo && $action_autorisee && $resp && $place_libre_equipier;
       if ($passage_possible) {
         $params = $this->seance->code . ', ' . $participant->code();
         $code_action = "mre"; // Modification : passage Responsable a Equipier
@@ -262,13 +276,14 @@
       }
 
       // Passage du role equipier au role responsable. Possible si :
+      // - site ouvert et support disponible
       // - action autorisee
       // - le participant est un equipier
       // - le type d'activite requiert un responsable participant
       // - il n'y a pas de responsable
       // - le participant est qualifie (chef de bord)
       $possible = $this->seance->responsable_requis() && !$this->seance->a_un_responsable() && $participant->est_chef_de_bord() && !$this->seance->a_comme_responsable($participant);
-      $passage_possible = $action_autorisee && $possible;
+      $passage_possible = $dispo && $action_autorisee && $possible;
       if ($passage_possible) {
         $params = $this->seance->code . ', ' . $participant->code();
         $code_action = "mer"; // Modification : passage Equipier a Responsable
@@ -281,8 +296,8 @@
     }
     
     protected function formater_responsable(String & $code_html) {
-      $str_resp = ""; //utf8_encode('');
-      $code_interacteur = ""; //utf8_encode('');
+      $str_resp = "";
+      $code_interacteur = "";
       if ($this->seance->a_un_responsable()) {
         //$str_resp = $this->seance->responsable->prenom . " " . $this->seance->responsable->nom;
         if ($this->est_interactif) {
@@ -312,8 +327,10 @@
       }
       $id = $this->generer_id(0);
       $str_resp = '<span id="resp_' . $id . '"> ' . $str_resp . '</span> ';
+      $dispo = $this->site_ouvert && $this->support_disponible;
+      $couleur_fond = ($dispo) ? $this->couleur_fond_resp : 'Gainsboro';
       
-      $code_html = $code_html . "<div id=\"" . $id . "\" style =\"width:" . $this->largeur . "px;color:" . $this->couleur_texte_resp . ";background-color:" . $this->couleur_fond_resp . ";text-align:center;padding:1px\"><div style=\"min-height:31px\">" . $str_resp . $code_interacteur . "</div></div>";
+      $code_html = $code_html . "<div id=\"" . $id . "\" style =\"width:" . $this->largeur . "px;color:" . $this->couleur_texte_resp . ";background-color:" . $couleur_fond . ";text-align:center;padding:1px\"><div style=\"min-height:31px\">" . $str_resp . $code_interacteur . "</div></div>";
       
       //$code_html = $code_html . "<td width=\"" . $this->largeur . "px\" bgcolor=\"" . $this->couleur_fond_resp . "\" align=\"center\">" . $str_resp . "</td>";
       return;
@@ -321,7 +338,9 @@
 
     protected function formater_place_libre(int $rang, String & $code_html) {
       $id = $this->generer_id($rang);
-      $code_html = $code_html . "<div id=\"" . $id . "\" style =\"width:" . $this->largeur . "px;min-height:31px;color:" . $this->couleur_texte_place_libre . ";background-color:" . $this->couleur_fond_place_libre . ";text-align:center;padding:1px\"><div style=\"min-height:31px\">";
+      $dispo = $this->site_ouvert && $this->support_disponible;
+      $couleur_fond = ($dispo) ? $this->couleur_fond_place_libre : 'GhostWhite';
+      $code_html = $code_html . "<div id=\"" . $id . "\" style =\"width:" . $this->largeur . "px;min-height:31px;color:" . $this->couleur_texte_place_libre . ";background-color:" . $couleur_fond . ";text-align:center;padding:1px\"><div style=\"min-height:31px\">";
       $code_html = $code_html . '<span id="equip_' . $id . '"> </span>';
       $code_interacteur = ""; //utf8_encode('');
       if ($this->est_interactif) {
@@ -690,7 +709,7 @@
                 . $params_nouveau_creneau . '); return false;" data-bs-toggle="modal" data-bs-target="#' . $this->id_dialogue_action . '">Passer sur créneau précédent</a>';
             }
           }
-        if ($this->afficheur->activite_site->creneau_suivant_est_libre($this->seance->code_support(),
+        if ($this->afficheur->activite_site->creneau_suivant_est_libre($code_support,
                                                                        $this->index_creneau)) {
           $nouveau_creneau = $this->afficheur->activite_site->creneaux_activite[$this->index_creneau + 1];
           if ($this->afficheur->activite_site->personne_participe_activite_creneau($this->seance, $nouveau_creneau)) {

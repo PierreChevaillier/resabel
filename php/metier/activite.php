@@ -221,7 +221,7 @@
                                                 "",
                                                 $indispo);
       foreach ($indispo as $x) {
-        $i = $x->support->code();
+        $i = $x->code_objet(); //support->code();
         if (!array_key_exists($i, $this->indisponibilites_support)) {
           $this->indisponibilites_support[$i] = array();
         }
@@ -404,7 +404,13 @@
       $n = count($this->creneaux_activite) - 1;
       if ($index_creneau < $n) {
         $seance = null;
-        $seance = $this->seance_programmee($code_support, $index_creneau + 1);
+        $i = $index_creneau + 1;
+        $debut = $this->creneaux_activite[$i]->debut();
+        $fin = $this->creneaux_activite[$i]->fin();
+        $support = $this->site->supports_activite[$code_support];
+        $dispo = !$this->site_ferme_creneau($debut, $fin) && !$this->support_indisponible_creneau($support, $debut, $fin);
+        if (!$dispo) return false;
+        $seance = $this->seance_programmee($code_support, $i);
         $condition = is_null($seance);
       }
       return $condition;
@@ -415,7 +421,13 @@
       $condition = false;
       if ($index_creneau > 0) {
         $seance = null;
-        $seance = $this->seance_programmee($code_support, $index_creneau - 1);
+        $i = $index_creneau - 1;
+        $debut = $this->creneaux_activite[$i]->debut();
+        $fin = $this->creneaux_activite[$i]->fin();
+        $support = $this->site->supports_activite[$code_support];
+        $dispo = !$this->site_ferme_creneau($debut, $fin) && !$this->support_indisponible_creneau($support, $debut, $fin);
+        if (!$dispo) return false;
+        $seance = $this->seance_programmee($code_support, $i);
         $condition = is_null($seance);
       }
       return $condition;
