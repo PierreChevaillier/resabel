@@ -408,7 +408,7 @@ function activer_controle_changer_support_seance(code_seance,
       for (var entree in dict) {
         valeur = dict[entree];
         p = JSON.parse(valeur);
-        console.log(entree + " >> " + p);
+        console.log(entree + " >> " + p['value']);
         html_corps = html_corps + '<div><button type="button" class="btn btn-primary" onclick="modifier_support_seance_activite(' + code_site
           + ', ' + code_seance
           + ', ' + entree

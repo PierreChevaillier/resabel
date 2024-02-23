@@ -136,12 +136,46 @@ class Seance_ActiviteTest extends TestCase {
    * 
    */
   public function testNombreParticipants(): void {
+    // aucun participant
     $this->assertEquals(0, $this->seance->nombre_participants());
+    // 1 participant non responsable
     $membre = new Membre(1);
     $participation = $this->seance->creer_participation($membre);
     $this->assertEquals(1, $this->seance->nombre_participants());
+    // 1 participant responsable
+    $this->seance->changer_responsable($membre);
+    $this->assertEquals(1, $this->seance->nombre_participants());
+    // 2 participants dont 1 responsable
+    $membre2 = new membre(2);
+    $this->seance->creer_participation($membre2);
+    $this->assertEquals(2, $this->seance->nombre_participants());
+    // 2 participants dont aucun responsable
+    $this->seance->annuler_responsable();
+    $this->assertEquals(2, $this->seance->nombre_participants());
   }
 
+  /**
+   *
+   */
+  public function testNombreEquipiers(): void {
+    // aucun participant
+    $this->assertEquals(0, $this->seance->nombre_equipiers());
+    // 1 participant non responsable
+    $membre = new Membre(1);
+    $participation = $this->seance->creer_participation($membre);
+    $this->assertEquals(1, $this->seance->nombre_equipiers());
+    // 1 participant responsable
+    $this->seance->changer_responsable($membre);
+    $this->assertEquals(0, $this->seance->nombre_equipiers());
+    // 2 participants dont 1 responsable
+    $membre2 = new membre(2);
+    $this->seance->creer_participation($membre2);
+    $this->assertEquals(1, $this->seance->nombre_equipiers());
+    // 2 participants dont aucun responsable
+    $this->seance->annuler_responsable();
+    $this->assertEquals(2, $this->seance->nombre_equipiers());
+  }
+  
   /**
    *
    */
@@ -162,25 +196,46 @@ class Seance_ActiviteTest extends TestCase {
     $type_support->nombre_personnes_max = $capacite;
     $this->assertTrue($this->seance->nombre_places_est_limite());
   }
+  
   /**
    * 
    */
-  public function testNombrePlacesDisponibles(): void {
+  public function testNombrePlacesDisponiblesEtEquipiersDisponibles(): void {
     // definition du support de l'activite avec capacite non definie
     $support = new Support_Activite(512);
     $type_support = new Type_Support_Activite(1);
     $support->def_type($type_support);
     $this->seance->def_support($support);
+    
+    // aucune participation
     $this->assertNull($this->seance->nombre_places_disponibles());
+    $this->assertNull($this->seance->nombre_places_equipiers_disponibles());
     
     $capacite = 2;
     $type_support->nombre_personnes_max = $capacite;
     
-    $this->seance->creer_participation(new Membre(1));
+    // Pas de responsable requis - 1 participation - aucun responsable
+    $membre = new Membre(1);
+    $this->seance->creer_participation($membre);
     $this->assertEquals(1, $this->seance->nombre_places_disponibles());
+    $this->assertEquals(1, $this->seance->nombre_places_equipiers_disponibles());
     
+    // Responsable requis - 1 participation - aucun responsable
+    $this->seance->support->type->requiert_responsable(true);
+    $this->assertEquals(1, $this->seance->nombre_places_disponibles());
+    $this->assertEquals(0, $this->seance->nombre_places_equipiers_disponibles());
+    
+    // Responsable requis - 1 participation - 1 responsable
+    $this->seance->changer_responsable($membre);
+    $this->assertEquals(1, $this->seance->nombre_places_disponibles());
+    $this->assertEquals(1, $this->seance->nombre_places_equipiers_disponibles());
+
+    // Pas de responsable requis - 2 participations
+    $this->seance->support->type->requiert_responsable(false);
+    $this->seance->annuler_responsable();
     $this->seance->creer_participation(new Membre(2));
     $this->assertEquals(0, $this->seance->nombre_places_disponibles());
+    $this->assertEquals(0, $this->seance->nombre_places_equipiers_disponibles());
     
     $this->seance->creer_participation(new Membre(3));
     $this->assertEquals(0, $this->seance->nombre_places_disponibles());
@@ -374,12 +429,41 @@ class Seance_ActiviteTest extends TestCase {
     // cas hors scenario d'usage
     $this->assertTrue($seance_accueil->peut_accueillir_participants($this->seance));
     
-    // seance a accueillir avec nbre participation = nbre place dispo - 1 et sans responsable
+    // seance a accueillir avec 1 participant non responsable
     $p2 = new Membre(2);
-    $this->seance->creer_participation($p2, $est_responsable);
+    $this->seance->creer_participation($p2);
     $this->assertTrue($seance_accueil->peut_accueillir_participants($this->seance));
+    
+    // seance a accueillir avec 1 participant non responsable
+    $this->seance->changer_responsable($p2);
+    $this->assertFalse($seance_accueil->peut_accueillir_participants($this->seance));
   }
   
+
+  public function testAccueilParticipantSurBateauSolo(): void {
+
+    $code_support = 512;
+    $support_accueil = new Bateau($code_support);
+    $type_support = new Type_Support_Activite(1);
+    $support_accueil->type = $type_support;
+    $type_support->nombre_personnes_max = 1;
+    $type_support->requiert_responsable(true);
+    
+    // seance d'accueil sans personne
+    $seance_accueil = new Seance_Activite();
+    $seance_accueil->def_support($support_accueil);
+    
+    // seance a accueillir avec 1 responsable
+    $p1 = new Membre(1);
+    $est_responsable = true;
+    $this->seance->creer_participation($p1, $est_responsable);
+    $this->assertTrue($seance_accueil->peut_accueillir_participants($this->seance));
+    
+    // seance a accueillir sans responsable
+    $this->seance->annuler_responsable();
+    $this->assertFalse($seance_accueil->peut_accueillir_participants($this->seance));
+  }
+
   /**
    *
    */

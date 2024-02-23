@@ -15,6 +15,7 @@
  * ----------------------------------------------------------------------------
  * creation : 18-dec-2023 pchevaillier@gmail.com
  * revision : 24-jan-2024 pchevaillier@gmail.com
+ * revision : 23-fev-2024 pchevaillier@gmail.com cas supports pas utilises
  * ----------------------------------------------------------------------------
  * commentaires :
  * - il ya deux requetes sur la table des activites => fusionner en une seule
@@ -113,10 +114,28 @@ Enregistrement_Seance_Activite::collecter($site,
 foreach ($seances as $s) {
   // associer les informations completes sur le support a la seance
   $s->def_support($supports[$s->code_support()]);
-    if (! $seance->peut_accueillir_participants($s)) {
+    if (! $s->peut_accueillir_participants($seance)) {
       $i = $s->code_support();
       unset($supports[$i]);
     }
+}
+
+// il faut aussi enlever les supports ne pouvant pas accueillir l'equipage
+// et pas affectes a une seance
+$supports_utilises = array();
+foreach ($seances as $s) {
+  $support_utilises[$s->code_support()] = $s->support;
+}
+
+foreach ($supports as $sa) {
+  $code_support = $sa->code();
+  if (!array_key_exists($code_support, $support_utilises)) {
+    $s = new Seance_Activite();
+    $s->def_support($sa);
+    if (! $s->peut_accueillir_participants($seance)) {
+      unset($supports[$code_support]);
+    }
+  }
 }
 
 if (!$ok) {
