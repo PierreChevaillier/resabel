@@ -4,11 +4,12 @@
  utilisation :
  teste avec  : Mac OS 10.14 - Firefox, Safari
  contexte    : resabel - aux couleurs du club
- Copyright (c) 2017-2019 AMP
+ Copyright (c) 2017-2024 AMP
  -------------------------------------------------------------------------------
  creation : 22-jul-2017 pchevaillier@gmail.com
  revision : 02-mar-2019 pchevaillier@gmail.com
  revision : 15-jun-2019 pchevaillier@gmail.com maree (idem France 2018)
+ revision : 24-fev-2024 pchevaillier@gmail.com zones saisie
  -------------------------------------------------------------------------------
  commentaires
  nom de couleurs : https://html-color-codes.info/color-names/
@@ -102,7 +103,7 @@ p.lead {
  */
 div.rsbl-scroll {
   padding-left: 10px;
-  background-color: #fed9ff;
+  background-color: #FFFAF0; //FloralWhite;
   /* width: 600px; */
   height: 250px;
   overflow: scroll;

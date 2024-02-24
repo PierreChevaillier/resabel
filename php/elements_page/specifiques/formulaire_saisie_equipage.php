@@ -16,6 +16,7 @@
  * ----------------------------------------------------------------------------
  * creation : 30-jan-2024 pchevaillier@gmail.com
  * revision : 19-fev-2024 pchevaillier@gmail.com
+ * revision : 24-fev-2024 pchevaillier@gmail.com mise en page saisie equipage
  * ----------------------------------------------------------------------------
  * commentaires :
  * -
@@ -113,14 +114,14 @@ class Formulaire_Saisie_Equipage extends Element {
       echo '<p>Autres membres de l\'équipage</p>';
     
     echo '<div class="rsbl-scroll">';
-    //echo '<div class="row g-3">';
-    echo '<div class="container"><div class="row row-cols-6">';
+    echo '<div class="container">';
+    echo '<div class="row row-cols-2 row-cols-sm-3 row-cols-md-6">';
     foreach ($this->personnes_actives as $p) {
       $id = 'equip_' . $p->code();
       $texte = $p->prenom . ' ' . $p->nom;
       $desactive = in_array($p->code(), $this->personnes_occupees); // && !$est_participant)
       $valeur = 0;
-      echo ' <div class="col"  style="padding:10px">';
+      echo ' <div class="col" style="padding:5px">';
       echo '<div class="form-check">';
       echo '<input type="checkbox" class="form-check-input" ';
       echo ' id="' . $id . '" name="participants" ';
