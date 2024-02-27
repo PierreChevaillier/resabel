@@ -33,6 +33,10 @@
   
   // ==========================================================================
   class Enregistrement_Indisponibilite {
+    
+    const CODE_TYPE_INDISPO_SUPPORT = 1;
+    const CODE_TYPE_INDISPO_SITE = 2;
+    
     private $indisponibilite = null;
     public function def_indisponibilite(Indisponibilite $indisponibilite) {
       $this->indisponibilite = $indisponibilite;
@@ -48,7 +52,7 @@
                          string $critere_tri,
                          array & $indisponibilites): ? bool {
       $status = false;
-      if (($type_indisponibilite < 1) || ($type_indisponibilite > 2)) {
+      if (!(($type_indisponibilite == self::CODE_TYPE_INDISPO_SUPPORT) || ($type_indisponibilite == self::CODE_TYPE_INDISPO_SITE))) {
         throw new Erreur_Type_Indisponibilite();
         return $status;
       }
@@ -59,7 +63,7 @@
       $source = self::source() . " AS indisp INNER JOIN rsbl_motifs_indisponibilite AS motif ON (indisp.code_motif = motif.code) ";
       $jointure_objet = " INNER JOIN ";
       $champs_objet = ", ";
-      if ($type_indisponibilite == 1) {
+      if ($type_indisponibilite == self::CODE_TYPE_INDISPO_SUPPORT) {
         $jointure_objet = $jointure_objet . "rsbl_supports AS support ON (indisp.code_objet = support.code) INNER JOIN rsbl_types_support ON (support.code_type_support = rsbl_types_support.code) ";
         $champs_objet = $champs_objet . "support.numero AS numero_support, support.nom AS nom_support, support.code_type_support AS type_support, support.code_site_base AS code_site, rsbl_types_support.code_type AS type_type_support, rsbl_types_support.nom_court AS nom_type_support ";
       } else {
@@ -76,12 +80,12 @@
         $resultat = $bdd->query($requete);
         while ($donnee = $resultat->fetch(PDO::FETCH_OBJ)) {
           if (is_null($site) || (!is_null($site) && ($site->code() == $donnee->code_site))) {
-            if ($donnee->code_type == 1) {
+            if ($donnee->code_type == self::CODE_TYPE_INDISPO_SUPPORT) {
               $indisponibilite = new Indisponibilite_Support($donnee->code);
-              if ($donnee->type_type_support == 1) {
+              if ($donnee->type_type_support == Enregistrement_Support_Activite::CODE_TYPE_BATEAU) {
                 $indisponibilite->support = new Bateau($donnee->code_objet);
                 $indisponibilite->support->def_numero($donnee->numero_support);
-              } elseif ($donnee->type_type_support == 2) {
+              } elseif ($donnee->type_type_support == Enregistrement_Support_Activite::CODE_TYPE_PLATEAU_ERGO) {
                 $indisponibilite->support = new Plateau_Ergo($donnee->code_objet);
               } else {
                 $indisponibilite->support = new Support_Activite($donnee->code_objet);
@@ -89,7 +93,7 @@
               $indisponibilite->support->def_nom($donnee->nom_support);
               $indisponibilite->support->type = new Type_Support_Activite($donnee->type_support);
               $indisponibilite->support->type->def_nom($donnee->nom_type_support);
-            } elseif ($donnee->code_type == 2) {
+            } elseif ($donnee->code_type == self::CODE_TYPE_INDISPO_SITE) {
               $indisponibilite = new Fermeture_Site($donnee->code);
               $site_ferme = NULL;
               if (is_null($site)) {

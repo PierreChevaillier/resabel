@@ -86,12 +86,12 @@
           $support = new Bateau($code_support);
           // ATTENTION : adhoc AMP POUR DEBUTER (1 seul site de chaque type)
           // TODO : a rendre plus generique
-          $support->site_activite_base = new Site_Activite_Mer(1);
+          $support->site_base = new Site_Activite_Mer(1);
           $support->pour_competition = false;
           $support->pour_loisir = true;
         } elseif ($est_ergo) {
           $support = new Plateau_Ergo($code_support);
-          $support->site_activite_base = new Salle_Sport(2);
+          $support->site_base = new Salle_Sport(2);
         }
         // initialisations (proprietes communes aux differentes classes)
         $support->pour_competition = false;
