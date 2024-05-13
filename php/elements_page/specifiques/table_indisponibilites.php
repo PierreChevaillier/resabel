@@ -10,7 +10,7 @@
   //              PHP 7.0 sur hebergeur web
   // --------------------------------------------------------------------------
   // creation : 10-jun-2019 pchevaillier@gmail.com
-  // revision :
+  // revision : 30-avr-2024 pchevaillier@gmail.com impacts modif classe Indisponibilite
   // --------------------------------------------------------------------------
   // commentaires :
   // attention :
@@ -36,7 +36,7 @@
     
     private $elements = array(); // elements de la table (1 ligne = 1 element)
     
-    public $affiche_creation = false;
+    public $affiche_creation = true;
     
     protected $menu_action;
     public function def_menu_action($menu) {
@@ -60,18 +60,17 @@
       echo '<tbody>';
     }
     
-    protected function afficher_menu_actions($item) {
+    protected function afficher_menu_actions(Indisponibilite $item): void {
       if (isset($this->menu_action)) {
-        // il n'y a pas necessairement de menu (depend du contexte)
-        // TODO $this->menu_action-> = $item;
-        $this->menu_action->initialiser();
+        // il n'y a pas necessairement de menu (pourrait dependre du contexte)
+        $this->menu_action->def_objet($item);
         $this->menu_action->afficher();
       }
     }
     
     protected function afficher_corps() {
       
-      $presentation_nom = new Afficheur_Nom();
+      //$presentation_nom = new Afficheur_Nom();
       
       if (!isset($this->elements)) return; // on ne sait jamais...
       foreach ($this->elements as $item) {
@@ -97,24 +96,24 @@
           echo '<td>' . $item->site_activite->nom() . '</td>';
         }
    
-        echo '<td>' . $item->motif->nom() . '</td>';
+        echo '<td>' . $item->motif()->nom() . '</td>';
         echo '<td>' . $item->formatter_periode() . '</td>';
         echo '<td>' . $item->information() . '</td>';
        
         if ($this->affiche_creation) {
-          $creation = "saisie le " . $item->instant_creation->date_texte_court();
+          $creation = "saisie le " . $item->instant_creation()->date_texte_court();
           echo '<td>' . $creation . '</td>';
         
-          $createur = '';
-          if (isset($item->createur)) {
+          if (!is_null($item->createurice())) {
             $enreg_prs = new Enregistrement_Membre();
-            $enreg_prs->def_membre($item->createur);
+            $enreg_prs->def_membre($item->createurice());
             $enreg_prs->lire();
           
-            $presentation_nom->def_personne($item->createur);
-            $createur = ' par ' . $presentation_nom->formatter();
+//            $presentation_nom->def_personne($item->createur);
+ //           $createur = ' par ' . $presentation_nom->formatter();
           }
-          echo '<td>' . $createur . '</td>';
+          $nom_createurice = $item->identite_createurice();
+          echo '<td>par ' . $nom_createurice . '</td>';
         }
         echo '<td>';
         $this->afficher_menu_actions($item);

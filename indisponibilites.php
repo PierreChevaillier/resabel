@@ -41,15 +41,18 @@
       
       // --- Classe definissant la page a afficher
       require_once 'php/pages/page_indisponibilites.php';
+require_once 'php/bdd/enregistrement_indisponibilite.php';
 
       // ----------------------------------------------------------------------
       // --- Creation dynamique de la page
       $feuilles_style = array();
       $feuilles_style[] = "css/resabel_ecran.css";
       $nom_site = Site_Web::accede()->sigle() . " Resabel";
-      $page = new Page_Indisponibilites($nom_site, "Indisponibilités supports activité", $feuilles_style);
+      $page = new Page_Indisponibilites($nom_site,
+                                        "Indisponibilités supports activité",
+                                        Enregistrement_Indisponibilite::CODE_TYPE_INDISPO_SUPPORT,
+                                        $feuilles_style);
       $page->def_id("pg_indisp");
-      $page->code_type_indisponibilite = 1;
       
       // --- Affichage de la page
       $page->initialiser();

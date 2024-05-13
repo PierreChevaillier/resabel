@@ -27,6 +27,7 @@
   // revision : 21-dec-2022 pchevaillier@gmail.com init valeur (php 8.x)
   // revision : 23-feb-2023 pchevaillier@gmail.com on_change pour Champ_Identifiant
 // revision : 31-jan-2024 pchevaillier@gmail.com bootstrap 5.x
+// revision : 13-mai-2024 pchevaillier@gmail.com Champ_Heure
   // ------------------------------------------------------------------------
   // commentaires :
   // attention :
@@ -329,6 +330,19 @@
     }
   }
   
+// --------------------------------------------------------------------------
+class Champ_Heure extends Champ_Formulaire {
+
+  protected function afficher_corps () {
+    $this->afficher_ouverture_commune();
+    if (strlen($this->fonction_controle_saisie) > 0)
+      echo ' onchange="' . $this->fonction_controle_saisie . '(this)" ';
+    echo ' type="time" ';
+    $affiche = ($this->valeur_definie())? 'value="' . $this->valeur() . '" ' : '';
+    echo $affiche . ' />';
+  }
+}
+
   // --------------------------------------------------------------------------
   class Champ_Zone_Texte extends Champ_Formulaire {
     public $longueur_max = 50;
