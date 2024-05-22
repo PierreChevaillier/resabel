@@ -16,13 +16,14 @@
  * creation : 09-jan-2019 pchevaillier@gmail.com
  * revision : 29-jun-2019 pchevaillier@gmail.com
  * revision : 22-fev-2024 pchevaillier@gmail.com * code_objet()
+ * revision : 16-may-2024 pchevaillier@gmail.com * code_objet(), libelle_objet
  * ----------------------------------------------------------------------------
  * commentaires :
  * -
  * attention :
  * -
  * a faire :
- * - typage pour expliciter les dependances et integrite
+ * - 
  * ============================================================================
  */
   
@@ -92,8 +93,8 @@ abstract class Indisponibilite {
     return $texte;
   }
   
-  public abstract function code_objet(): int;
-  public abstract function libelle_objet(): string;
+  public abstract function code_objet(): ?int;
+  public abstract function libelle_objet(): ?string;
   
 }
   
@@ -103,8 +104,14 @@ class Fermeture_Site extends Indisponibilite {
   public function def_site_activite(Site_Activite $site): void {
     $this->site_activite = $site;
   }
-  public function code_objet(): int { return $this->site_activite->code(); }
-  public function libelle_objet(): string { return $this->site_activite->nom(); }
+  public function code_objet(): ? int {
+    $result = (! is_null($this->site_activite)) ? $this->site_activite->code(): null;
+    return $result;
+  }
+  public function libelle_objet(): ? string {
+    $result = (! is_null($this->site_activite)) ? $this->site_activite->nom(): null;
+    return $result;
+  }
 }
 
 class Indisponibilite_Support extends Indisponibilite {
@@ -112,8 +119,15 @@ class Indisponibilite_Support extends Indisponibilite {
   public function def_support(Support_Activite $support): void {
     $this->support = $support;
   }
-  public function code_objet(): int { return $this->support->code(); }
-  public function libelle_objet(): string { return $this->support->nom(); }
+  public function code_objet(): ? int {
+    $result = (! is_null($this->support)) ? $this->support->code(): null;
+    return $result;
+    }
+    
+  public function libelle_objet(): ? string {
+    $result = (! is_null($this->support)) ? $this->support->nom(): null;
+    return $result;
+  }
 }
 
 // ----------------------------------------------------------------------------

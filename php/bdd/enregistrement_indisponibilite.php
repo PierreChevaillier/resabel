@@ -10,18 +10,18 @@
   // teste avec : PHP 7.1 sur Mac OS 10.14 ;
   //              PHP 7.0 sur hebergeur web
 // - depuis 2023 :
-//   PHP 8.2 sur macOS 13.x et PHPUnit 9.5
+//   PHP 8.2 sur macOS 13.x
   // --------------------------------------------------------------------------
   // creation : 10-jun-2019 pchevaillier@gmail.com
   // revision : 07-jan-2020 pchevaillier@gmail.com indispo support et ferm. site
 // revision : 25-apr-2024 pchevaillier@gmail.com struct. code +ajouter +supprimer +modifier
+// revision : 15-may-2024 pchevaillier@gmail.com + lire
   // --------------------------------------------------------------------------
   // commentaires :
   // - dans collecter : si le site est specifie, il ne faut collecter que
   //   les indisponibilites relatives a ce site.
   // attention :
   // a faire :
-// - lire
 //$nom_classe = "Fermeture_Site";
 //$fermeture_site = new $nom_classe($code);
   // ==========================================================================
@@ -44,6 +44,7 @@ require_once 'php/bdd/enregistrement_support_activite.php';
     const CODE_TYPE_INDISPO_SITE = 2;
     
     private $indisponibilite = null;
+    public function indisponibilite() { return $this->indisponibilite; }
     public function def_indisponibilite(Indisponibilite $indisponibilite) {
       $this->indisponibilite = $indisponibilite;
     }
@@ -101,7 +102,7 @@ require_once 'php/bdd/enregistrement_support_activite.php';
       $champs = $champs . self::sql_champs_support();
     } else {
       $source = $source . self::sql_jointure_site();
-      $selection = self::sql_selection("Fermeture_site", $critere_selection);
+      $selection = self::sql_selection("Fermeture_Site", $critere_selection);
       $champs = $champs . self::sql_champs_site();
     }
     $tri = "";
@@ -117,7 +118,27 @@ require_once 'php/bdd/enregistrement_support_activite.php';
     return $code_sql;
   }
 
-
+    public function lire(): bool {
+      $indispos = array();
+      $code_classe_indisponibilite = 0;
+      if (is_a($this->indisponibilite, 'Fermeture_Site'))
+        $code_classe_indisponibilite = self::CODE_TYPE_INDISPO_SITE;
+      elseif (is_a($this->indisponibilite, 'Indisponibilite_Support'))
+        $code_classe_indisponibilite = self::CODE_TYPE_INDISPO_SUPPORT;
+      $critere_selection = 'indispo.code = ' . $this->indisponibilite->code();
+      $critere_tri = "";
+      $ok = self::collecter(null, $code_classe_indisponibilite,
+                            $critere_selection,
+                            $critere_tri,
+                            $indispos);
+      $ok = (count($indispos) == 1);
+      if ($ok) {
+        // easy way...
+        $this->indisponibilite = $indispos[0];
+      }
+      return $ok;
+    }
+    
     static function collecter(Site_Activite $site = NULL,
                          int $type_indisponibilite,
                          string $critere_selection,
@@ -131,24 +152,6 @@ require_once 'php/bdd/enregistrement_support_activite.php';
       $requete_sql = self::sql_requete_collecter($type_indisponibilite,
                                                 $critere_selection,
                                                 $critere_tri);
-      /*
-      $selection = " WHERE indisp.code_type = " . $type_indisponibilite . " ";
-      $selection = $selection . ((strlen($critere_selection) > 0) ? " AND " . $critere_selection . " " : "");
-      $tri = (strlen($critere_tri) > 0) ? " ORDER BY " . $critere_tri . " " : " ORDER BY indisp.code_objet, indisp.date_debut ";
-      $source = self::source() . " AS indisp INNER JOIN rsbl_motifs_indisponibilite AS motif ON (indisp.code_motif = motif.code) ";
-      $jointure_objet = " INNER JOIN ";
-      $champs_objet = ", ";
-      if ($type_indisponibilite == self::CODE_TYPE_INDISPO_SUPPORT) {
-        $jointure_objet = $jointure_objet . "rsbl_supports AS support ON (indisp.code_objet = support.code) INNER JOIN rsbl_types_support ON (support.code_type_support = rsbl_types_support.code) ";
-        $champs_objet = $champs_objet . "support.numero AS numero_support, support.nom AS nom_support, support.code_type_support AS type_support, support.code_site_base AS code_site, rsbl_types_support.code_type AS type_type_support, rsbl_types_support.nom_court AS nom_type_support ";
-      } else {
-        $jointure_objet = $jointure_objet . "rsbl_sites_activite AS site ON (indisp.code_objet = site.code) ";
-        $champs_objet = $champs_objet . "site.code AS code_site, site.code_type AS type_site, site.nom AS nom_site, site.nom_court AS nom_court_site ";
-      }
-      $source = $source . $jointure_objet;
-      
-      $requete = "SELECT indisp.code AS code, information, indisp.code_type AS code_type, date_creation, code_createur, code_motif, code_objet, date_debut, date_fin, motif.nom AS nom_motif, motif.nom_court " . $champs_objet . " FROM " . $source . $selection . $tri;
-      */
       //echo PHP_EOL, $requete_sql, PHP_EOL;
       $status = true;
       try {
@@ -214,54 +217,6 @@ require_once 'php/bdd/enregistrement_support_activite.php';
       }
       return $status;
     }
-    /*
-    static function collecter($critere_selection, $critere_tri, & $indisponibilites) {
-      $status = false;
-      $indisponibilites = array();
-      
-      $selection = (strlen($critere_selection) > 0) ? " WHERE " . $critere_selection . " " : "";
-      $tri = (strlen($critere_tri) > 0) ? " ORDER BY " . $critere_tri . " " : " ORDER BY indisp.code_objet, indisp.date_debut ";
-      try {
-        $bdd = Base_Donnees::acces();
-        $source = self::source() . " AS indisp INNER JOIN rsbl_motifs_indisponibilite AS motif ON indisp.code_motif = motif.code ";
-        $requete = "SELECT indisp.code AS code, information, code_type, date_creation, code_createur, code_motif, code_objet, date_debut, date_fin, motif.nom AS nom_motif, motif.nom_court  FROM " . $source . $selection . $tri;
-        //echo "<p>" . $requete . "</p>";
-        $resultat = $bdd->query($requete);
-        while ($donnee = $resultat->fetch(PDO::FETCH_OBJ)) {
-          if ($donnee->code_type == 1) {
-            $indisponibilite = new Indisponibilite_Support($donnee->code);
-            $indisponibilite->support = new Support_Activite($donnee->code_objet);
-          } elseif ($donnee->code_type == 2) {
-            $indisponibilite = new Fermeture_Site($donnee->code);
-            $site = Enregistrement_Site_Activite::creer($donnee->code_objet);
-            $indisponibilite->site_activite = $site;
-          //} else {
-          //  $indisponibilite = new Indisponibilite($donnee->code);
-          }
-          
-          $indisponibilite->def_information($donnee->information);
-          
-          // -- Information sur la creation
-          $indisponibilite->instant_creation = new Instant($donnee->date_creation);
-          $indisponibilite->createur = new Membre($donnee->code_createur);
-          
-          // Periode d'indisponibilite
-          $indisponibilite->debut = new Instant($donnee->date_debut);
-          $indisponibilite->fin = new Instant($donnee->date_fin);
-          //$indisponibilite->periode = new Intervalle_Temporel($debut, $fin);
-          
-          // Motif d'indisponibilite
-          $indisponibilite->motif = new Motif_Indisponibilite($donnee->code_motif);
-          $indisponibilite->motif->def_nom($donnee->nom_motif);
-          
-          $indisponibilites[$indisponibilite->code()] = $indisponibilite;
-        }
-      } catch (PDOException $e) {
-        Base_Donnees::sortir_sur_exception(self::source(), $e);
-      }
-      return $status;
-      }
-      */
     
   public function ajouter_fermeture_site(): bool {
     if (is_null($this->indisponibilite))
@@ -345,7 +300,7 @@ require_once 'php/bdd/enregistrement_support_activite.php';
   public function modifier(): bool {
     if (is_null($this->indisponibilite)) return false;
     if (is_null($this->indisponibilite->motif())) return false;
-    
+    if (is_null($this->indisponibilite->code_objet())) return false;
     $status = false;
     $bdd = Base_Donnees::acces();
     

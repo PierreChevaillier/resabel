@@ -3,7 +3,7 @@
  * contexte : Resabel - systeme de REServAtion de Bateau En Ligne
  * description : Definition de la classe Page_Indisponibilite
  *               creation ou modification d'une indisponibilite
- * copyright (c) 2023-2023 AMP. Tous droits reserves.
+ * copyright (c) 2023-2024 AMP. Tous droits reserves.
  * ----------------------------------------------------------------------------
  * utilisation : php require_once <chemin_vers_ce_fichier.php>
  * dependances :
@@ -13,7 +13,7 @@
  *   PHP 8.1 sur hebergeur web
  * ----------------------------------------------------------------------------
  * creation : 03-dec-2023 pchevaillier@gmail.com
- * revision :
+ * revision : é&-may-2024 pchevaillier@gmail.com 1re version operationnelle
  * ----------------------------------------------------------------------------
  * commentaires :
  * -
@@ -70,8 +70,9 @@ class Page_Indisponibilite extends Page_Menu {
        * dans la base de donnees
       */
       $enregistrement = new enregistrement_Indisponibilite();
-      $enregistrement->def_indisponibilite($indisponibilite);
+      $enregistrement->def_indisponibilite($indispo);
       $enregistrement->lire();
+      $indispo = $enregistrement->indisponibilite(); // car modifie par lire
     }
     
     // Creation du formulaire pour la modification des informations
@@ -82,8 +83,7 @@ class Page_Indisponibilite extends Page_Menu {
   
   public function initialiser() {
     parent::initialiser();
-
-    //$this->form->initialiser_champs();
+    $this->form->initialiser_champs();
   }
 }
 // ============================================================================

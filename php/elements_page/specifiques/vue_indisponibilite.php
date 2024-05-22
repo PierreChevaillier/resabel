@@ -2,19 +2,20 @@
 /* ============================================================================
  * contexte : Resabel - systeme de REServAtion de Bateau En Ligne
  * description : classes definissant les 'vues' (= 'presentations')
- *               d'un objet de la classe Support_Activite
+ *               d'un objet de la classe Indisponibilite
  * copyright (c) 2018-2024 AMP. Tous droits reserves.
  * ----------------------------------------------------------------------------
  * utilisation : php - require_once <chemin_vers_ce_fichier_php>
  * dependances :
  * - bootstrap 5.x
+ * - javascript : actions_indisponibilite.js (controle actions menu)
  * utilise avec :
  * - depuis 2023 :
  *   PHP 8.2 sur macOS 13.x
  *   PHP 8.1 sur hebergeur web
  * ----------------------------------------------------------------------------
  * creation : 30-avr-2024 pchevaillier@gmail.com
- * revision :
+ * revision : 22-may-2024 pchevaillier@gmail.com + Afficheur_Fermetures_Site
  * ----------------------------------------------------------------------------
  * commentaires :
  * -
@@ -32,9 +33,9 @@ require_once 'php/elements_page/generiques/element.php';
 require_once 'php/elements_page/generiques/modal.php';
 require_once 'php/elements_page/generiques/page.php';
 
-// --------------------------------------------------------------------------
+// ============================================================================
 class Menu_Actions_Indisponibilite extends Element {
-  private $indisponibilite = null;
+  private ?Indisponibilite $indisponibilite;
   public function def_objet(Indisponibilite $objet_metier): void {
     $this->indisponibilite = $objet_metier;
   }
@@ -74,11 +75,11 @@ class Menu_Actions_Indisponibilite extends Element {
     $periode = $this->indisponibilite->formatter_periode();
     $html_resume_indispo = '<p>'
       . $this->indisponibilite->libelle_objet() . '<br />'
-      . $periode . '</br>'
+      . $periode . '<br />'
       . $this->indisponibilite->motif()->nom()
       .'</p>';
     $html_details_indispo = '<p>'
-    . $this->indisponibilite->information() . '<br >'
+    . $this->indisponibilite->information() . '<br />'
     . 'saisie le ' . $this->indisponibilite->instant_creation()->date_texte()
     . ' à ' . $this->indisponibilite->instant_creation()->heure_texte()
     . ' par ' . $this->indisponibilite->identite_createurice() . '<br />'
@@ -94,7 +95,7 @@ class Menu_Actions_Indisponibilite extends Element {
     echo '<a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#' . $this->afficheur_info->id()
       . '"  onclick="return afficher_indisponibilite(' .  $params . ');">Afficher</a>';
     
-    echo '<a class="dropdown-item" href="indisponibilite.php?a=m&to=' . $type_objet . '&o=' . $this->indisponibilite->code() . '">Modifier</a>';
+    echo '<a class="dropdown-item" href="indisponibilite.php?act=m&typ=' . $type_objet . '&id=' . $this->indisponibilite->code() . '">Modifier</a>';
     
     $params = $this->indisponibilite->code()
       . ", " . $type_objet
@@ -116,5 +117,21 @@ class Menu_Actions_Indisponibilite extends Element {
   
 }
 
+// ============================================================================
+class Afficheur_Fermetures_Site extends Element_Code {
+  public function __construct(Page $page, & $fermetures) {
+    $this->def_page($page);
+    $code_html = '<div class="alert alert-warning" role="alert" align="center"><p class="lead"> Le site est fermé : <br />';
+    foreach ($fermetures as $fermeture) {
+      $code_html = $code_html
+        . $fermeture->libelle_motif() . ' '
+        . $fermeture->formatter_periode() . ' : '
+        . $fermeture->information()
+        . '<br />';
+    }
+    $code_html = $code_html . '</p></div>';
+    $this->def_code($code_html);
+  }
+}
 // ============================================================================
 ?>

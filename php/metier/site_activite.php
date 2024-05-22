@@ -2,7 +2,7 @@
   // ==========================================================================
   // contexte : Resabel - systeme de REServAtion de Bateau En Ligne
   // description : classes supportant les informations sur sites d'acitivite
-  // copyright (c) 2018-2019 AMP. Tous droits reserves.
+  // copyright (c) 2018-2024 AMP. Tous droits reserves.
   // --------------------------------------------------------------------------
   // utilisation : php - require_once <chemin_vers_ce_fichier.php>
   // dependances : 
@@ -10,21 +10,23 @@
   //              PHP 7.0 sur hebergeur web
   // --------------------------------------------------------------------------
   // creation : 09-jun-2019 pchevaillier@gmail.com
-  // revision :
+  // revision : 21-mai-2024 pchevaillier@gmail.com classe Site_Activite 'concrete
   // --------------------------------------------------------------------------
   // commentaires :
-  // -
+  // - La classe Site_Activite n'est pas abstraite car le type de site n'a pas
+// necessairement beseoin d'etre connu (quand 1 site est associe a un autre objet
+// en vue de l'insertion en table
   // attention :
   // -
   // a faire :
-  // -
+  // - oper ation 'est_creneau_possible' dans classes derivees
   // ==========================================================================
 
   // --------------------------------------------------------------------------
   require_once 'php/metier/calendrier.php';
   
   // --------------------------------------------------------------------------
-  abstract class Site_Activite {
+  class Site_Activite {
     
     public $longitude = 0.0;
     public $latitude = 0.0;
@@ -52,7 +54,9 @@
     
     public function __construct($code) { $this->code = $code; }
     
-    public abstract function est_creneau_possible($intervalle_temporel);
+    public function est_creneau_possible($intervalle_temporel): bool {
+      return true;
+    }
   }
     
   // --------------------------------------------------------------------------
@@ -62,7 +66,7 @@
     public $hauteur_maree_min;
     public $hauteur_maree_max;
     
-    public function est_creneau_possible($intervalle_temporel) {
+    public function est_creneau_possible($intervalle_temporel): bool {
       $possible = true;
       // verifier contraintes marees
       return $possible;
@@ -72,7 +76,7 @@
   // --------------------------------------------------------------------------
   class Salle_Sport extends Site_Activite {
     
-    public function est_creneau_possible($intervalle_temporel) {
+    public function est_creneau_possible($intervalle_temporel): bool {
       $possible = true;
       // verifier regime_ouverture
       return $possible;

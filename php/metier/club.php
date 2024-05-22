@@ -20,9 +20,13 @@
   // attention :
   // - 
   // a faire :
-  // -
+  // - commune, adresses, telephones, reseaux sociaux
   // ==========================================================================
 
+// ============================================================================
+require_once 'php/metier/commune.php';
+
+// ============================================================================
   class Club {
     private int $code = 0;
     public function code(): int { return $this->code; }
@@ -39,12 +43,20 @@
     public function nom(): string { return $this->nom; }
     public function def_nom(string $valeur): void { $this->nom = $valeur; }
     
-    private $fuseau_horaire = null;
-    public function def_fuseau_horaire(string $nom_fuseau): void {
+    private ?DateTimeZone $fuseau_horaire = null;
+    public function definir_fuseau_horaire(string $nom_fuseau): void {
       $this->fuseau_horaire = new DateTimeZone($nom_fuseau);
     }
-    public function fuseau_horaire(): DateTimeZone { return $this->fuseau_horaire; }
+    public function fuseau_horaire(): ?DateTimeZone { return $this->fuseau_horaire; }
         
+    private ? Commune $commune;
+    
+    private $adresses = array(); // 'postale' => 'bla'
+    
+    private $telephones = array(); // 'fixe' => '0298'
+    
+    private $reseaux_sociaux = array(); // 'facebook' => 'bla'
+    
     public $lieu_principal_activite = null; // Site_Activite
     public $site_web_principal = null; // Site_Web
     

@@ -14,7 +14,7 @@
  *   PHP 8.2 sur macOS 13.x et PHPUnit 9.5
  * ----------------------------------------------------------------------------
  * creation : 28-fev-2024 pchevaillier@gmail.com
- * revision :
+ * revision : 15-may-2024 pchevaillier@gmail.com + testLireFermetureSite
  * ----------------------------------------------------------------------------
  * commentaires :
  * -
@@ -91,6 +91,7 @@ final class Enregistrement_IndisponibiliteTest extends TestCase {
     //print_r(self::$donneesTest);
   }
   
+  
   public function testRequeteCollecterIndisponibiliteSupport(): void {
  
     //$cnx = self::$donneesTest[0][1];
@@ -143,6 +144,20 @@ final class Enregistrement_IndisponibiliteTest extends TestCase {
                                                     );
     $this->assertTrue($ok, $msg);
   }
+  
+  public function testLireFermetureSite(): void {
+    $code = $this->code_dernier_enregistrement_fermeture();
+    if ($code > 0) {
+      $indispo = new Fermeture_Site($code);
+      $enreg = new Enregistrement_Indisponibilite();
+      $enreg->def_indisponibilite($indispo);
+      
+      $ok = $enreg->lire();
+      $msg = PHP_EOL . "Lecture femeture site code :" . $code . PHP_EOL;
+      $this->assertTrue($ok, $msg);
+    }
+  }
+  
   /*
   public function testRequeteAjouterFermetureSite(): void {
     
@@ -182,8 +197,38 @@ final class Enregistrement_IndisponibiliteTest extends TestCase {
     }
     $resultat->closeCursor();
     return $code;
-    
   }
+  
+  public function code_dernier_enregistrement_fermeture(): int {
+    $code = 0;
+    $sql_query = 'SELECT MAX(code) AS n FROM '
+      . Enregistrement_Indisponibilite::source()
+      . ' WHERE code_type = ' . Enregistrement_Indisponibilite::CODE_TYPE_INDISPO_SITE
+      ;
+    $resultat = self::$bdd->query($sql_query);
+    while ($donnee = $resultat->fetch(PDO::FETCH_OBJ)) {
+      $code = $donnee->n;
+      break;
+    }
+    $resultat->closeCursor();
+    return $code;
+  }
+  
+  public function code_dernier_enregistrement_indisponibilite_support(): int {
+    $code = 0;
+    $sql_query = 'SELECT MAX(code) AS n FROM '
+      . Enregistrement_Indisponibilite::source()
+      . ' WHERE code_type = ' . Enregistrement_Indisponibilite::CODE_TYPE_INDISPO_SUPPORT
+      ;
+    $resultat = self::$bdd->query($sql_query);
+    while ($donnee = $resultat->fetch(PDO::FETCH_OBJ)) {
+      $code = $donnee->n;
+      break;
+    }
+    $resultat->closeCursor();
+    return $code;
+  }
+  
   /*
   public function testRequeteSupprimerIndisponibilite(): void {
     
@@ -211,27 +256,28 @@ final class Enregistrement_IndisponibiliteTest extends TestCase {
     
   }
   */
-  public function testModifierIndisponibilite(): void {
+  public function testModifierEnregistrementIndisponibilite(): void {
     $enregistrement = new Enregistrement_Indisponibilite();
     $ok = $enregistrement->modifier();
     $this->assertFalse($ok);
     
-    $code_existant = $this->code_dernier_enregistrement();
-    $indispo = $this->getMockBuilder('Indisponibilite')
-      ->disableOriginalConstructor()
-      ->getMockForAbstractClass();
-    $indispo->__construct($code_existant);
-    $enregistrement->def_indisponibilite($indispo);
-    
-    $motif = new Motif_Indisponibilite(1);
-    $indispo->def_motif($motif);
-    $debut = new Instant("2024-04-25 21:48:00");
-    $fin = $debut->add(new DateInterval('PT8H0M0S'));
-    $indispo->definir_periode($debut, $fin);
-    
-    $ok = $enregistrement->modifier();
-    $this->assertTrue($ok);
-    
+    $code_existant = $this->code_dernier_enregistrement_indisponibilite_support();
+    if ($code_existant > 0) {
+      $indispo = new Indisponibilite_support($code_existant);
+      $enregistrement->def_indisponibilite($indispo);
+      
+      $motif = new Motif_Indisponibilite(1);
+      $indispo->def_motif($motif);
+      $debut = new Instant("2024-04-25 21:48:00");
+      $fin = $debut->add(new DateInterval('PT8H0M0S'));
+      $indispo->definir_periode($debut, $fin);
+      
+      $support = new Support_Activite(1);
+      $indispo ->def_support($support);
+      
+      $ok = $enregistrement->modifier();
+      $this->assertTrue($ok);
+    }
   }
 }
 // ============================================================================

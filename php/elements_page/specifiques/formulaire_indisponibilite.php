@@ -8,7 +8,6 @@
  * ----------------------------------------------------------------------------
  * utilisation : php - require_once <chemin_vers_ce_fichier_php>
  * dependances :
- * - bootstrap 5.x
  * utilise avec :
  * - depuis 2023 :
  *   PHP 8.2 sur macOS 13.x
@@ -33,8 +32,10 @@ require_once 'php/elements_page/generiques/formulaire.php';
 require_once 'php/elements_page/generiques/champ_formulaire.php';
 require_once 'php/elements_page/generiques/page.php';
 
+require_once 'php/bdd/enregistrement_indisponibilite.php';
 require_once 'php/bdd/enregistrement_site_activite.php';
 require_once 'php/bdd/enregistrement_support_activite.php';
+require_once 'php/bdd/enregistrement_motif_indisponibilite.php';
 // ============================================================================
 class Formulaire_Indisponibilite extends Formulaire {
   
@@ -52,7 +53,7 @@ class Formulaire_Indisponibilite extends Formulaire {
     $script_traitement = 'php/scripts/indisponibilite_maj.php?';
     $action = $_GET['act'];
     $params = 'act=' . $action . '&typ=' . $_GET['typ'];
-    if (isset($action) && $action == 'm')
+    //if (isset($action) && $action == 'm')
       $params = $params . (isset($this->indisponibilite) ? '&id=' . $this->indisponibilite->code() : '');
     $script_traitement = $script_traitement . $params;
       
@@ -73,8 +74,10 @@ class Formulaire_Indisponibilite extends Formulaire {
     }
     */
     try {
-      
+      $code_type = 0;
       if (is_a($this->indisponibilite, 'Fermeture_Site')) {
+        $code_type = Enregistrement_Indisponibilite::CODE_TYPE_INDISPO_SITE;
+        
         $item = new Champ_Selection("site");
         $item->def_titre("Site fermé");
         $item->def_obligatoire();
@@ -87,6 +90,7 @@ class Formulaire_Indisponibilite extends Formulaire {
       }
       
       if (is_a($this->indisponibilite, 'Indisponibilite_Support')) {
+        $code_type = Enregistrement_Indisponibilite::CODE_TYPE_INDISPO_SUPPORT;
         $item = new Champ_Selection("support");
         $item->def_titre("Support(s) indisponible(s)");
         $item->def_obligatoire();
@@ -123,12 +127,12 @@ class Formulaire_Indisponibilite extends Formulaire {
       $item->def_obligatoire();
       $item->valeurs_multiples = False;
       $motifs = array();
-      //Enregistrement_Commune::collecter("acces = 'O'"," nom ASC", $communes);
-      foreach ($motifs as $code => $c)
-        $item->options[$code] = $c->nom();
+      Enregistrement_Motif_Indisponibilite::collecter($code_type, $motifs);
+      foreach ($motifs as $code => $motif)
+        $item->options[$code] = $motif->nom();
       $this->ajouter_champ($item);
       
-      $item = new Champ_Texte("desc", "", "");
+      $item = new Champ_Texte("info", "", "");
       $item->def_titre("Explication");
       $this->ajouter_champ($item);
       
@@ -140,22 +144,28 @@ class Formulaire_Indisponibilite extends Formulaire {
   
   public function initialiser_champs() {
     $ok = isset($this->indisponibilite);
+    $action = $_GET['act'];
     if ($ok) {
-      /*
-      $this->champ('nom')->def_valeur($this->support->nom());
-      $this->champ('num')->def_valeur($this->support->numero());
-      $this->champ('mdl')->def_valeur($this->support->modele);
-      $this->champ('const')->def_valeur($this->support->constructeur);
-      $this->champ('aconst')->def_valeur($this->support->annee_construction);
-      $v = $this->support->est_pour_competition() ? 1 : 0;
-      $this->champ('compet')->def_valeur($v);
-      $v = $this->support->est_pour_loisir() ? 1 : 0;
-      $this->champ('loisir')->def_valeur($v);
-      $v = $this->support->est_actif() ? 1 : 0;
-      $this->champ('actif')->def_valeur($v);
-      $this->champ('mininit')->def_valeur($this->support->nombre_initiation_min);
-      $this->champ('maxinit')->def_valeur($this->support->nombre_initiation_max);
-       */
+      if ($action == 'm') {
+        if (is_a($this->indisponibilite, 'Fermeture_Site')) {
+          $this->champ('site')->def_valeur($this->indisponibilite->code_objet());
+        } elseif (is_a($this->indisponibilite, 'Indisponibilite_Support')) {
+          $this->champ('support')->def_valeur($this->indisponibilite->code_objet());
+        }
+        $this->champ('date_deb')->def_valeur($this->indisponibilite->debut()->date_html());
+        $this->champ('hre_deb')->def_valeur($this->indisponibilite->debut()->format('H:i'));
+        $this->champ('date_fin')->def_valeur($this->indisponibilite->fin()->date_html());
+        $this->champ('hre_fin')->def_valeur($this->indisponibilite->fin()->format('H:i'));
+        $this->champ('motif')->def_valeur($this->indisponibilite->motif()->code());
+        $this->champ('info')->def_valeur($this->indisponibilite->information());
+      } elseif ($action == 'c') {
+        $debut = Calendrier::aujourdhui();
+        $fin = $debut->lendemain();
+        $this->champ('date_deb')->def_valeur($debut->date_html());
+        $this->champ('hre_deb')->def_valeur($debut->format('H:i'));
+        $this->champ('date_fin')->def_valeur($fin->date_html());
+        $this->champ('hre_fin')->def_valeur($fin->format('H:i'));
+      }
     }
     return $ok;
   }

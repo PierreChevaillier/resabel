@@ -43,12 +43,8 @@ require_once 'php/pages/page_indisponibilite.php';
 // --- Classes des elements de la page
 require_once 'php/elements_page/generiques/element.php';
 // ============================================================================
-
-// autres parametres
-$code_site_web = (isset($_GET['id']))? intval($_GET['id']): 1;
-$action = (isset($_GET['act']))? $_GET['act']: '';
-$code_indispo = (isset($_GET['id']))? intval($_GET['id']): 0;
-$type_indispo = (isset($_GET['typ']))? intval($_GET['typ']): 0;
+// parametres
+$code_site_web = (isset($_SESSION['swb']))? intval($_SESSION['swb']): 1;
 
 // ----------------------------------------------------------------------------
 // --- Creation dynamique de la page

@@ -153,6 +153,10 @@ final class IndisponibiliteTest extends TestCase {
     // --- association site et Fermeture
     $code_indispo = 1;
     $fermeture = new Fermeture_Site($code_indispo);
+    
+    $this->assertNull($fermeture->code_objet());
+    $this->assertNull($fermeture->libelle_objet());
+    
     $fermeture->def_site_activite($site);
     
     // --- Verifications
@@ -173,6 +177,10 @@ final class IndisponibiliteTest extends TestCase {
     // --- association support et Indisponibilite
     $code_indispo = 1;
     $indispo = new Indisponibilite_Support($code_indispo);
+    
+    $this->assertNull($indispo->code_objet());
+    $this->assertNull($indispo->libelle_objet());
+    
     $indispo->def_support($support);
     
     // --- Verifications

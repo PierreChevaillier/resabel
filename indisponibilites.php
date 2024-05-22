@@ -36,18 +36,20 @@
       // --- Information sur le site Web
       require_once 'php/bdd/enregistrement_site_web.php';
       
-      if (isset($_SESSION['swb']))
-        new Enregistrement_site_web($_SESSION['swb']);
-      
       // --- Classe definissant la page a afficher
       require_once 'php/pages/page_indisponibilites.php';
 require_once 'php/bdd/enregistrement_indisponibilite.php';
 
+// ============================================================================
+// parametres
+$code_site_web = (isset($_SESSION['swb']))? intval($_SESSION['swb']): 1;
+
       // ----------------------------------------------------------------------
       // --- Creation dynamique de la page
+new Enregistrement_site_web($code_site_web);
+$nom_site = Site_Web::accede()->sigle() . " Resabel";
       $feuilles_style = array();
       $feuilles_style[] = "css/resabel_ecran.css";
-      $nom_site = Site_Web::accede()->sigle() . " Resabel";
       $page = new Page_Indisponibilites($nom_site,
                                         "Indisponibilités supports activité",
                                         Enregistrement_Indisponibilite::CODE_TYPE_INDISPO_SUPPORT,

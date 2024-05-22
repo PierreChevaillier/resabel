@@ -3,22 +3,22 @@
   // contexte : Resabel - systeme de REServAtion de Bateaux En Ligne
   // description : Definition de la classe Page_Activites
   //               Gestion des informations sur les seances de la journee
-  // copyright (c) 2018-2020 AMP. Tous droits reserves.
+  // copyright (c) 2018-2024 AMP. Tous droits reserves.
   // --------------------------------------------------------------------------
   // utilisation : php - require_once <chemin-fichier.php'
-  // dependances : bootstrap 4.x, $_GET[]
+  // dependances : $_GET[]
   // teste avec : PHP 7.1 sur Mac OS 10.14 ; PHP 7.0 sur hebergeur web
   // --------------------------------------------------------------------------
   // creation : 10-jun-2019 pchevaillier@gmail.com
   // revision : 08-jan-2020 pchevaillier@gmail.com affichage fermeture site (debut)
+// revision : 22-may-2024 pchevaillier@gmail.com  utilisation Afficheur_Fermetures_Site
   // --------------------------------------------------------------------------
   // commentaires :
-  // - en evolution
+  // - operationnel
   // attention :
   // - pas complet
   // a faire :
-  // - traiter le cas des fermetures partielles (que une partie de la journee)
-  // - (pas urgent) supprimer dependance / bootstrap (Element a creer)
+  // - 
   // ==========================================================================
 
   // --- Classes utilisees
@@ -41,6 +41,8 @@
   require_once 'php/elements_page/specifiques/vue_regime_ouverture.php';
   require_once 'php/elements_page/specifiques/table_seances.php';
   
+require_once 'php/elements_page/specifiques/vue_indisponibilite.php';
+
   require_once 'php/elements_page/specifiques/formulaire_dispo_activite.php';
   
   // --------------------------------------------------------------------------
@@ -158,7 +160,8 @@
       $mode = 'l';
       $code_site_selectionne = 1;
       $selecteur_activites = new Formulaire_Disponibilite_Activite($this,
-                                                                   $mode, $code_site_selectionne);
+                                                                   $mode,
+                                                                   $code_site_selectionne);
       $cadre->ajouter_element($selecteur_activites);
     }
     
@@ -205,16 +208,8 @@
           $tableau = new Table_Seances($this, $activite_site);
           $onglet->elements[] = $tableau;
         } else {
-          $message = new Element_code();
-          $texte = '<div class="alert alert-warning" role="alert" align="center"><p class="lead"> Le site est fermé : <br />' . PHP_EOL;
-          foreach ($activite_site->fermetures_site as $x) {
-            $texte = $texte . $x->motif->nom() . ' '
-                      . $x->formatter_periode() . ' : '
-                      . $x->information() . '<br />'. PHP_EOL;
-          }
-          $texte = $texte . '</p></div>' . PHP_EOL;
-          $message->def_code($texte);
-          $onglet->elements[] = $message;
+          $onglet->elements[] = new Afficheur_Fermetures_Site($this->page,
+                                                  $activite_site->fermetures_site);
         }
       }
       $this->ajoute_contenu($onglets);
@@ -238,16 +233,6 @@
     
     public function initialiser() {
       $this->entete->def_titre($this->jour()->date_texte());
-
-/*
-      $debut = $cal->aujourdhui();
-      $debut_sql = $cal->formatter_date_heure_sql($debut);
-      //$critere_selection = " code_type = " . $this->code_type_indisponibilite . " AND date_fin >= '" . $debut_sql . "'";
-      
-      $indisponibilites = null;
-      $this->enregistrement_indisponibilite->collecter("$critere_selection", "", $indisponibilites);
-      $this->table->def_elements($indisponibilites);
-      */
       parent::initialiser();
     }
     

@@ -2,7 +2,7 @@
   // ==========================================================================
   // contexte : Resabel - systeme de REServAtion de Bateau En Ligne
   // description : Classes pour information et planification activite journaliere
-  // copyright (c) 2018-2022 AMP. Tous droits reserves.
+  // copyright (c) 2018-2024 AMP. Tous droits reserves.
   // --------------------------------------------------------------------------
   // utilisation : php - require_once <chemin_vers_ce_fichier.php>
   // dependances : 
@@ -19,8 +19,7 @@
   // commentaires :
   // - Uniquement 'logique metier': pas d'IHM
   // attention :
-  // - En chantier...
-  // - non stabilise
+  // - 
   // a faire :
   //  - collecter informations marees
   //  - recuperation des donnees $GET ou $POST : a faire ailleurs. (pas sur)
@@ -204,19 +203,21 @@
     }
     
     protected function collecter_info_fermetures_site() {
-      $critere_selection = " date_debut <= '" . $this->jour()->lendemain()->date_sql() . "' AND  date_fin >= '" . $this->jour()->date_sql() . "'";
+      $critere_selection = " date_debut <= '" . $this->jour()->lendemain()->date_sql()
+        . "' AND  date_fin >= '" . $this->jour()->date_sql() . "'";
       Enregistrement_Indisponibilite::collecter($this->site,
-                                                2,
+                                                Enregistrement_Indisponibilite::CODE_TYPE_INDISPO_SITE,
                                                 $critere_selection,
                                                 "",
                                                 $this->fermetures_site);
     }
     
     protected function collecter_info_indispo_supports() {
-      $critere_selection = " date_debut <= '" . $this->jour()->lendemain()->date_sql() . "' AND  date_fin >= '" . $this->jour()->date_sql() . "'";
+      $critere_selection = " date_debut <= '" . $this->jour()->lendemain()->date_sql()
+        . "' AND  date_fin >= '" . $this->jour()->date_sql() . "'";
       $indispo = array();
       Enregistrement_Indisponibilite::collecter($this->site,
-                                                1,
+                                                Enregistrement_Indisponibilite::CODE_TYPE_INDISPO_SUPPORT,
                                                 $critere_selection,
                                                 "",
                                                 $indispo);
@@ -335,7 +336,7 @@
       $creneau_activite = new Intervalle_temporel($d, $f);
       $condition = false;
       foreach ($this->fermetures_site as $ferm) {
-        $creneau_fermeture = new Intervalle_temporel($ferm->debut, $ferm->fin);
+        $creneau_fermeture = new Intervalle_temporel($ferm->debut(), $ferm->fin());
         $condition = $creneau_fermeture->couvre($creneau_activite);
         if ($condition) break;
       }
@@ -346,20 +347,22 @@
       $creneau = new Intervalle_temporel($debut, $fin);
       $condition = false;
       foreach ($this->fermetures_site as $ferm) {
-        $creneau_fermeture = new Intervalle_temporel($ferm->debut, $ferm->fin);
+        $creneau_fermeture = new Intervalle_temporel($ferm->debut(), $ferm->fin());
         $condition = $creneau->chevauche($creneau_fermeture);
         if ($condition) break;
       }
       return $condition;
     }
     
-    public function support_indisponible_creneau(Support_Activite $support, Instant $debut, Instant $fin) {
+    public function support_indisponible_creneau(Support_Activite $support,
+                                                 Instant $debut,
+                                                 Instant $fin) {
       $condition = array_key_exists($support->code(), $this->indisponibilites_support);
       if ($condition) {
         $creneau = new Intervalle_temporel($debut, $fin);
         $indispos = $this->indisponibilites_support[$support->code()];
         foreach ($indispos as $indispo) {
-          $creneau_indispo = new Intervalle_temporel($indispo->debut, $indispo->fin);
+          $creneau_indispo = new Intervalle_temporel($indispo->debut(), $indispo->fin());
           $condition = $creneau->chevauche($creneau_indispo);
           if ($condition) break;
         }
