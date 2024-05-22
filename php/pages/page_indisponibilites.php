@@ -4,15 +4,20 @@
   // description : Definition de la classe Page_Indisponibilites
   //               Informations sur les indisponibilites des supports d'activite
   //               ou sur les fermetures de site d'activite
-  // copyright (c) 2018-2019 AMP. Tous droits reserves.
+  // copyright (c) 2018-2024 AMP. Tous droits reserves.
   // --------------------------------------------------------------------------
   // utilisation : php - require_once <chemin-fichier.php'
   // dependances :
-  // teste avec : PHP 7.1 sur Mac OS 10.14 ; PHP 7.0 sur hebergeur web
+  // - bootstrap 5.x
+  // utilise avec :
+  // - depuis 2023 :
+  //   PHP 8.2 sur macOS 13.x
+  //   PHP 8.1 sur hebergeur web
   // --------------------------------------------------------------------------
   // creation : 10-jun-2019 pchevaillier@gmail.com
   // revision : 29-dec-2019 pchevaillier@gmail.com impact refonte Calendrier
 // revision : 30-avr-2024 pchevaillier@gmail.com + Menu actions sur indispo
+// revision : 22-may-2024 pchevaillier@gmail.com + utilisation Profil_Session
   // --------------------------------------------------------------------------
   // commentaires :
   // attention :
@@ -25,6 +30,8 @@
 
   require_once 'php/bdd/enregistrement_indisponibilite.php';
   require_once 'php/metier/calendrier.php';
+require_once 'php/metier/profil_session.php';
+
   require_once 'php/elements_page/specifiques/table_indisponibilites.php';
 require_once 'php/elements_page/specifiques/vue_indisponibilite.php';
 
@@ -50,7 +57,10 @@ require_once 'php/elements_page/specifiques/vue_indisponibilite.php';
       $this->entete = new Entete_Contenu_Page();
       $this->ajoute_element_haut($this->entete);
     
-      if (isset($_SESSION['adm'])) {
+      $profil = new Profil_Session();
+      $modif_permise = $profil->est_admin() || $profil->est_permanence() || $profil->est_club();
+      
+      if ($modif_permise) {
         $e = new Element_Code();
         $code_html = '<div>';
         $code_html = $code_html . '<a href="indisponibilite.php?act=c&typ=' . $this->code_type_indisponibilite

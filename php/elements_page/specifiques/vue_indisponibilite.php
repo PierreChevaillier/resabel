@@ -33,6 +33,8 @@ require_once 'php/elements_page/generiques/element.php';
 require_once 'php/elements_page/generiques/modal.php';
 require_once 'php/elements_page/generiques/page.php';
 
+require_once 'php/metier/profil_session.php';
+
 // ============================================================================
 class Menu_Actions_Indisponibilite extends Element {
   private ?Indisponibilite $indisponibilite;
@@ -95,16 +97,22 @@ class Menu_Actions_Indisponibilite extends Element {
     echo '<a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#' . $this->afficheur_info->id()
       . '"  onclick="return afficher_indisponibilite(' .  $params . ');">Afficher</a>';
     
-    echo '<a class="dropdown-item" href="indisponibilite.php?act=m&typ=' . $type_objet . '&id=' . $this->indisponibilite->code() . '">Modifier</a>';
-    
-    $params = $this->indisponibilite->code()
-      . ", " . $type_objet
-      . ", '" . $this->afficheur_action->id()
-      . "', '" . $html_resume_indispo
-      . "'";
-    
-    echo '<a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#' . $this->afficheur_action->id()
-      . '"  onclick="return activer_controle_suppression_indisponibilite(' . $params . ');">Supprimer</a>';
+    $profil = new Profil_Session();
+    $modif_permise = $profil->est_admin() || $profil->est_permanence() || $profil->est_club();
+
+    if ($modif_permise) {
+      echo '<a class="dropdown-item" href="indisponibilite.php?act=m&typ=' . $type_objet
+        . '&id=' . $this->indisponibilite->code() . '">Modifier</a>';
+      
+      $params = $this->indisponibilite->code()
+        . ", " . $type_objet
+        . ", '" . $this->afficheur_action->id()
+        . "', '" . $html_resume_indispo
+        . "'";
+      
+      echo '<a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#' . $this->afficheur_action->id()
+        . '"  onclick="return activer_controle_suppression_indisponibilite(' . $params . ');">Supprimer</a>';
+      }
   }
 
   protected function afficher_corps() {

@@ -22,6 +22,7 @@
   // revision : 29-dec-2019 pchevaillier@gmail.com reorganisation items menu
   // revision : 17-mar-2023 pchevaillier@gmail.com bootstrap v5.3
 // revision : 14-jan-2024 pchevaillier@gmail.com + menu competitions
+// revision : 22-may-2024 pchevaillier@gmail.com + utilisation Profil_Session
   // --------------------------------------------------------------------------
   // commentaires :
   // attention :
@@ -34,7 +35,8 @@
   // --- Classes utilisees
   require_once 'php/elements_page/generiques/menu_navigation.php';
   require_once 'php/metier/calendrier.php';
-  
+ require_once 'php/metier/profil_session.php';
+
   // ==========================================================================
   class Menu_Application extends Menu_Navigation {
     
@@ -47,10 +49,11 @@
     private ?Instant $jour;
     
     public function initialiser() {
-      $this->session_admin = isset($_SESSION['adm']) && $_SESSION['adm'];
-      $this->session_pers = isset($_SESSION['prs']) && $_SESSION['prs'];
-      $this->session_club = ! $this->session_pers;
-      $this->membre_actif = $this->session_pers && isset($_SESSION['usr']) && isset($_SESSION['act']) && $_SESSION['act'];
+      $profil = new Profil_Session();
+      $this->session_admin = $profil->est_admin();
+      $this->session_pers = $profil->est_personne();
+      $this->session_club = $profil->est_club();
+      $this->membre_actif = $profil->est_membre_actif();
       
       $this->jour = isset($GET['j']) ? new Instant($GET['j']): Calendrier::aujourdhui();
     }
