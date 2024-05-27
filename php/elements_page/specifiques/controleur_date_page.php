@@ -3,7 +3,7 @@
   // contexte : Resabel - systeme de REServAtion de Bateaux En Ligne
   // description : Definition des classes pour le controle du changement
   //               de la date de reference pour la gestion des seances d'activite
-  // copyright (c) 2018-2023 AMP. Tous droits reserves.
+  // copyright (c) 2018-2024 AMP. Tous droits reserves.
   // --------------------------------------------------------------------------
   // utilisation : php - require_once <nom_-fichier.php'
   // dependances : bootstrap 5.3
@@ -12,12 +12,12 @@
   // --------------------------------------------------------------------------
   // creation : 06-jul-2019 pchevaillier@gmail.com
   // revision : 21-mar-2023 pchevaillier@gmail.com bootstrap 5.2 + Menu_Navigation_Date
+// revision : 19-fev-2024 pchevaillier@gmail.com correction definir_parametres_url()
   // --------------------------------------------------------------------------
   // commentaires :
   // - ergonomie de Menu_navigation_Date sans doute meilleure que Selecteur_Date
   // attention :
   // a faire :
-  // - tester avec bootstrap v5.3 (theme, entre autre)
   // - changer couleur bouton validation en fonction du theme
   // ==========================================================================
 
@@ -84,7 +84,7 @@
     
   }
   
-// --------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
   class Navigateur_Date extends Controleur_Date_Page {
     private $jours = array();
     
@@ -106,11 +106,12 @@
         $this->afficher_item($jour);
     }
     
-    protected function afficher_item($date_jour) {
+    protected function afficher_item($date_jour): void {
       $texte_jour = $date_jour->date_texte_court();
       $valeur_jour =  $date_jour->date_html();
       $code_param_url = "?j=" . $valeur_jour . $this->code_html_parametres;
-      echo "<a class=\"flex-sm-fill text-sm-center nav-link active\" href=\"", $this->page_cible, $code_param_url, "\">", $texte_jour, "</a>";
+      echo '<a class="flex-sm-fill text-sm-center nav-link active" href="', $this->page_cible, $code_param_url, '">', $texte_jour, "</a>";
+      return;
     }
     
     protected function afficher_fin() {
@@ -118,7 +119,8 @@
     }
     
   }
-  
+
+// ----------------------------------------------------------------------------
   class Selecteur_Date extends Controleur_Date_Page {
     
     private $valeur_initiale;
@@ -196,7 +198,6 @@ class Menu_Navigation_Date extends Controleur_Date_Page {
   
   protected function afficher_debut() {
     echo '<nav class="navbar navbar-expand-md" id ="' . $this->id() . '">';
-    //echo '<nav class="navbar navbar-expand-md bg-primary" data-bs-theme="dark" id ="' . $this->id() . '">';
     echo '<div class="container-fluid">';
     $txt = ($this->titre() == "") ? "Date": $this->titre();
     echo '<a class="navbar-text">' . $txt . '</a>';
@@ -213,7 +214,7 @@ class Menu_Navigation_Date extends Controleur_Date_Page {
    
     $valeur_jour = $this->date_ref->date_html();
     $code_param_url = $this->code_html_parametres;
-    $code_action = $this->page_cible . $code_param_url;
+    $code_action = $this->page_cible . '?x=0' . $code_param_url;
     echo '<form class="d-flex" action="' . $code_action . '" method="GET">';
     echo '<input class="form-control me-2" id="j" name="j" type="date" value="' . $valeur_jour
       . '" aria-label="Date"><button class="btn btn-outline-primary" type="submit">Afficher</button>';

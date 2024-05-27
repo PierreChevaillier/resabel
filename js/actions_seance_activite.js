@@ -14,6 +14,7 @@
 // creation : 13-avr-2020 pchevaillier@gmail.com
 // revision : 17-feb-2023 pchevaillier@gmail.com + changement horaire seance
 // revision : 29-mar-2023 pchevaillier@gmail.com utilisation XMLHttpRequest
+// revision : 25-jan-2024 pchevaillier@gmail.com + changement support activite
 // ----------------------------------------------------------------------------
 // commentaires :
 // - en evolution
@@ -322,7 +323,6 @@ function activer_controle_changer_horaire_seance(code_seance, modal_id, html_inf
   corps_modal.innerHTML = "<div>" + html_corps + "</div>";
   
   bouton_modal.textContent = "Ne rien faire";
-
   return true;
 }
 
@@ -365,5 +365,98 @@ function modifier_horaire_seance_activite(code_seance, debut_nouveau, fin_nouvea
    */
 }
 
+// ----------------------------------------------------------------------------
+// Changement de support d'activite pour une seance, meme equipage, meme horaire
 
+// Activation de la boite modale pour choisir le nouveau support d'activite
+function activer_controle_changer_support_seance(code_seance,
+                                                 code_site,
+                                                 code_support,
+                                                 debut_creneau,
+                                                 fin_creneau,
+                                                 modal_id,
+                                                 html_info_seance,
+                                                 html_info_partipations,
+                                                 html_mailto) {
+  
+  const titre_modal = document.getElementById(modal_id + "_titre");
+  const corps_modal = document.getElementById(modal_id + "_corps");
+  const bouton_modal = document.getElementById(modal_id + "_btn");
+  
+  titre_modal.innerHTML = "Changement Support d'activité";
+  html_corps = '<div class="alert alert-warning" role="alert">Opération irréversible !<br />Ne pas oublier de prévenir les personnes intéressées.</div>';
+  html_corps = html_corps + '<div class="card"><div class="card-body"><p>' + html_info_seance + '</p><p>' + html_info_partipations + '</p></div></div>';
+  html_corps = html_corps + '<div><button type="button" class="btn btn-outline-primary"><a href="'
+    + html_mailto + '">Envoyez un mail aux participants</a></button></div>';
+  bouton_modal.textContent = "Ne rien faire";
+  
+  const envoi = {id: code_seance, sa: code_site};
+  console.log(envoi);
+  
+  var xmlhttp = new XMLHttpRequest();
+  var url = "php/scripts/supports_activite_dispo_collecter.php?";
+  const params = new URLSearchParams(envoi).toString();
+  url += params;
+  console.log(url);
+  
+  var ok = false;
+  xmlhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      console.log("recherche autres supports seance : retour");
+      // les boutons pour choisir le nouveau support
+      var dict = JSON.parse(this.responseText);
+      for (var entree in dict) {
+        valeur = dict[entree];
+        p = JSON.parse(valeur);
+        console.log(entree + " >> " + p['value']);
+        html_corps = html_corps + '<div><button type="button" class="btn btn-primary" onclick="modifier_support_seance_activite(' + code_site
+          + ', ' + code_seance
+          + ', ' + entree
+          + '); return false;">Passer sur ' + p['value'] + '</button></div>';
+      }
+      //console.log(html_corps);
+      corps_modal.innerHTML = "<div>" + html_corps + "</div>";
+
+      ok = true;
+    }
+  };
+  
+  xmlhttp.open('GET', url, true);
+  xmlhttp.send();
+  console.log("request sent");
+  return ok;
+}
+
+function modifier_support_seance_activite(code_site,
+                                          code_seance,
+                                          code_nouveau_support) {
+  const code_action = 'msa'; // modification support activite
+  const envoi = {act: code_action, sa: code_site, id: code_seance, s: code_nouveau_support};
+  console.log(envoi);
+  
+  var xmlhttp = new XMLHttpRequest();
+  var url = "php/scripts/inscription_seance_activite_maj.php?";
+  const params = new URLSearchParams(envoi).toString();
+  url += params;
+  console.log(url);
+  
+  var ok = false;
+  xmlhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      console.log("changement support seance : ok");
+      var dict = JSON.parse(this.responseText);
+      for (var entree in dict) {
+        valeur = dict[entree];
+        console.log(entree + " >> " + valeur);
+      }
+      location.reload(); // necessaire pour prendre en compte nouveau contexte
+      ok = true;
+    }
+  };
+  
+  xmlhttp.open('GET', url, true);
+  xmlhttp.send();
+  console.log("request sent");
+  return ok;
+}
 // ============================================================================

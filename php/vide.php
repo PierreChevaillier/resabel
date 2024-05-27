@@ -2,7 +2,7 @@
 /* ============================================================================
  * contexte : Resabel - systeme de REServAtion de Bateau En Ligne
  * description : Fichier vide -  modele entete
- * copyright (c) 2018-2023 AMP. Tous droits reserves.
+ * copyright (c) 2018-2024 AMP. Tous droits reserves.
  * ----------------------------------------------------------------------------
  * utilisation : php - require_once <chemin_vers_ce_fichier_php>
  * dependances :
@@ -20,7 +20,7 @@
  * attention :
  * -
  * a faire :
- *-
+ * -
  * ============================================================================
  */
 

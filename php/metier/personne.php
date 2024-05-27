@@ -49,6 +49,9 @@
     public function nom(): string { return $this->nom; }
     public function def_nom(string $valeur): void { $this->nom = $valeur; }
     
+    public function identite(): string {
+      return $this->prenom . ' ' . $this->nom;
+    }
     
     public $code_commune = 0;
     public $nom_commune = ""; // pas dans la table

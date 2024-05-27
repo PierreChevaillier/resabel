@@ -6,7 +6,7 @@
   // teste avec :
   //  - PHP 7.1 sur Mac OS 10.14 ; PHP 7.0 sur serveur OVH
   //  - PHP 8.2 sur macOS 13.1 (> 25-dec-2022)
-  // Copyright (c) 2014-2023 AMP. Tous droits reserves.
+  // Copyright (c) 2014-2024 AMP. Tous droits reserves.
   // ------------------------------------------------------------------------
   // creation: 28-fev-2015 pchevaillier@gmail.com
   // revision: 29-avr-2015 pchevaillier@gmail.com, recherche information
@@ -17,6 +17,7 @@
   // revision: 06-ami-2019 pchevaillier@gmail.com  initialiser_debutant
   // revision: 29-dec-2022 pchevaillier@gmail.com fix erreur 8.2
   // revision: 30-nov-2023 pchevaillier@gmail.com separation membre - connexion
+// revision: 22-may-2024 pchevaillier@gmail.com - enregistrer_nouveau()
   // ------------------------------------------------------------------------
   // commentaires :
   // attention :
@@ -106,35 +107,6 @@ require_once 'php/metier/calendrier.php';
       $this->niveau = self::NIVEAU_DEBUTANT;
     }
       
-    public function enregistrer_nouveau() {
-      //$actif = ($this->est_actif()) ? 1: 0;
-      //$connexion = ($this->est_autorise_connecter()) ? 1: 0;
-      //$cdb = ($this->est_chef_de_bord()) ? 1: 0;
-      /*
-      $requete = "INSERT INTO membres VALUES('" . $this->code . "', '"
-                                                . $this->identifiant . "', '"
-                                                .  $actif . "', '"
-                                                . $connexion . "', '"
-                                                . $this->niveau . "', '"
-                                                . $this->genre . "', '"
-                                                . $this->mot_passe . "', '"
-                                                . $this->prenom . "', '"
-                                                . $this->nom . "', '"
-                                                . $this->date_naissance . "', '"
-                                                . $this->code_commune . "', '"
-                                                . $this->rue . "', '"
-                                                . $this->telephone . "', '"
-                                                . $this->telephone2 . "', '"
-                                                . $this->courriel . "', '"
-                                                . $cdb  . "', '"
-                                                . $this->date_derniere_connexion . "', '"
-                                                . $this->num_licence . "')";
-      //echo $requete . "<br />";
-      $resultat = mysql_query($requete);
-      return $resultat;
-    */
-      return;
-    }
 		
     public function initialiser_visiteur(): void {
       $this->connexion->def_est_compte_actif(1);
@@ -147,21 +119,7 @@ require_once 'php/metier/calendrier.php';
       $this->genre = "F";
       return;
     }
-	
-    /*
-    public function est_disponible($jour, $creneau) {
-      $status = false;
-      $requete = "SELECT COUNT(*) AS n FROM inscriptions_sortie WHERE code_membre = '" . $this->code . "' AND  jour = '" . $jour . "' AND horaire = '" . $creneau . "'";
-      //echo $requete;
-     
-      $resultat = mysql_query($requete) or die('Requête personne est disponible invalide : ' . mysql_error());
-      $donnee = mysql_fetch_assoc($resultat);
-      $status = ($donnee['n'] == 0);
-      return $status;
-     
-    }
-     */
-	
+
   }
 // ============================================================================
   ?>

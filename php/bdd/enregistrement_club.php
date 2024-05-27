@@ -113,7 +113,7 @@
     private function initialiser_depuis_table($donnee): void {
       $this->club->def_identifiant($donnee->identifiant);
       $this->club->def_nom($donnee->nom);
-      $this->club->def_fuseau_horaire($donnee->fuseau_horaire);
+      $this->club->definir_fuseau_horaire($donnee->fuseau_horaire);
     }
   }
   // ==========================================================================

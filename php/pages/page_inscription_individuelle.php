@@ -43,10 +43,11 @@
       $indiv = (isset($_GET['a']) && $_GET['a'] == 'ii');
       $equip = (isset($_GET['a']) && $_GET['a'] == 'ie');
       
-      $site_selectionne = 1; // pourrait etre dans $_GET ???
+      $site_selectionne = 1; // TODO: pourrait etre dans $_GET ???
       
       $element = new Entete_Contenu_Page();
-       $this->ajoute_element_haut($element);
+      $this->ajoute_element_haut($element);
+      
       if ($indiv) {
         $element->def_titre("Inscription individuelle");
       } elseif($equip) {
@@ -55,8 +56,8 @@
         $element->def_titre("Erreur type d'inscription...");
         return;
       }
-      // Ceation du formulaire pour la modification des informations
       
+      // Creation du formulaire pour la saisie/modification des informations
       $mode =  $_GET['a'];
       $formulaire = new Formulaire_Disponibilite_Activite($this, $mode, $site_selectionne);
       $this->ajoute_contenu($formulaire);

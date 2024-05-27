@@ -2,7 +2,7 @@
   // ==========================================================================
   // contexte : Resabel - systeme de REServAtion de Bateau En Ligne
   // description : Classe Seance Activite et associees - Vue metier
-  // copyright (c) 2018-2023 AMP. Tous droits reserves.
+  // copyright (c) 2018-2024 AMP. Tous droits reserves.
   // --------------------------------------------------------------------------
   // utilisation : php - require_once <chemin_vers_ce_fichier.php>
   // dependances : 
@@ -16,6 +16,7 @@
   // revision : 08-mar-2020 pchevaillier@gmail.com a_comme_responsable
   // revision : 29-dec-2022 pchevaillier@gmail.com information
   // revision : 29-dec-2022 pchevaillier@gmail.com MaJ suite tests unitaires
+// revision : 23-jan-2024 pchevaillier@gmail.com + peut_accueillir_participants
   // --------------------------------------------------------------------------
   // commentaires :
   // - version minimale / pratique AMP
@@ -46,7 +47,7 @@
     public function code(): int { return $this->code; }
     public function def_code(int $code): void { $this->code = $code; }
     
-    public $plage_horaire;
+    public ?Intervalle_Temporel $plage_horaire;
     public function debut(): ?Instant {
       return $this->plage_horaire->debut();
     }
@@ -63,7 +64,6 @@
     }
     
     public ?Membre $responsable = null; // si sortie en mer :  resp = chef de bord
-    
     
     public function a_un_responsable(): bool {
       return (!is_null($this->responsable));
@@ -114,6 +114,13 @@
       return count($this->inscriptions);
     }
     
+    public function nombre_equipiers(): int {
+      $nombre = $this->nombre_participants();
+      if ($this->a_un_responsable())
+        $nombre -= 1;
+      return $nombre;
+    }
+    
     public function nombre_places_est_limite(): bool {
       $condition = !is_null($this->support->capacite());
       return $condition;
@@ -127,6 +134,15 @@
       return $resultat; 
     }
     
+    public function nombre_places_equipiers_disponibles(): ?int {
+      $resultat = $this->nombre_places_disponibles(); // null si pas de limite de capacite
+      if (!is_null($resultat) && $resultat > 0) {
+        if ($this->responsable_requis() && !$this->a_un_responsable())
+          $resultat -= 1;
+      }
+      return $resultat;
+    }
+    
     public function a_comme_participant(Membre $personne): bool {
       $resultat = false;
       foreach ($this->inscriptions as $p) {
@@ -134,6 +150,73 @@
           return true;
       }
       return $resultat;
+    }
+    
+    /*
+     * teste la possibilite de "fusionner" deux seances :
+     * $this accueille l'equipe de la seance 'source' (parametre $seance)
+     * $this est la destination
+     * $seance est la source
+     */
+    public function peut_accueillir_participants(Seance_Activite $seance): bool {
+      $doublon = false;
+      foreach ($seance->inscriptions as $x) {
+        if ($this->a_comme_participant($x->participant)) {
+          $doublon = true;
+          break;
+        }
+      }
+      if ($doublon) return false;
+     
+      // --- Si pas de limite de place pour la seance d'accueil, c'est bon
+      if (!$this->nombre_places_est_limite()) return true;
+
+      // --- Cas ou la seance d'accueil (this) a une capacite limitee
+      $ok = true;
+      
+      // les eventuels responsables
+      $nb_resp_source = 0;
+      if ($seance->a_un_responsable()) $nb_resp_source = 1;
+      $nb_resp_dest = 0;
+      if ($this->a_un_responsable()) $nb_resp_dest = 1;
+      $nb_places_resp_dest = 0;
+      if ($this->responsable_requis()) $nb_places_resp_dest = 1 - $nb_resp_dest;
+      
+      // les autres membres des seances
+      $nb_equip_source = $seance->nombre_equipiers();
+      $nb_places_equip_dest = $this->nombre_places_equipiers_disponibles();
+      
+      if ($this->responsable_requis()) {
+        // condition sur le resp de la seance d'accueil (dest = this)
+        // cas simple : il faut qu'il y ait une place pour accueillir
+        // l'eventuel responsable de la seance source
+        $ok = ($nb_resp_source <= $nb_places_resp_dest);
+        if (!$ok) return false;
+        // il faut aussi de la place pour les equipiers (s'il ya des places)
+        $ok = ($nb_equip_source <= $nb_places_equip_dest);
+        if (!$ok) return false;
+      } else {
+        $ok = (($nb_resp_source + $nb_equip_source) <= $nb_places_equip_dest);
+        if (!$ok) return false;
+      }
+      /*
+      $places_dispo = ((!$this->nombre_places_est_limite()) || ($this->nombre_places_disponibles() >= $seance->nombre_participants()));
+      if (! $places_dispo)
+        return false;
+
+      if ($this->nombre_places_est_limite()) {
+        if ($this->nombre_places_equipiers_disponibles() >= $seance->nombre_equipiers())
+          return false;
+      }
+ 
+      $ok = true;
+      $cond_resp = ($this->responsable_requis() && ! $this->a_un_responsable());
+      $complet = ($this->nombre_places_disponibles() == $seance->nombre_participants());
+      if ($complet && $cond_resp) {
+        $ok = $seance->a_un_responsable();
+      }
+       */
+      return $ok;
     }
   }
   

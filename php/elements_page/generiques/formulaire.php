@@ -6,7 +6,7 @@
   // dependances : bootstrap 4.x (teste avec bootstrap 4.1.3)
   // teste avec  : PHP 7.1 sur Mac OS 10.14
   // contexte    : Resabel
-  // Copyright (c) 2017-2018 AMP. Tous droits reserves.
+  // Copyright (c) 2017-2024 AMP. Tous droits reserves.
   // ------------------------------------------------------------------------
   // creation : 22-oct-2017 pchevaillier@gmail.com
   // revision : 04-fev-2018 pchevaillier@gmail.com mode responsive
@@ -16,6 +16,7 @@
   // revision : 26-aug-2018 pchevaillier@gmail.com Resabel V2
   // revision : 03-mar-2019 pchevaillier@gmail.com bootstrap 4.1 (boutons)
   // revision : 29-mar-2019 pchevaillier@gmail.com attribut 'methode', class form-btn
+// revision : 31-jan-2024 pchevaillier@gmail.com bootstrap 5.x
   // ------------------------------------------------------------------------
   // commentaires :
   // - en chantier
@@ -26,8 +27,8 @@
   // ------------------------------------------------------------------------
 
   // --- Classes utilisees
-  require_once 'php/elements_page/generiques/element.php';
-  require_once 'php/elements_page/generiques/champ_formulaire.php';
+require_once 'php/elements_page/generiques/element.php';
+require_once 'php/elements_page/generiques/champ_formulaire.php';
   
   // ------------------------------------------------------------------------
 
@@ -36,20 +37,19 @@
     //protected $page_web = ""; // necessaire pour ajouter les scripts de controle des champs
     public $methode = 'post';
     public $message_bouton_validation = "Envoyer ma demande";
-    protected $script_traitement = "";
+    public $script_traitement = "";
     protected $action = 'a'; // a => ajout (nouvelle saisie) m => modification (MaJ saisie)
     public $confirmation_requise = False;
     
     private $champs = array();
     public function champs() { return $this->champs;}
-    public function champ($nom) {
+    public function champ(string $nom): Champ_Formulaire {
       if (!array_key_exists($nom, $this->champs))
         throw new Exception('Erreur recherche champ formulaire - champ inexistant : ' . $nom);
       return $this->champs[$nom];
     }
     
-    public function ajouter_champ($champ) {
-      $resultat = False;
+    public function ajouter_champ(Champ_Formulaire $champ): void {
       if (strlen($champ->id()) == 0)
           throw new Exception('Erreur insertion champ formulaire - champ sans identifiant');
       if (array_key_exists($champ->id(), $this->champs))
@@ -57,14 +57,17 @@
       $this->champs[$champ->id()] = $champ;
     }
   
-    public function __construct($page, $script_traitement, $action, $id_objet) {
+    public function __construct(Page $page,
+                                string $script_traitement,
+                                string $action,
+                                string $id_objet) {
       $this->def_page($page);
       $this->script_traitement = $script_traitement;
       $this->action = $action;
       $this->def_id($id_objet);
     }
   
-    public function definir_valeur_champs($valeurs) {
+    public function definir_valeur_champs($valeurs): void {
       foreach ($valeurs as $cle => $v) {
         $this->champs[$cle]->def_valeur($v);
       }
@@ -84,7 +87,7 @@
       if ($this->a_un_titre())
         echo '<div class="well well-sm"><p class="lead">' . $this->titre() . '</p></div>';
       echo "\n";
-      echo '<form class="form-horizontal rsbl-form" role="form" id="' . $this->id() . '" name="' . $this->id() . '" onsubmit="return verification_formulaire(this)"  method="' . $this->methode . '" action="' . $this->script_traitement . '">';
+      echo '<form class="rsbl-form" role="form" id="' . $this->id() . '" name="' . $this->id() . '" onsubmit="return verification_formulaire(this)"  method="' . $this->methode . '" action="' . $this->script_traitement . '">';
       echo '<input type="hidden" name="a" value="' . $this->action . '" />';
       //echo '<input type="hidden" name="id" value="' . $this->id() . '" />';
     }
@@ -97,7 +100,7 @@
       $this->afficher_bouton_validation();
     }
   
-    protected function generer_script_validation() {
+    protected function generer_script_validation(): string {
       $code = "\n<script>\nfunction verification_formulaire(f) {\n";
       // TODO  collecter les scripts des champs
       $condition = "  var saisie_ok = (";
@@ -130,9 +133,10 @@
     }
     
     protected function afficher_acquitement_saisie() {
-      echo '<div class="form-group"><div class="col-sm-offset-2 col-sm-10"><div class="checkbox"><label><input type="checkbox" name="remember" required>';
-      echo " J'ai vérifié les informations saisies dans ce formulaire, elles sont complètes.";
-      echo '</label></div></div></div>';
+      echo '<div class="form-check">';
+      echo '<input class="form-check-input" type="checkbox" name="acq_verif" required>';
+      echo "<label class=\"form-check-label\"> J'ai vérifié les informations saisies dans ce formulaire, elles sont complètes.</label>";
+       echo '</div>';
     }
     
     protected function afficher_bouton_validation() {

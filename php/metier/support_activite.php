@@ -3,7 +3,7 @@
   // contexte : Resabel - systeme de REServAtion de Bateau En Ligne
   // description : classes supportant les informations sur supports d'activite
   //               p. ex : yoles, plateaux d'ergos
-  // copyright (c) 2018-2023 AMP. Tous droits reserves.
+  // copyright (c) 2018-2024 AMP. Tous droits reserves.
   // --------------------------------------------------------------------------
   // utilisation : php - require_once <chemin_vers_ce_fichier.php>
   // dependances : 
@@ -15,6 +15,7 @@
   // creation : 09-jun-2019 pchevaillier@gmail.com
   // revision : 08-sep-2019 pchevaillier@gmail.com identite_texte()
   // revision : 29-dec-2022 pchevaillier@gmail.com MaJ suite tests unitaires
+// revision : 26-fev-2024 pchevaillier@gmail.com typage
   // --------------------------------------------------------------------------
   // commentaires :
   // -
@@ -45,22 +46,22 @@
     public $pour_competition = true; // pour l'instant pas de distinction au niveau des membres
     
     private $code = 0; // identifiant interne non modifiable
-    public function code() { return $this->code; }
-    public function def_code($valeur) { $this->code = $valeur;}
+    public function code(): int { return $this->code; }
+    public function def_code(int $valeur) { $this->code = $valeur;}
     
-    private $numero; // identifiant pour utilisateur
-    public function numero() { return $this->numero; }
-    public function def_numero($valeur) { $this->numero = $valeur;}
+    private $numero = ''; // identifiant pour utilisateur
+    public function numero(): string { return $this->numero; }
+    public function def_numero(?string $valeur) { $this->numero = $valeur;}
     
     private $nom = ""; // utf8
-    public function nom() { return $this->nom; }
-    public function def_nom($valeur) { $this->nom = $valeur; }
+    public function nom(): string { return $this->nom; }
+    public function def_nom(string $valeur): void { $this->nom = $valeur; }
     
     public $modele = "";
     public $constructeur = "";
     public $annee_construction = 2020;
     
-    public function __construct($code) { $this->code = $code; }
+    public function __construct(int $code) { $this->code = $code; }
     
     public function nom_type() {
         return (is_null($this->type)) ? "Type non défini" : $this->type->nom();
@@ -114,8 +115,8 @@
     public function def_code(int $valeur):void { $this->code = $valeur;}
     
     private $nom = ""; // utf8
-    public function nom() { return $this->nom; }
-    public function def_nom($valeur) { $this->nom = $valeur; }
+    public function nom(): string { return $this->nom; }
+    public function def_nom(string $valeur) { $this->nom = $valeur; }
     
     public function __construct(int $code) {
       $this->code = $code;

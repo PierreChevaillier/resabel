@@ -16,7 +16,7 @@
       // teste avec : PHP 7.1 sur Mac OS 10.14 ; PHP 7.0 sur hebergeur web
       // ----------------------------------------------------------------------
       // creation : 10-jun-2019 pchevaillier@gmail.com
-      // revision :
+      // revision : 30-acr-2024 pchevaillier@gmail.com
       // ----------------------------------------------------------------------
       // commentaires :
       //  - fontionnalité très similaire à la gestion des indisponibilites
@@ -44,13 +44,17 @@
       // --- Classe definissant la page a afficher
       require_once 'php/pages/page_indisponibilites.php';
 
+require_once 'php/bdd/enregistrement_indisponibilite.php';
+
       // ----------------------------------------------------------------------
       // --- Creation dynamique de la page
       $feuilles_style = array();
       $feuilles_style[] = "css/resabel_ecran.css";
       $nom_site = Site_Web::accede()->sigle() . " Resabel";
-      $page = new Page_Indisponibilites($nom_site, "Fermetures sites d'activité", $feuilles_style);
-      $page->code_type_indisponibilite = 2;
+      $page = new Page_Indisponibilites($nom_site,
+                                        "Fermetures sites d'activité",
+                                        Enregistrement_Indisponibilite::CODE_TYPE_INDISPO_SITE,
+                                        $feuilles_style);
       
       // --- Affichage de la page
       $page->initialiser();

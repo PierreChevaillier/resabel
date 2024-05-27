@@ -194,42 +194,6 @@
     }
   }
    
-  /* version avant dec-2019
-  class Instant {
-    private $valeur = 0;
-    
-    public function __construct($valeur) {
-      $this->definir($valeur);
-    }
-    
-    public function date() {
-      return $this->valeur;
-    }
-    
-    public function timestamp() { return $this->valeur; }
-    public function definir($valeur) {
-      $this->valeur = $valeur;
-    }
-    
-    public function dupliquer () {
-      return new Instant($this->valeur);
-    }
-   
-    public function est_egal($autre_instant) {
-      return $this->valeur == $autre_instant->valeur;
-    }
-    
-    public function est_avant($autre_instant) {
-      return $this->valeur < $autre_instant->valeur;
-    }
-    
-    public function est_apres($autre_instant) {
-      return $this->valeur > $autre_instant->valeur;
-    }
-    
-  }
-  
-   */
   // ---------------------------------------------------------------------------
   /* Version avant dec-2019
      class Intervalle_Temporel {

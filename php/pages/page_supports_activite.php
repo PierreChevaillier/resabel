@@ -65,7 +65,7 @@
     }
  
     public function initialiser() {
-      $supports = null;
+      $supports = array();
       $ordre_tri = "code_type_support, support.numero";
       
       if (!isset($_SESSION['adm']))

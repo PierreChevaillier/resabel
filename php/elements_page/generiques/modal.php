@@ -21,6 +21,9 @@
   // -
   // ==========================================================================
 
+// --- Classes utilisees
+require_once 'php/elements_page/generiques/element.php';
+
   // --------------------------------------------------------------------------
   class Element_Modal extends Element {
     public string $corps = '';
