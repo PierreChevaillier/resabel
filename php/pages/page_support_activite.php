@@ -82,18 +82,20 @@
           $support = $enregistrement->support_activite();
         else return;
       } elseif ($creation) {
+        $code_site = 0;
         if ($est_bateau) {
           $support = new Bateau($code_support);
           // ATTENTION : adhoc AMP POUR DEBUTER (1 seul site de chaque type)
           // TODO : a rendre plus generique
-          $support->site_base = new Site_Activite_Mer(1);
-          $support->pour_competition = false;
-          $support->pour_loisir = true;
+          $code_site = 1; // site par defaut pour les bateaux
+          $support->site_base = new Site_Activite_Mer($code_site);
         } elseif ($est_ergo) {
           $support = new Plateau_Ergo($code_support);
+          $code_site = 2; // site par defaut pour les ergos
           $support->site_base = new Salle_Sport(2);
         }
         // initialisations (proprietes communes aux differentes classes)
+        $support->actif = false;
         $support->pour_competition = false;
         $support->pour_loisir = true;
       }

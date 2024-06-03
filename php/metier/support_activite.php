@@ -25,7 +25,7 @@
   // -
   // ==========================================================================
 
-  
+
   // --------------------------------------------------------------------------
   class Support_Activite {
     //public static $code_type; // a voir...
@@ -97,8 +97,10 @@
     public function capacite(): ?int { return $this->nombre_postes; }
   }
   
+// ----------------------------------------------------------------------------
   class Type_Support_Activite {
     public $type_site = null; // Type de site auquel est destine ce type de support
+    
     public $nombre_personnes_min = null; // pour l'aviron: min = max
     public $nombre_personnes_max = null; // pour ergo, on ne met rien
     
