@@ -107,7 +107,7 @@ require_once 'php/metier/site_activite.php';
       $erreur = 1;
     }
     if (strlen($x) < 2 || strlen($x) > 20) $erreur = 2;
-    elseif (!preg_match("#^[a-zA-Zéèëçñì\ '-]+$#", $x)) $erreur = 3;
+    elseif (!preg_match("#^[a-zA-Z0-9éèëçñì\ '-]+$#", $x)) $erreur = 3;
     if ($erreur > 0) {
       $location = $location . "&r=" . $erreur . "&i=" . $iod . "&v=" . $x;
     }
@@ -127,7 +127,7 @@ require_once 'php/metier/site_activite.php';
       //include 'php/scripts/deconnexion.php';
       $erreur = 4;
     }
-    if (strlen($x) < 2)$erreur = 1;
+    if (strlen($x) < 2) $erreur = 1;
     elseif (strlen($x) > 6) $erreur = 2;
     elseif (!preg_match("#^[a-zA-Z0-9]+$#", $x)) $erreur = 3;
     if ($erreur > 0) {
@@ -179,7 +179,7 @@ if (isset($_POST[$iod])) {
   }
   
   // Controle de la valeur saisie pour le nom du constructreur du support
-  $iod = 'constr';
+  $iod = 'const';
   if ($erreur  == 0 && isset($_POST[$iod])) {
     $x = trim($_POST[$iod]);
     $nCar1 = strlen($x);
@@ -194,7 +194,7 @@ if (isset($_POST[$iod])) {
     if ($erreur > 0) {
       $location = $location . "&r=" . $erreur . "&i=" . $iod . "&v=" . $x;
     } else {
-      $support->modele = $x;
+      $support->constructeur = $x;
     }
   }
 
@@ -204,6 +204,11 @@ if (isset($_POST[$iod])) {
     $support->annee_construction = $_POST[$iod];
   }
   
+$iod = 'n_post';
+if (isset($_POST[$iod])) {
+  $support->nombre_postes = $_POST[$iod];
+}
+
   // champs checkbox
   // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/checkbox
   $iod = 'actif';

@@ -23,7 +23,7 @@
  * commentaires :
  * - En evolution : certains champs/attributs ne sont pas (encore) traites
  * attention :
- * - pas teset avec support de type Ergo
+ * - pas teste avec support de type Ergo
  * a faire :
  * -
  * ============================================================================
@@ -196,8 +196,8 @@ class Enregistrement_Support_Activite {
         $requete= $bdd->prepare($code_sql);
         
         // champs communs aux differentes sous-classes de Support_Actvite
-        
-        $requete->bindParam(':code', $support->code(), PDO::PARAM_INT);
+        $code = $support->code();
+        $requete->bindParam(':code', $code, PDO::PARAM_INT);
         $numero = $support->numero();
         $requete->bindParam(':numero', $numero, PDO::PARAM_STR);
         $nom = $support->nom();
@@ -219,11 +219,8 @@ class Enregistrement_Support_Activite {
         $requete->bindParam(':init_max', $support->nombre_initiation_max, PDO::PARAM_INT);
 
         // Champs (ou valeurs) specifiques
-        if (is_a($this->support_activite, 'Plateau_Ergo')) {
-          if (!is_null($this->support->nombre_postes))
-            $requete->bindParam(':nombre_postes', $support->nombre_postes, PDO::PARAM_INT);
-          else
-            $requete->bindParam(':nombre_postes', PDO::PARAM_NULL);
+        if (is_a($support, 'Plateau_Ergo')) {
+          $requete->bindParam(':nombre_postes', $support->nombre_postes, PDO::PARAM_INT);
         }
         
         $requete->execute();
@@ -261,7 +258,7 @@ class Enregistrement_Support_Activite {
         else
           $code_sql = "INSERT INTO " . self::source()
                       . " (numero, nom, code_type_support" // champs obligatoires
-                      . ", modele, constructeur, annee_construction, fichier_image"
+                      . ", modele, constructeur, annee_construction" // , fichier_image"
                       . ", actif, code_site_base" // champs obligatoires
                       . ", nombre_postes"
                       . ", competition, loisir" // champs obligatoires
@@ -295,21 +292,13 @@ class Enregistrement_Support_Activite {
         $requete->bindParam(':competition', $pour_competition, PDO::PARAM_INT);
         $pour_loisir = $support->est_pour_loisir() ? 1 : 0;
         $requete->bindParam(':loisir', $pour_loisir, PDO::PARAM_INT);
-        if (! is_null($support->nombre_initiation_min))
-          $requete->bindParam(':nb_initiation_min', $support->nombre_initiation_min, PDO::PARAM_INT);
-        else
-          $requete->bindParam(':nb_initiation_min', PDO::PARAM_NULL);
-        if (! is_null($support->nombre_initiation_max))
-          $requete->bindParam(':nb_initiation_max', $support->nombre_initiation_max, PDO::PARAM_INT);
-        else
-          $requete->bindParam(':nb_initiation_max', PDO::PARAM_NULL);
+        
+        $requete->bindParam(':nb_initiation_min', $support->nombre_initiation_min, PDO::PARAM_INT);
+        $requete->bindParam(':nb_initiation_max', $support->nombre_initiation_max, PDO::PARAM_INT);
         
         // Champs (ou valeurs) specifiques
         if (is_a($support, 'Plateau_Ergo')) {
-          if (!is_null($support->nombre_postes))
-            $requete->bindParam(':nombre_postes', $support->nombre_postes, PDO::PARAM_INT);
-          else
-            $requete->bindParam(':nombre_postes', PDO::PARAM_NULL);
+          $requete->bindParam(':nombre_postes', $support->nombre_postes, PDO::PARAM_INT);
         }
         
         $requete->execute();

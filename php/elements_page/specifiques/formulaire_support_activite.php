@@ -107,22 +107,35 @@ require_once 'php/bdd/enregistrement_site_activite.php';
           $item->options[$code] = $type_support->nom();
         $this->ajouter_champ($item);
         
-        $item = new Champ_Nom("nom", "js/controle_saisie_nom.js", "verif_nom");
+        if ($code_classe_support == Enregistrement_Support_Activite::CODE_TYPE_PLATEAU_ERGO) {
+          $item = new Champ_Entier_Naturel("n_post", "", "");
+          $item->def_titre("Nombre de postes");
+          $item->valeur_min = 0;
+          $this->ajouter_champ($item);
+        }
+        
+        $item = new Champ_Nom("nom", "", "");
         $item->def_titre("Nom");
+        $item->nb_car_min = 3;
+        $item->nb_car_max = 20;
         $item->def_obligatoire();
         $this->ajouter_champ($item);
         
         $item = new Champ_Nom("num", "js/controle_saisie_alphanum.js", "verif_alphanum");
         $item->def_titre("Numéro");
+        $item->nb_car_max = 6;
         $item->def_obligatoire();
         $this->ajouter_champ($item);
         
         $item = new Champ_Nom("mdl", "", "");
         $item->def_titre("Modèle");
+        $item->nb_car_min = 2;
+        $item->nb_car_max = 20;
         $this->ajouter_champ($item);
 
-        $item = new Champ_Nom("const", "js/controle_saisie_nom.js", "verif_nom");
+        $item = new Champ_Nom("const", "", "");
         $item->def_titre("Constructeur");
+        $item->nb_car_max = 20;
         $this->ajouter_champ($item);
 
         $item = new Champ_Entier_Naturel("aconst", "", "");
@@ -165,7 +178,10 @@ require_once 'php/bdd/enregistrement_site_activite.php';
         if (!is_null($this->support->type)) {
           $this->champ('type')->def_valeur($this->support->type->code());
         }
-        
+        if (is_a($this->support, 'Plateau_Ergo') && !is_null($this->support->nombre_postes)) {
+          $this->champ('n_post')->def_valeur($this->support->nombre_postes);
+        }
+          
         $this->champ('nom')->def_valeur($this->support->nom());
         $this->champ('num')->def_valeur($this->support->numero());
         $this->champ('mdl')->def_valeur($this->support->modele);

@@ -28,6 +28,7 @@
   // revision : 23-feb-2023 pchevaillier@gmail.com on_change pour Champ_Identifiant
 // revision : 31-jan-2024 pchevaillier@gmail.com bootstrap 5.x
 // revision : 13-mai-2024 pchevaillier@gmail.com Champ_Heure
+// revision : 04-jun-2024 pchevaillier@gmail.com *Champ_Nom
   // ------------------------------------------------------------------------
   // commentaires :
   // attention :
@@ -194,6 +195,9 @@
   
   // --------------------------------------------------------------------------
   class Champ_Nom extends Champ_Formulaire {
+    public int $nb_car_min = 0;
+    public int $nb_car_max = 0;
+    
     protected function afficher_corps () {
       $this->afficher_ouverture_commune();
       echo 'type="text" ';
@@ -202,6 +206,8 @@
       if (isset($_GET['i']) && ($_GET['i'] == $this->id()) && isset($_GET['v']))
           $this->def_valeur($_GET['v']);
       $affiche = ($this->valeur_definie())? 'value="' . $this->valeur() . '" ' : '';
+      $affiche = $affiche . (($this->nb_car_max > 0)? ' maxLength="' . $this->nb_car_max . '" ' : '');
+      $affiche = $affiche . (($this->nb_car_min > 0)? ' minLength="' . $this->nb_car_min . '" ' : '');
       echo $affiche . ' >';
       if (isset($_GET['r']) && isset($_GET['i']) && ($_GET['i'] == $this->id())) {
         $msg = "<p id=\"" . $this->id() . "_msg\" class=\"text-danger\">Erreur : ";

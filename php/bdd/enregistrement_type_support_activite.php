@@ -7,7 +7,7 @@
  * ----------------------------------------------------------------------------
  * utilisation : php require_once <chemin_vers_ce_fichier.php>
  * dependances :
- * - aucune
+ * - structure table dans base de donnees
  * utilise avec :
  *   PHP 8.2 sur macOS 13.x
  *   PHP 8.1 sur hebergeur web
@@ -50,7 +50,7 @@ class Enregistrement_Type_Support_Activite {
       }
       $ok = true;
     } catch (PDOException $e) {
-          Base_Donnees::sortir_sur_exception(self::source(), $e);
+      Base_Donnees::sortir_sur_exception(self::source(), $e);
     }
     return $ok;
   }

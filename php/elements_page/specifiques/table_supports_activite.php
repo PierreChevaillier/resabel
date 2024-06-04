@@ -64,18 +64,19 @@
   }
   
   // --------------------------------------------------------------------------
-  class Table_Supports_activite extends Table_Elements {
+class Table_Supports_activite extends Table_Elements {
+  
+  protected function afficher_corps() {
     
-    protected function afficher_corps() {
-      
-      if (!isset($this->elements)) return; // on ne sait jamais...
-      
-      echo '<tr><th style="text-align:center;">Numéro</th><th>Nom</th><th>Type</th><th>Usage</th><th>Service</th><th>Nb place</th>';
-      if (!is_null($this->menu_action))
-        echo '<th>&nbsp;</th>';
-      echo '</tr>';
-      
-      foreach ($this->elements as $item) {
+    if (!isset($this->elements)) return; // on ne sait jamais...
+    
+    echo '<tr><th style="text-align:center;">Numéro</th><th>Nom</th><th>Type</th><th>Usage</th><th>Service</th><th>Nb place</th>';
+    if (!is_null($this->menu_action))
+      echo '<th>&nbsp;</th>';
+    echo '</tr>';
+    
+    foreach ($this->elements as $item) {
+      if ($item->est_actif() || isset($_SESSION['adm'])) {
         echo '<tr>';
         //if (is_a($item, 'Bateau'))
            echo '<td style="text-align:center;">'. $item->numero() . '</td>';
@@ -100,11 +101,12 @@
         echo '</td></tr>';
       }
     }
-    
-    protected function afficher_fin() {
-      echo "</tbody></table></div>\n";
-    }
   }
   
-  // ==========================================================================
+  protected function afficher_fin() {
+    echo "</tbody></table></div>\n";
+  }
+}
+
+// ============================================================================
 ?>
