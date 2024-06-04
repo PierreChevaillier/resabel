@@ -38,24 +38,23 @@
         new Enregistrement_site_web($_SESSION['swb']);
 
       // --- Classe definissant la page a afficher
-      require_once 'php/elements_page/specifiques/page_menu.php';
+      require_once 'php/pages/page_accueil_club.php';
 
       // --- Classes des elements de la page
-      require_once 'php/elements_page/generiques/element.php';
-      require_once 'php/elements_page/generiques/entete_contenu_page.php';
-      require_once 'php/metier/calendrier.php';
       
       // ----------------------------------------------------------------------
       // --- Creation dynamique de la page
       $feuilles_style = array();
       $feuilles_style[] = "css/resabel_ecran.css";
       $nom_site = Site_Web::accede()->sigle() . " Resabel";
-      $page = new Page_Menu($nom_site, "accueil - club", $feuilles_style);
+      $page = new Page_Accueil_Club($nom_site, "accueil - club", $feuilles_style);
       
+/*
       $element = new Entete_Contenu_Page();
       $element->def_titre("Session club " . $_SESSION['n_clb']);
       $page->ajoute_element_haut($element);
-      
+  */
+/*
       // --- Contenu temporaire
       $info = new Element_Code();
       $code_html = '<div>' . PHP_EOL;
@@ -76,7 +75,8 @@
       $code_html = $code_html . '</div>' . PHP_EOL;
       $doc->def_code($code_html);
       $page->ajoute_contenu($doc);
-      
+      */
+
       // --- Affichage de la page
       $page->initialiser();
       $page->afficher();
