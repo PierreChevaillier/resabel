@@ -3,7 +3,7 @@
   // contexte : Resabel - systeme de REServAtion de Bateau En Ligne
   // description : verification et mise a jour des informations
   //               sur un support d'activite
-  // copyright (c) 2018-2020 AMP. Tous droits reserves.
+  // copyright (c) 2018-2024 AMP. Tous droits reserves.
   // --------------------------------------------------------------------------
   // utilisation : php - require_once <chemin_vers_ce_fichier.php>
   // dependances : formulaire_support_activite.php (ids des champs du formulaire)
@@ -11,7 +11,7 @@
   //              PHP 7.0 sur hebergeur web
   // --------------------------------------------------------------------------
   // creation : 31-aug-2020 pchevaillier@gmail.com cf. membre_info_obtenir.php
-  // revision :
+// revision : 03-jun-2024 pchevaillier@gmail.com + type_support
   // --------------------------------------------------------------------------
   // commentaires :
   // - voir membre_info_obtenir.php pour les expressions reguliere
@@ -42,6 +42,7 @@
     
   require_once 'php/bdd/enregistrement_support_activite.php';
   require_once 'php/metier/support_activite.php';
+require_once 'php/metier/site_activite.php';
   
   $ok = true; // controle erreurs fatales pour enregistrement
   
@@ -92,10 +93,10 @@
   //     et verification des valeurs saisies
   
   $erreur = 0;
+
   // Controle de la valeur saisie pour le nom (saisie obligatoire)
   $iod = 'nom';
   if ($erreur == 0 && isset($_POST[$iod])) {
-    //$x = trim(utf8_decode($_POST[$iod]));
     $x = trim($_POST[$iod]);
     $nCar1 = strlen($x);
     $x = strip_tags($x);
@@ -106,7 +107,7 @@
       $erreur = 1;
     }
     if (strlen($x) < 2 || strlen($x) > 20) $erreur = 2;
-    elseif (!preg_match("#^[a-zA-Zéèëçñì\ '-]+$#", $x)) $erreur = 3;
+    elseif (!preg_match("#^[a-zA-Z0-9éèëçñì\ '-]+$#", $x)) $erreur = 3;
     if ($erreur > 0) {
       $location = $location . "&r=" . $erreur . "&i=" . $iod . "&v=" . $x;
     }
@@ -126,7 +127,7 @@
       //include 'php/scripts/deconnexion.php';
       $erreur = 4;
     }
-    if (strlen($x) < 2)$erreur = 1;
+    if (strlen($x) < 2) $erreur = 1;
     elseif (strlen($x) > 6) $erreur = 2;
     elseif (!preg_match("#^[a-zA-Z0-9]+$#", $x)) $erreur = 3;
     if ($erreur > 0) {
@@ -140,12 +141,18 @@
   
   
   // Controle de la valeur saisie pour le code du type de support
-  $iod = 'ts';
+  $iod = 'type';
   if (isset($_POST[$iod])) {
     $code_type_support = $_POST[$iod];
-    $support->type = new Type_Support_Activite($code_type_support);
+    $support->def_type(new Type_Support_Activite($code_type_support));
   }
   
+$iod = 'site';
+if (isset($_POST[$iod])) {
+  $code_site = $_POST[$iod];
+  $support->site_base = new Site_Activite($code_site);
+}
+
   // Pour l'instant les autres champs ont les valeurs par defaut
   // definies dans les classes Support_Activite et derivees
   
@@ -172,7 +179,7 @@
   }
   
   // Controle de la valeur saisie pour le nom du constructreur du support
-  $iod = 'constr';
+  $iod = 'const';
   if ($erreur  == 0 && isset($_POST[$iod])) {
     $x = trim($_POST[$iod]);
     $nCar1 = strlen($x);
@@ -187,7 +194,7 @@
     if ($erreur > 0) {
       $location = $location . "&r=" . $erreur . "&i=" . $iod . "&v=" . $x;
     } else {
-      $support->modele = $x;
+      $support->constructeur = $x;
     }
   }
 
@@ -197,6 +204,11 @@
     $support->annee_construction = $_POST[$iod];
   }
   
+$iod = 'n_post';
+if (isset($_POST[$iod])) {
+  $support->nombre_postes = $_POST[$iod];
+}
+
   // champs checkbox
   // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/checkbox
   $iod = 'actif';

@@ -2,7 +2,7 @@
   // ==========================================================================
   // contexte : Resabel - systeme de REServAtion de Bateau En Ligne
   // description : Affichage des seances d'activite, par support et par creneau horaire
-  // copyright (c) 2018-2020 AMP. Tous droits reserves.
+  // copyright (c) 2018-2024 AMP. Tous droits reserves.
   // --------------------------------------------------------------------------
   // utilisation : php - require_once <chemin_vers_ce_fichier.php>
   // dependances : bootstrap 4.x, resabel_ecran.css
@@ -11,6 +11,7 @@
   // --------------------------------------------------------------------------
   // creation : 15-jun-2019 pchevaillier@gmail.com
   // revision : 22-jan-2020 pchevaillier@gmail.com fermeture site et indispo supports
+// revision : 31-may-2024 pchevaillier@gmail.com + affichage compet ou loisir (ou rien)
   // --------------------------------------------------------------------------
   // commentaires :
   // - en evolution
@@ -90,7 +91,7 @@
           elseif ($support->est_pour_loisir()) $sous_classe = 'loisir';
           echo '<td class="cel_bateau ' . $sous_classe . '">';
           echo '<div class="row h-100 justify-content-center align-items-center">';
-          echo '<div class="num_bateau">'. $support->numero() . '</div><div class="nom_bateau">' .  $support->nom() . '</div>';
+          echo '<div class="num_bateau">'. $support->numero() . '</div><div class="nom_bateau">' .  $support->nom() . ' ' . $sous_classe . '</div>';
           echo '</div>';
           echo '</td>';
         } elseif (is_a($support, 'Plateau_Ergo'))  {

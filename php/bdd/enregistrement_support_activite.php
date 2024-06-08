@@ -9,7 +9,7 @@
  * dependances : cf. require_once + classe Base_Donnees + structure table
  *               code_type pour instantiation objet
  *               de la bonne sous-classe de Support_Activite
-* utilise avec :
+ * utilise avec :
  * - depuis 2023 :
  *   PHP 8.2 sur macOS 13.x
  *   PHP 8.1 sur hebergeur web
@@ -18,11 +18,12 @@
  * revision : 11-jan-2020 pchevaillier@gmail.com champs loisir, competition
  * revision : 23-jan-2020 pchevaillier@gmail.com champs nb_pers (type support)
  * revision : 28-jan-2024 pchevaillier@gmail.com coherence lire, ajouter, collecter
+ * revision : 03-jun-2024 pchevaillier@gmail.com *modifier, *ajouter
  * ----------------------------------------------------------------------------
  * commentaires :
  * - En evolution : certains champs/attributs ne sont pas (encore) traites
  * attention :
- * -
+ * - pas teste avec support de type Ergo
  * a faire :
  * -
  * ============================================================================
@@ -55,7 +56,7 @@ class Enregistrement_Support_Activite {
         $bdd = Base_Donnees::acces();
         $prefix = Base_Donnees::$prefix_table;
         $source = self::source() . ' AS support'
-          . ' INNER JOIN ' . $prefix . 'types_support AS type_support ON (support.code_type_support = type.code)';
+          . ' INNER JOIN ' . $prefix . 'types_support AS type_support ON (support.code_type_support = type_support.code)';
         $code_sql = 'SELECT support.code, numero, support.nom AS nom, type_support.nom_court AS nom_type, type_support.code_type AS code_type FROM ' . $source
           . ' WHERE support.code = :code_support_activite LIMIT 1';
         
@@ -159,28 +160,57 @@ class Enregistrement_Support_Activite {
       try {
         $bdd = Base_Donnees::acces();
         $support = $this->support_activite();
-        $requete= $bdd->prepare("UPDATE " . self::source()
-                                          . " SET numero = :numero"
-                                          . ", nom = :nom"
-                                          . ", modele = :modele"
-                                          . ", constructeur = :constructeur"
-                                          . ", annee_construction = :annee_constr"
-                                          . ", actif = :actif"
-                                          . ", competition = :compet"
-                                          . ", loisir = :loisir"
-                                          . ", nb_initiation_min = :init_min"
-                                          . ", nb_initiation_max = :init_max"
-                                          . " WHERE code = :code");
-        $requete->bindParam(':code', $support->code(), PDO::PARAM_INT);
+        $code_sql = "";
+        if (is_a($this->support_activite, 'Bateau'))
+          $code_sql = "UPDATE " . self::source()
+          . " SET numero = :numero"
+          . ", nom = :nom"
+          . ", code_type_support = :code_type"
+          . ", modele = :modele"
+          . ", constructeur = :constructeur"
+          . ", annee_construction = :annee_constr"
+          . ", actif = :actif"
+          . ", code_site_base = :code_site"
+          . ", competition = :compet"
+          . ", loisir = :loisir"
+          . ", nb_initiation_min = :init_min"
+          . ", nb_initiation_max = :init_max"
+          . " WHERE code = :code";
+        else
+          $code_sql = "UPDATE " . self::source()
+          . " SET numero = :numero"
+          . ", nom = :nom"
+          . ", code_type_support = :code_type"
+          . ", modele = :modele"
+          . ", constructeur = :constructeur"
+          . ", annee_construction = :annee_constr"
+          . ", actif = :actif"
+          . ", code_site_base = :code_site"
+          . ", nombre_postes = :nombre_postes"
+          . ", competition = :compet"
+          . ", loisir = :loisir"
+          . ", nb_initiation_min = :init_min"
+          . ", nb_initiation_max = :init_max"
+          . " WHERE code = :code";
+        
+        $requete= $bdd->prepare($code_sql);
+        
+        // champs communs aux differentes sous-classes de Support_Actvite
+        $code = $support->code();
+        $requete->bindParam(':code', $code, PDO::PARAM_INT);
         $numero = $support->numero();
         $requete->bindParam(':numero', $numero, PDO::PARAM_STR);
         $nom = $support->nom();
         $requete->bindParam(':nom', $nom, PDO::PARAM_STR);
+        $code_type = $support->type->code();
+        $requete->bindParam(':code_type', $code_type, PDO::PARAM_INT);
         $requete->bindParam(':modele', $support->modele, PDO::PARAM_STR);
         $requete->bindParam(':constructeur', $support->constructeur, PDO::PARAM_STR);
         $requete->bindParam(':annee_constr', $support->annee_construction, PDO::PARAM_INT);
         $actif = $support->est_actif() ? 1: 0;
         $requete->bindParam(':actif', $actif, PDO::PARAM_INT);
+        $code_site = $support->site_base->code();
+        $requete->bindParam(':code_site', $code_site, PDO::PARAM_INT);
         $compet = $support->est_pour_competition() ? 1: 0;
         $requete->bindParam(':compet', $compet, PDO::PARAM_INT);
         $loisir = $support->est_pour_loisir() ? 1: 0;
@@ -188,6 +218,11 @@ class Enregistrement_Support_Activite {
         $requete->bindParam(':init_min', $support->nombre_initiation_min, PDO::PARAM_INT);
         $requete->bindParam(':init_max', $support->nombre_initiation_max, PDO::PARAM_INT);
 
+        // Champs (ou valeurs) specifiques
+        if (is_a($support, 'Plateau_Ergo')) {
+          $requete->bindParam(':nombre_postes', $support->nombre_postes, PDO::PARAM_INT);
+        }
+        
         $requete->execute();
         $status = true;
       } catch (PDOexception $e) {
@@ -200,85 +235,86 @@ class Enregistrement_Support_Activite {
     public function ajouter(): bool {
       $status = false;
       $nouveau_code = 0;
+      $support = $this->support_activite();
+      
       try {
         $bdd = Base_Donnees::acces();
         $bdd->beginTransaction();
         $code_sql = "";
-        if (is_a($this->support_activite, 'Bateau'))
+        if (is_a($support, 'Bateau'))
           $code_sql = "INSERT INTO " . self::source()
                       . " (numero, nom, code_type_support" // champs obligatoires
-//                      . ", modele, constructeur, annee_construction, fichier_image"
+                      . ", modele, constructeur, annee_construction" //, fichier_image"
                       . ", actif, code_site_base" // champs obligatoires
                       . ", competition, loisir" // champs obligatoires
- //                     . ", nb_initiation_min, nb_initiation_max"
+                      . ", nb_initiation_min, nb_initiation_max"
                       . ") VALUES"
                       . " (:numero, :nom, :code_type_support"
- //                     . ", :modele, :constructeur, :annee_construction, :fichier_image"
+                      . ", :modele, :constructeur, :annee_constr" //, :fichier_image"
                       . ", :actif, :code_site_base"
                       . ", :competition, :loisir"
- //                     . ", :nb_initiation_min, nb_initiation_max"
+                      . ", :nb_initiation_min, :nb_initiation_max"
                       . " )";
         else
           $code_sql = "INSERT INTO " . self::source()
                       . " (numero, nom, code_type_support" // champs obligatoires
-                      . ", modele, constructeur, annee_construction, fichier_image"
+                      . ", modele, constructeur, annee_construction" // , fichier_image"
                       . ", actif, code_site_base" // champs obligatoires
                       . ", nombre_postes"
                       . ", competition, loisir" // champs obligatoires
                       . ", nb_initiation_min, nb_initiation_max"
                       . ") VALUES"
                       . " (:numero, :nom, :code_type_support"
-                      . ", :modele, :constructeur, :annee_construction, :fichier_image"
+                      . ", :modele, :constructeur, :annee_constr" //, :fichier_image"
                       . ", :actif, :code_site_base"
                       . ", :nombre_postes"
                       . ", :competition, :loisir"
-                      . ", :nb_initiation_min, nb_initiation_max"
+                      . ", :nb_initiation_min, :nb_initiation_max"
                       . " )";
 
         $requete= $bdd->prepare($code_sql);
-        // champs communs aux differentes sous-classes de Support_Actvite
-        $requete->bindParam(':numero', $this->support_activite->numero(), PDO::PARAM_STR);
-        $requete->bindParam(':nom', $this->support_activite->nom(), PDO::PARAM_STR);
-        $code_type_support = $this->support_activite->type->code();
-        $requete->bindParam(':code_type_support', $code_type_support, PDO::PARAM_INT);
-        $actif = $this->support_activite->est_actif() ? 1 : 0;
-        $requete->bindParam(':actif', $actif, PDO::PARAM_INT);
-        $pour_competition = $this->support_activite->est_pour_competition() ? 1 : 0;
-        $requete->bindParam(':competition', $pour_competition, PDO::PARAM_INT);
-        $pour_loisir = $this->support_activite->est_pour_loisir() ? 1 : 0;
-        $requete->bindParam(':loisir', $pour_loisir, PDO::PARAM_INT);
-        $requete->bindParam(':nb_initiation_min', $this->support_activite->npmbre_initiation_min, PDO::PARAM_INT);
-        $requete->bindParam(':nb_initiation_max', $this->support_activite->npmbre_initiation_max, PDO::PARAM_INT);
-
-        $code_site_base = 0;
         
-        /*
-        if (is_a($this->support_activite, 'Bateau')) {
-          // Champs (ou valeurs) specifiques aux bateaux
-          $code_site_base = 1;
-        } else {
-          $code_site_base = 2;
-          // Champs specifiques aux Plateau_Ergo (pour l'instant que 2 sous-classes)
+        // champs communs aux differentes sous-classes de Support_Actvite
+        $numero = $support->numero();
+        $requete->bindParam(':numero', $numero, PDO::PARAM_STR);
+        $nom = $support->nom();
+        $requete->bindParam(':nom', $nom, PDO::PARAM_STR);
+        $code_type_support = $support->type->code();
+        $requete->bindParam(':code_type_support', $code_type_support, PDO::PARAM_INT);
+        $requete->bindParam(':modele', $support->modele, PDO::PARAM_STR);
+        $requete->bindParam(':constructeur', $support->constructeur, PDO::PARAM_STR);
+        $requete->bindParam(':annee_constr', $support->annee_construction, PDO::PARAM_INT);
+        $actif = $support->est_actif() ? 1 : 0;
+        $requete->bindParam(':actif', $actif, PDO::PARAM_INT);
+        $code_site = $support->site_base->code();
+        $requete->bindParam(':code_site_base', $code_site, PDO::PARAM_INT);
+        $pour_competition = $support->est_pour_competition() ? 1 : 0;
+        $requete->bindParam(':competition', $pour_competition, PDO::PARAM_INT);
+        $pour_loisir = $support->est_pour_loisir() ? 1 : 0;
+        $requete->bindParam(':loisir', $pour_loisir, PDO::PARAM_INT);
+        
+        $requete->bindParam(':nb_initiation_min', $support->nombre_initiation_min, PDO::PARAM_INT);
+        $requete->bindParam(':nb_initiation_max', $support->nombre_initiation_max, PDO::PARAM_INT);
+        
+        // Champs (ou valeurs) specifiques
+        if (is_a($support, 'Plateau_Ergo')) {
+          $requete->bindParam(':nombre_postes', $support->nombre_postes, PDO::PARAM_INT);
         }
-        */
-        $requete->bindParam(':code_site_base', $this->support_activite->site_base, PDO::PARAM_INT);
         
         $requete->execute();
+        
         // Recuperation du code du support qui vient d'etre cree
         // champ AUTO_INCREMENT qui est la cle primaire de la table
         $nouveau_code = $bdd->lastInsertId(); // doit etre dans la transaction (avant le commit)
         //echo "LastInsertedId: " .  $nouveau_code;
-        $this->support_activite->def_code($nouveau_code);
-        /*
-        $requete_code = $bdd->prepare("SELECT MAX(code) AS code FROM ". self::source());
-        $resultat = $requete_code->fetch(PDO::FETCH_OBJ))
-        $this->support_activite->def_code($resultat->code); // on va eventuellement a la faute car dans bloc try - catch
-         */
+        $support->def_code($nouveau_code);
         $bdd->commit();
         $status = true;
       } catch (PDOexception $e) {
         $bdd->rollBack();
-        die("Erreur ajout enregistrement dans " . self::source() . " pour code " . $code . " : ligne " . $e->getLine() . " :<br /> ". $e->getMessage());
+        die("Erreur ajout enregistrement dans " . self::source()
+            . " : ligne " . $e->getLine()
+            . " :<br /> ". $e->getMessage());
         //Base_Donnees::sortir_sur_exception(self::source(), $e);
       }
       

@@ -2,7 +2,7 @@
   // ==========================================================================
   // contexte : Resabel - systeme de REServAtion de Bateau En Ligne
   // description : Affichage des supports d'activite
-  // copyright (c) 2018-2020 AMP. Tous droits reserves.
+  // copyright (c) 2018-2024 AMP. Tous droits reserves.
   // --------------------------------------------------------------------------
   // utilisation : php - require_once <chemin_vers_ce_fichier.php>
   // dependances : bootstrap 4.x
@@ -10,7 +10,7 @@
   //              PHP 7.0 sur hebergeur web
   // --------------------------------------------------------------------------
   // creation : 28-aug-2020 pchevaillier@gmail.com
-  // revision :
+  // revision : 31-may-2024 pchevaillier@gmail.com + affichages usage et actif
   // --------------------------------------------------------------------------
   // commentaires :
   // attention :
@@ -64,18 +64,19 @@
   }
   
   // --------------------------------------------------------------------------
-  class Table_Supports_activite extends Table_Elements {
+class Table_Supports_activite extends Table_Elements {
+  
+  protected function afficher_corps() {
     
-    protected function afficher_corps() {
-      
-      if (!isset($this->elements)) return; // on ne sait jamais...
-      
-      echo '<tr><th style="text-align:center;">Numéro</th><th>Nom</th><th>Type</th><th>Nb place</th>';
-      if (!is_null($this->menu_action))
-        echo '<th>&nbsp;</th>';
-      echo '</tr>';
-      
-      foreach ($this->elements as $item) {
+    if (!isset($this->elements)) return; // on ne sait jamais...
+    
+    echo '<tr><th style="text-align:center;">Numéro</th><th>Nom</th><th>Type</th><th>Usage</th><th>Service</th><th>Nb place</th>';
+    if (!is_null($this->menu_action))
+      echo '<th>&nbsp;</th>';
+    echo '</tr>';
+    
+    foreach ($this->elements as $item) {
+      if ($item->est_actif() || isset($_SESSION['adm'])) {
         echo '<tr>';
         //if (is_a($item, 'Bateau'))
            echo '<td style="text-align:center;">'. $item->numero() . '</td>';
@@ -84,17 +85,28 @@
         echo '<td>'. $item->nom() . '</td>';
         echo '<td>'. $item->type->nom() . '</td>';
 
+        $usage = '';
+        if ($item->est_pour_competition()) $usage = 'compet';
+        elseif ($item->est_pour_loisir()) $usage = 'loisir';
+        echo '<td>' . $usage . '</td>';
+        
+        $service = '';
+        if ($item->est_actif()) $service = 'actif';
+        else $service = 'désarmé';
+        
+        echo '<td>' . $service. '</td>';
         echo '<td>' . $item->capacite() . '</td>';
         echo '<td>';
         $this->afficher_menu_actions($item);
         echo '</td></tr>';
       }
     }
-    
-    protected function afficher_fin() {
-      echo "</tbody></table></div>\n";
-    }
   }
   
-  // ==========================================================================
+  protected function afficher_fin() {
+    echo "</tbody></table></div>\n";
+  }
+}
+
+// ============================================================================
 ?>

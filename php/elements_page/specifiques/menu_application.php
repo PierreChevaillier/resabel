@@ -69,7 +69,7 @@
         echo '<li><a class="dropdown-item" href="sites_activite.php">Sites d\'activité</a></li>';
       }
       echo '<li><a class="dropdown-item" href="fermetures_sites.php">Fermetures sites</a></li>';
-      echo '<li><a class="dropdown-item" href="club.php">Info club</a></li>';
+      //echo '<li><a class="dropdown-item" href="club.php">Info club</a></li>';
       echo '<li><a class="dropdown-item" href="composantes.php">Composantes club</a></li>';
       echo '</ul></li>';
     }
