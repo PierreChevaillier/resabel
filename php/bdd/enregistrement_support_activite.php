@@ -9,7 +9,7 @@
  * dependances : cf. require_once + classe Base_Donnees + structure table
  *               code_type pour instantiation objet
  *               de la bonne sous-classe de Support_Activite
-* utilise avec :
+ * utilise avec :
  * - depuis 2023 :
  *   PHP 8.2 sur macOS 13.x
  *   PHP 8.1 sur hebergeur web
@@ -56,7 +56,7 @@ class Enregistrement_Support_Activite {
         $bdd = Base_Donnees::acces();
         $prefix = Base_Donnees::$prefix_table;
         $source = self::source() . ' AS support'
-          . ' INNER JOIN ' . $prefix . 'types_support AS type_support ON (support.code_type_support = type.code)';
+          . ' INNER JOIN ' . $prefix . 'types_support AS type_support ON (support.code_type_support = type_support.code)';
         $code_sql = 'SELECT support.code, numero, support.nom AS nom, type_support.nom_court AS nom_type, type_support.code_type AS code_type FROM ' . $source
           . ' WHERE support.code = :code_support_activite LIMIT 1';
         

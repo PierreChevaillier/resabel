@@ -2,7 +2,7 @@
   // ==========================================================================
   // contexte : Resabel - systeme de REServAtion de Bateau En Ligne
   // description : menu de navigation dans l'application
-  // copyright (c) 2018-2023 AMP. Tous droits reserves.
+  // copyright (c) 2018-2024 AMP. Tous droits reserves.
   // --------------------------------------------------------------------------
   // utilisation : php - require_once <chemin_vers_ce_fichier.php>
   // dependances : bootstrap
@@ -13,9 +13,10 @@
   // revision : 16-dec-2018 pchevaillier@gmail.com sigle site web et home page
   // revision : 02-mar-2019 pchevaillier@gmail.com erreur toggle Menu
   // revision : 17-mar-2023 pchevaillier@gmail.com bootstrap v5.3
+// revision : 04-jun-2024 pchevaillier@gmail.com couleur
   // --------------------------------------------------------------------------
   // commentaires :
-  // - pres a recevoir le contenu du module
+  // -
   // attention :
   // -
   // a faire :
@@ -36,8 +37,9 @@
     
     protected function afficher_debut() {
       $html_id = (strlen($this->id()) > 0) ? " id=\"" . $this->id() . "\" " : " ";
-      echo '<nav class="navbar navbar-expand-lg"' . $html_id . 'role="navigation">';
       echo '<div class="container-fluid">';
+      echo '<nav class="navbar navbar-expand-lg navbar-dark bg-primary"' . $html_id . 'role="navigation">';
+     
       
       // Lien vers le site web du club
       echo '<a class="navbar-brand" href="' . htmlspecialchars(Site_Web::accede()->adresse_racine()) . '" target="_new">'
@@ -54,7 +56,7 @@
     }
     
     protected function afficher_fin() {
-      echo '</ul></div></div></nav>';
+      echo '</ul></div></nav></div>';
     }
     
   }
