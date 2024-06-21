@@ -12,6 +12,8 @@
   // creation : 15-jun-2019 pchevaillier@gmail.com
   // revision : 22-jan-2020 pchevaillier@gmail.com fermeture site et indispo supports
 // revision : 31-may-2024 pchevaillier@gmail.com + affichage compet ou loisir (ou rien)
+// revision : 21-jun-2024 pchevaillier@gmail.com * affichage selon contexte
+//            issue: https://github.com/PierreChevaillier/resabel/issues/14#issue-2366996625
   // --------------------------------------------------------------------------
   // commentaires :
   // - en evolution
@@ -84,41 +86,48 @@
       
       if (!isset($this->activite_site->site->supports_activite)) return; // on ne sait jamais...
       foreach ($this->activite_site->site->supports_activite as $code => $support) {
-        echo '<tr>';
-        if (is_a($support, 'Bateau')) {
-          $sous_classe = '';
-          if ($support->est_pour_competition()) $sous_classe = 'compet';
-          elseif ($support->est_pour_loisir()) $sous_classe = 'loisir';
-          echo '<td class="cel_bateau ' . $sous_classe . '">';
-          echo '<div class="row h-100 justify-content-center align-items-center">';
-          echo '<div class="num_bateau">'. $support->numero() . '</div><div class="nom_bateau">' .  $support->nom() . ' ' . $sous_classe . '</div>';
-          echo '</div>';
-          echo '</td>';
-        } elseif (is_a($support, 'Plateau_Ergo'))  {
-          echo '<td>' . $support->nom() . '</td>';
+        $affiche = true;
+        $action = $this->page->contexte_action()->code_action();
+        if ($action == 'l') {
+          $affiche = array_key_exists($code, $this->activite_site->seances_support);
         }
-        foreach ($this->activite_site->creneaux_activite as $i => $creneau) {
-          $classe = '';
-          $code_html = '';
-          if ($this->activite_site->site_ferme_creneau($creneau->debut(), $creneau->fin()) || $this->activite_site->support_indisponible_creneau($support, $creneau->debut(), $creneau->fin()))
-            $classe = 'indispo';
-          
-          $seance = $this->activite_site->seance_programmee($code, $i);
-          if (is_null($seance)) {
-            $seance = new Seance_Activite();
-            $seance->support = $support;
-            $seance->site = $this->activite_site->site;
-            $seance->definir_horaire($creneau->debut(), $creneau->fin());
+        if ($affiche) {
+          echo '<tr>';
+          if (is_a($support, 'Bateau')) {
+            $sous_classe = '';
+            if ($support->est_pour_competition()) $sous_classe = 'compet';
+            elseif ($support->est_pour_loisir()) $sous_classe = 'loisir';
+            echo '<td class="cel_bateau ' . $sous_classe . '">';
+            echo '<div class="row h-100 justify-content-center align-items-center">';
+            echo '<div class="num_bateau">'. $support->numero() . '</div><div class="nom_bateau">' .  $support->nom() . ' ' . $sous_classe . '</div>';
+            echo '</div>';
+            echo '</td>';
+          } elseif (is_a($support, 'Plateau_Ergo'))  {
+            echo '<td>' . $support->nom() . '</td>';
           }
-          $id = $seance->support->code() . '_' . $seance->debut()->date_heure_sql();
-          $classe = $classe . ' cel_seance';
-          $classe = trim($classe); 
-          echo '<td id="', $id, '" class="', $classe, '" style="padding:1px;text-align:center;">';
-          
-          $this->afficher_seance($seance, $i);
-          echo '</td>';
+          foreach ($this->activite_site->creneaux_activite as $i => $creneau) {
+            $classe = '';
+            $code_html = '';
+            if ($this->activite_site->site_ferme_creneau($creneau->debut(), $creneau->fin()) || $this->activite_site->support_indisponible_creneau($support, $creneau->debut(), $creneau->fin()))
+              $classe = 'indispo';
+            
+            $seance = $this->activite_site->seance_programmee($code, $i);
+            if (is_null($seance)) {
+              $seance = new Seance_Activite();
+              $seance->support = $support;
+              $seance->site = $this->activite_site->site;
+              $seance->definir_horaire($creneau->debut(), $creneau->fin());
+            }
+            $id = $seance->support->code() . '_' . $seance->debut()->date_heure_sql();
+            $classe = $classe . ' cel_seance';
+            $classe = trim($classe);
+            echo '<td id="', $id, '" class="', $classe, '" style="padding:1px;text-align:center;">';
+            
+            $this->afficher_seance($seance, $i);
+            echo '</td>';
+          }
+          echo '</tr>';
         }
-        echo '</tr>';
       }
     }
     
