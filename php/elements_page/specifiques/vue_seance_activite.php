@@ -5,11 +5,14 @@
   //               Seance_activite
   //               generation du code html pour affichage des informations
   //               sur une seance d'activite
-  // copyright (c) 2018-2023 AMP. Tous droits reserves.
+  // copyright (c) 2018-2024 AMP. Tous droits reserves.
   // --------------------------------------------------------------------------
   // utilisation : php - require_once <chemin_vers_ce_fichier.php>
-  // dependances : bootstratp 4.x
-  //  - actions_seance_activite.js
+// dependances :
+//  - bootstrap 5.3
+//  - valeur variables $_SESSION
+//  - code actions
+//  - actions_seance_activite.js
   // teste avec : PHP 7.1 sur Mac OS 10.14 ;
   //              PHP 7.0 sur hebergeur web
   //  - PHP 8.2 sur macOS 13.1 (> 25-dec-2022)
@@ -18,6 +21,7 @@
   // revision : 25-aug-2020 pchevaillier@gmail.com contexte actions + des actions
   // revision : 29-dec-2022 pchevaillier@gmail.com fix erreur 8.2 : utf8_encode deprecated
   // revision : 17-feb-2023 pchevaillier@gmail.com + changement horaire
+// revision: 04-jul-2024 pchevaillier@gmail.com + affichage photo support activite
   // --------------------------------------------------------------------------
   // commentaires :
   // - en evolution
@@ -620,8 +624,9 @@
       $aff_tel = new Afficheur_Telephone();
       $aff_mail = new Afficheur_Courriel_Actif();
       
-      $entete = $seance->site->nom() . ", le " . $seance->debut()->date_texte_court()
-      . " de " . $seance->debut()->heure_texte() . " à " . $seance->fin()->heure_texte();
+      $entete =  $seance->debut()->date_texte_court()
+        . " " . $seance->debut()->heure_texte() . " - " . $seance->fin()->heure_texte()
+        . "<br />" . $seance->site->nom();
       $sujet = "Sortie du " . $seance->debut()->date_texte()
              . " à " . $seance->debut()->heure_texte();
       $info_support = " sur " . $seance->support->nom();
@@ -630,6 +635,10 @@
       $sujet = $sujet . " " . $info_support;
       $sujet = $sujet . " - " . $seance->site->nom();
       $entete = $entete . $info_support;
+      if (strlen($seance->support->nom_fichier_image()) > 0) {
+          $chemin_fichier_image = '../photos/supports_activite/' . $seance->support->nom_fichier_image();
+          $entete  = $entete . '<img src="' . $chemin_fichier_image . '" alt="' . $seance->support->nom_fichier_image() . '" width=256>';
+        }
       foreach ($seance->inscriptions as $participation) {
         $p = $participation->participant;
         $details = $details . $p->prenom() . " " . $p->nom();
@@ -638,7 +647,8 @@
         $details = $details . " " . $aff_mail->formatter("Je te contacte ", $sujet);
         $details = $details . "<br />";
       }
-      $details = htmlspecialchars($details); // indispensable car il y a des " dans $details
+      $entete = htmlspecialchars($entete); // indispensable car il y a des " dans $entete
+      $details = htmlspecialchars($details); // idem pour $details
       $modal_id = "aff_act";
       $menu = $menu . '<a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#' . $this->id_dialogue_action . '" onclick="return afficher_info_seance(\'' . $this->id_dialogue_action . '\', \''
           . $entete . '\', \'' . $details . '\');">Afficher informations</a>';

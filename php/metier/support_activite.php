@@ -16,6 +16,7 @@
   // revision : 08-sep-2019 pchevaillier@gmail.com identite_texte()
   // revision : 29-dec-2022 pchevaillier@gmail.com MaJ suite tests unitaires
 // revision : 26-fev-2024 pchevaillier@gmail.com typage
+// revision : 03-jul-2024 pchevaillier@gmail.com + nom fichier image
   // --------------------------------------------------------------------------
   // commentaires :
   // -
@@ -60,6 +61,12 @@
     public $modele = "";
     public $constructeur = "";
     public $annee_construction = 2020;
+    
+    private $nom_fichier_image = "";
+    public function nom_fichier_image(): string { return $this->nom_fichier_image; }
+    public function def_nom_fichier_image(string $nom_fichier): void {
+      $this->nom_fichier_image = $nom_fichier;
+    }
     
     public function __construct(int $code) { $this->code = $code; }
     
