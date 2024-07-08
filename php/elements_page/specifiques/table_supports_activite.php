@@ -11,6 +11,7 @@
   // --------------------------------------------------------------------------
   // creation : 28-aug-2020 pchevaillier@gmail.com
   // revision : 31-may-2024 pchevaillier@gmail.com + affichages usage et actif
+// revision: 05-jul-2024 pchevaillier@gmail.com + affichage photo
   // --------------------------------------------------------------------------
   // commentaires :
   // attention :
@@ -70,7 +71,7 @@ class Table_Supports_activite extends Table_Elements {
     
     if (!isset($this->elements)) return; // on ne sait jamais...
     
-    echo '<tr><th style="text-align:center;">Numéro</th><th>Nom</th><th>Type</th><th>Usage</th><th>Service</th><th>Nb place</th>';
+    echo '<tr><th></th><th style="text-align:center;">Numéro</th><th>Nom</th><th>Type</th><th>Usage</th><th>Service</th><th>Nb place</th>';
     if (!is_null($this->menu_action))
       echo '<th>&nbsp;</th>';
     echo '</tr>';
@@ -78,8 +79,16 @@ class Table_Supports_activite extends Table_Elements {
     foreach ($this->elements as $item) {
       if ($item->est_actif() || isset($_SESSION['adm'])) {
         echo '<tr>';
+        
+        $photo = "";
+        if (strlen($item->nom_fichier_image()) > 0) {
+          $chemin_fichier_image = '../photos/supports_activite/' . $item->nom_fichier_image();
+          $photo = '<img src="' . $chemin_fichier_image . '" alt="' . $item->nom_fichier_image() . '" width=128>';
+        }
+        echo '<td style="text-align:center;">'. $photo . '</td>';
+        
         //if (is_a($item, 'Bateau'))
-           echo '<td style="text-align:center;">'. $item->numero() . '</td>';
+        echo '<td style="text-align:center;">'. $item->numero() . '</td>';
         //else
         //   echo '<td>&nbsp;</td>';
         echo '<td>'. $item->nom() . '</td>';

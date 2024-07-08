@@ -12,6 +12,7 @@
   // creation : 10-jun-2019 pchevaillier@gmail.com
   // revision : 08-jan-2020 pchevaillier@gmail.com affichage fermeture site (debut)
 // revision : 22-may-2024 pchevaillier@gmail.com  utilisation Afficheur_Fermetures_Site
+// revision: 05-jul-2024 pchevaillier@gmail.com * affichage marees
   // --------------------------------------------------------------------------
   // commentaires :
   // - operationnel
@@ -216,12 +217,14 @@ require_once 'php/elements_page/specifiques/vue_indisponibilite.php';
     }
 
     protected function definir_affichage_marees($activite_site, $conteneur) {
-      $cadre = new Conteneur_Repliable();
-      $cadre->def_id('cadre_maree');
-      $cadre->def_titre("Marées");
-      $conteneur->ajouter_element($cadre);
-      $table_marees = new Table_Marees_jour($activite_site->marees);
-      $cadre->ajouter_element($table_marees);
+      if (count($activite_site->marees) > 0) {
+        $cadre = new Conteneur_Repliable();
+        $cadre->def_id('cadre_maree');
+        $cadre->def_titre("Marées");
+        $conteneur->ajouter_element($cadre);
+        $table_marees = new Table_Marees_jour($activite_site->marees);
+        $cadre->ajouter_element($table_marees);
+        }
     }
     
     protected function definir_affichage_horaires($site, $conteneur) {

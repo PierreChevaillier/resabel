@@ -19,6 +19,7 @@
   // revision : 29-dec-2022 pchevaillier@gmail.com fix erreur 8.2, utf8_encode deprecated
   // revision : 30-mar-2023 pchevaillier@gmail.com actions changement de role
 // revision: 04-jul-2024 pchevaillier@gmail.com + affichage photo support activite
+// revision: 05-jul-2024 pchevaillier@gmail.com * affichage marees
   // --------------------------------------------------------------------------
   // commentaires :
   // - en cours d'evolution
@@ -288,16 +289,19 @@
     }
 
     protected function definir_affichage_marees() {
-      $cadre = new Conteneur_Repliable();
-      $cadre->def_id('cadre_maree');
-      $cadre->def_titre("Marées");
       
-      $this->ajoute_contenu($cadre);
       $code_site = 1;
       $maintenant = Calendrier::maintenant();
       $marees = Enregistrement_Maree::recherche_marees_jour($code_site,  $maintenant->jour());
-      $table_marees = new Table_Marees_jour($marees);
-      $cadre->ajouter_element($table_marees);
+      
+      if (!is_null($marees) && count($marees) > 0) {
+        $cadre = new Conteneur_Repliable();
+        $cadre->def_id('cadre_maree');
+        $cadre->def_titre("Marées");
+        $this->ajoute_contenu($cadre);
+        $table_marees = new Table_Marees_jour($marees);
+        $cadre->ajouter_element($table_marees);
+      }
     }
     
    }
