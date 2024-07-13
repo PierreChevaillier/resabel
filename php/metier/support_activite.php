@@ -17,6 +17,7 @@
   // revision : 29-dec-2022 pchevaillier@gmail.com MaJ suite tests unitaires
 // revision : 26-fev-2024 pchevaillier@gmail.com typage
 // revision : 03-jul-2024 pchevaillier@gmail.com + nom fichier image
+// revision : 13-jul-2024  pchevaillier@gmail.com * identite_texte()
   // --------------------------------------------------------------------------
   // commentaires :
   // -
@@ -84,7 +85,9 @@
     public function est_pour_loisir() { return $this->pour_loisir; }
     public function est_pour_competition() { return $this->pour_competition; }
     
-    public function identite_texte() { return $this->nom() .  ' (' .  $this->nom_type() . ')'; }
+    public function identite_texte() {
+      return $this->nom_type() .  ' n° ' . $this->numero() . '(' . $this->nom() . ')';
+    }
     
   }
   
@@ -94,7 +97,9 @@
     public $immatriculation = "";
     public $categorie_navigation;
         
-    public function identite_texte() { return $this->numero() . ' ' . $this->nom() .  ' (' .  $this->nom_type() . ')'; }
+    public function identite_texte() {
+      return $this->nom_type() .  ' n° ' . $this->numero() . ' (' . $this->nom() . ')';
+    }
     
   }
   

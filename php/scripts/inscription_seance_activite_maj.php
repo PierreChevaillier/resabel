@@ -9,7 +9,7 @@
   // utilisation : php - pour traitement requete ajax
   // dependances : javascript qui lance cette requete ($_GET)
   // teste avec : PHP 7.1 sur Mac OS 10.14 ;
-  //  - depuis jan-2023 :
+  //  - depuis jan-2023 :/Volumes/partage/photos/2023_Singapour/IMG_1168.jpeg
   //              PHP 8.2 sur macOS 13.2
   // --------------------------------------------------------------------------
   // creation : 08-feb-2020 pchevaillier@gmail.com

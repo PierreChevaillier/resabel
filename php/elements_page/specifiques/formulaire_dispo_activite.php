@@ -11,13 +11,15 @@
   // --------------------------------------------------------------------------
   // creation : 10-jul-2019 pchevaillier@gmail.com
   // revision : 21-mar-2020 pchevaillier@gmail.com val. defaut creneaux horaires
+// revision : 13-jul-2024  pchevaillier@gmail.com * libelle choix support activite
   // --------------------------------------------------------------------------
   // commentaires :
   // - pas complet
   // attention :
   // - 
   // a faire :
-  // - cas ou un seul site actif.
+// - cas ou un seul site actif => pas de champ
+// - cas ou un seul type de support => pas de champ
   // ==========================================================================
 
   // --- Classes utilisees
@@ -159,8 +161,12 @@
       $possibilites = array();
       $possibilites[0] = "Tous";
       $site = $this->sites[$this->code_site_selectionne];
-      foreach ($this->supports_activite as $support)
-          $possibilites[$support->code()] = $support->identite_texte(); //$support->numero() . ' ' . $support->nom() . ' (' .  $support->type->nom() . ')';
+      foreach ($this->supports_activite as $support) {
+        $label = $support->identite_texte();
+        if ($support->est_pour_competition())
+          $label = $label . ' - compétition';
+        $possibilites[$support->code()] = $label;
+      }
       $this->champ($id_champ)->options = $possibilites;
       $this->champ($id_champ)->def_valeur(0); // tous
     }

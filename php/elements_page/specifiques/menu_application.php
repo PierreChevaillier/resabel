@@ -23,12 +23,12 @@
   // revision : 17-mar-2023 pchevaillier@gmail.com bootstrap v5.3
 // revision : 14-jan-2024 pchevaillier@gmail.com + menu competitions
 // revision : 22-may-2024 pchevaillier@gmail.com + utilisation Profil_Session
+// revision : 22-may-2024 pchevaillier@gmail.com * afficher_menu_competition
   // --------------------------------------------------------------------------
   // commentaires :
   // attention :
 //  - certains liens sont specifiques AMP
   // a faire :
-  //  - completer au fur et a mesure du developpement (nouvelles pages) 
   // - variables pour acronyme club et lien home-page
   // ==========================================================================
 
@@ -140,8 +140,8 @@
     echo '<li class="nav-item dropdown">';
     echo '<a class="nav-link dropdown-toggle" href="#" id="mnu_compet" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Compétitions</a>';
     echo '<ul class="dropdown-menu" aria-labelledby="mnu-compet">';
-    echo '<li><a class="dropdown-item" href="https://docs.google.com/spreadsheets/d/1jDx-ZHJd75ovZLKHATITXX3gjzHwaQwHk48lTsKuT6M/edit?usp=drive_link">Régates</a></li>';
-    echo '<li><a  class="dropdown-item" href="https://drive.google.com/drive/folders/1LRFUzREEHQZjcsy6BeK6UUhBeeoYA-3D?usp=drive_link">Entrainements</a></li>';
+    echo '<li><a class="dropdown-item" href="https://docs.google.com/spreadsheets/d/1jDx-ZHJd75ovZLKHATITXX3gjzHwaQwHk48lTsKuT6M/edit?usp=drive_link" target ="_blank">Régates</a></li>';
+    echo '<li><a  class="dropdown-item" href="https://drive.google.com/drive/folders/1LRFUzREEHQZjcsy6BeK6UUhBeeoYA-3D?usp=drive_link" target="_blank">Entrainements</a></li>';
     echo '</ul></li>';
   }
       
