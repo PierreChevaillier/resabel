@@ -9,6 +9,7 @@
 // creation : 23-oct-2017 pchevaillier@gmail.com
 // revision : 29-dec-2018 pchevaillier@gmail.com autorisation ñì
 // revision : 06-jan-2019 pchevaillier@gmail.com suppression message erreur
+// revision : 15-jul-2024 pchevaillier@gmail.com autorisation ü (Salaün)
 // ----------------------------------------------------------------------------
 // commentaires :
 // -
@@ -39,8 +40,9 @@ function verif_nom(element) {
   if (x == null || x == "") {
     est_correct = true;
   } else {
-    var regExpr = /^[a-zA-Zéèëçñì\ '-]+$/;
-    if (!regExpr.test(x)) {
+    const pattern = "^[a-zA-Zéèëçñìïü\ '-]+$";
+    ok = new RegExp(pattern).test(x);
+    if (!ok) {
       element.style.color = "red";
       element.focus();
     } else {

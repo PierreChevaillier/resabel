@@ -114,10 +114,10 @@ Enregistrement_Seance_Activite::collecter($site,
 foreach ($seances as $s) {
   // associer les informations completes sur le support a la seance
   $s->def_support($supports[$s->code_support()]);
-    if (! $s->peut_accueillir_participants($seance)) {
-      $i = $s->code_support();
-      unset($supports[$i]);
-    }
+  if (! $s->peut_accueillir_participants($seance)) {
+    $i = $s->code_support();
+    unset($supports[$i]);
+  }
 }
 
 // il faut aussi enlever les supports ne pouvant pas accueillir l'equipage

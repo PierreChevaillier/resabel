@@ -22,6 +22,7 @@
   // revision : 29-dec-2022 pchevaillier@gmail.com fix erreur 8.2 : utf8_encode deprecated
   // revision : 17-feb-2023 pchevaillier@gmail.com + changement horaire
 // revision: 04-jul-2024 pchevaillier@gmail.com + affichage photo support activite
+// revision: 13-jul-2024 pchevaillier@gmail.com + couleur / seance passee et indispo
   // --------------------------------------------------------------------------
   // commentaires :
   // - en evolution
@@ -30,7 +31,7 @@
   // attention :
   // - experimental
   // a faire : Afficheur simple : sans controle et Afficheur avec controle(s)
-  //  - afficher information : sortie et participant
+  //  - afficher champ information pour seance et participation
   // ==========================================================================
   
   // --------------------------------------------------------------------------
@@ -594,9 +595,16 @@
         . ' à ' . $this->seance->debut()->heure_texte();
       
       $id_menu = 'mnu_seance_' . $this->seance->support->code() . '_' . $this->seance->debut()->date_heure_sql();
-      
+      $sous_classe = 'btn-outline-primary';
+      $activite_possible = $this->site_ouvert && $this->support_disponible;
+      if (!$activite_possible)
+        $sous_classe = 'btn-dark';
+      else {
+        if ($this->seance->debut() < Calendrier::maintenant())
+          $sous_classe = 'btn-outline-warning';
+      }
       $code_html = $code_html
-        . '<button class="btn btn-outline-primary btn-sm dropdown-toggle" type="button" id="' . $id_menu
+        . '<button class="btn ' . $sous_classe . ' btn-sm dropdown-toggle" type="button" id="' . $id_menu
         . '" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">'
         . $texte_bouton . '</button>';
       $code_html = $code_html . '<div class="dropdown-menu" aria-labelledby="' . $id_menu . '">';
@@ -624,9 +632,13 @@
       $aff_tel = new Afficheur_Telephone();
       $aff_mail = new Afficheur_Courriel_Actif();
       
-      $entete =  $seance->debut()->date_texte_court()
+      $entete = "";
+      if ($this->seance->debut() < Calendrier::maintenant())
+        $entete = $entete . '<span class="bg-warning">séance passée</span> <br />';
+      $entete =  $entete . $seance->debut()->date_texte_court()
         . " " . $seance->debut()->heure_texte() . " - " . $seance->fin()->heure_texte()
         . "<br />" . $seance->site->nom();
+      
       $sujet = "Sortie du " . $seance->debut()->date_texte()
              . " à " . $seance->debut()->heure_texte();
       $info_support = " sur " . $seance->support->nom();

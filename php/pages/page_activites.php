@@ -137,6 +137,7 @@ require_once 'php/elements_page/specifiques/vue_indisponibilite.php';
       $nav_date->parametres = $params;
       $nav_date->def_id('nav_dte');
       $nav_date->def_titre("Date");
+      $nav_date->initialiser();
       
     }
     

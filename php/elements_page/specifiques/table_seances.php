@@ -20,8 +20,8 @@
   // attention :
   //  - incomplet
   // a faire :
-  // - affichage seance
-  // - menus support, seance, creneau
+  // - ne pas afficher d'afficheur seance si aucune sorite sur creneaux selectionnes
+  //   et site ferme ou support indispo : on gaggne de la place d'affichage
   //   ...
   // ==========================================================================
 
@@ -108,11 +108,13 @@
           foreach ($this->activite_site->creneaux_activite as $i => $creneau) {
             $classe = '';
             $code_html = '';
-            if ($this->activite_site->site_ferme_creneau($creneau->debut(), $creneau->fin()) || $this->activite_site->support_indisponible_creneau($support, $creneau->debut(), $creneau->fin()))
+            $indispo = ($this->activite_site->site_ferme_creneau($creneau->debut(), $creneau->fin()) || $this->activite_site->support_indisponible_creneau($support, $creneau->debut(), $creneau->fin()));
+            if ($indispo)
               $classe = 'indispo';
             
             $seance = $this->activite_site->seance_programmee($code, $i);
-            if (is_null($seance)) {
+            $nouvelle_seance = is_null($seance);
+            if ($nouvelle_seance) {
               $seance = new Seance_Activite();
               $seance->support = $support;
               $seance->site = $this->activite_site->site;
@@ -122,8 +124,8 @@
             $classe = $classe . ' cel_seance';
             $classe = trim($classe);
             echo '<td id="', $id, '" class="', $classe, '" style="padding:1px;text-align:center;">';
-            
-            $this->afficher_seance($seance, $i);
+            if (!($nouvelle_seance && $indispo))
+              $this->afficher_seance($seance, $i);
             echo '</td>';
           }
           echo '</tr>';

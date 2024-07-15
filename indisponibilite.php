@@ -15,7 +15,7 @@
  *   PHP 8.1 sur hebergeur web
  * ----------------------------------------------------------------------------
  * creation : 06-mai-2024 pchevaillier@gmail.com
- * revision :
+ * revision : 15-jul-2024 pchevaillier@gmail.com + jquery
  * ----------------------------------------------------------------------------
  * commentaires :
  * -
@@ -48,13 +48,16 @@ $code_site_web = (isset($_SESSION['swb']))? intval($_SESSION['swb']): 1;
 
 // ----------------------------------------------------------------------------
 // --- Creation dynamique de la page
-
-$feuilles_style = array();
-$feuilles_style[] = "css/resabel_ecran.css";
 new Enregistrement_site_web($code_site_web);
 $nom_site = Site_Web::accede()->sigle() . " Resabel";
 
+$feuilles_style = array();
+$feuilles_style[] = "css/resabel_ecran.css";
+$feuilles_style[] = "./../jquery-ui/1.13.2/jquery-ui.css";
+
 $page = new Page_Indisponibilite($nom_site, "indisponibilite", $feuilles_style);
+$page->ajouter_script('./../jquery/3.6.3/jquery.min.js');
+$page->ajouter_script('./../jquery-ui/1.13.2/jquery-ui.min.js');
 
 $info = new Element_Code();
 $info->def_code('<div class="alert alert-warning" role="alert">version de développement incomplète</div>');

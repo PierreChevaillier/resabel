@@ -90,7 +90,7 @@
       echo '<a class="nav-link dropdown-toggle" href="#" id="mnu_support" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Supports activités</a>';
       echo '<ul class="dropdown-menu" aria-labelledby="mnu_support">';
       echo '<li><a class="dropdown-item" href="indisponibilites.php">Indisponibilités supports</a></li>';
-      echo '<li><a class="dropdown-item" href="https://docs.google.com/spreadsheets/d/14zDfgiiELgDnSE4GkX0tpoB2RK1tlmWS3hywiklecFc/edit#gid=795898690">Signalements anomalie</a></li>';
+      echo '<li><a class="dropdown-item" href="https://docs.google.com/spreadsheets/d/14zDfgiiELgDnSE4GkX0tpoB2RK1tlmWS3hywiklecFc/edit#gid=795898690">Signalements anomalies</a></li>';
      /* if ($this->session_admin) {
         echo '<li><a class="dropdown-item" href="motifs_indispo_support.php">Motifs indisponibilités</a></li>';
       }
@@ -106,9 +106,9 @@
     
     private function afficher_menu_personnes() {
       echo '<li class="nav-item dropdown">';
-      echo '<a class="nav-link dropdown-toggle" href="#" id="mnu_prs" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Personnes</a>';
+      echo '<a class="nav-link dropdown-toggle" href="#" id="mnu_prs" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Adhérent.e.s</a>';
       echo '<ul class="dropdown-menu" aria-labelledby="mnu_prs">';
-      echo '<li><a class="dropdown-item" href="personnes.php?a=l&act=1&cnx=1">Liste personnes</a></li>';
+      echo '<li><a class="dropdown-item" href="personnes.php?a=l&act=1&cnx=1">Liste adhérent.e.s</a></li>';
       if ($this->session_club || $this->session_admin) {
         /*
          * Acces au formulaire pour l'enregistrement d'un nouveau membre du club

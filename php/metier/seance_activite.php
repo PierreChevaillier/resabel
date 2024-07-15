@@ -159,6 +159,7 @@
      * $seance est la source
      */
     public function peut_accueillir_participants(Seance_Activite $seance): bool {
+      $ok = true;
       $doublon = false;
       foreach ($seance->inscriptions as $x) {
         if ($this->a_comme_participant($x->participant)) {
@@ -172,7 +173,6 @@
       if (!$this->nombre_places_est_limite()) return true;
 
       // --- Cas ou la seance d'accueil (this) a une capacite limitee
-      $ok = true;
       
       // les eventuels responsables
       $nb_resp_source = 0;
@@ -180,6 +180,7 @@
       $nb_resp_dest = 0;
       if ($this->a_un_responsable()) $nb_resp_dest = 1;
       $nb_places_resp_dest = 0;
+      /*
       if ($this->responsable_requis()) $nb_places_resp_dest = 1 - $nb_resp_dest;
       
       // les autres membres des seances
@@ -192,13 +193,14 @@
         // l'eventuel responsable de la seance source
         $ok = ($nb_resp_source <= $nb_places_resp_dest);
         if (!$ok) return false;
-        // il faut aussi de la place pour les equipiers (s'il ya des places)
+        // il faut aussi de la place pour les equipiers (s'il y a des places)
         $ok = ($nb_equip_source <= $nb_places_equip_dest);
         if (!$ok) return false;
       } else {
         $ok = (($nb_resp_source + $nb_equip_source) <= $nb_places_equip_dest);
         if (!$ok) return false;
       }
+      */
       /*
       $places_dispo = ((!$this->nombre_places_est_limite()) || ($this->nombre_places_disponibles() >= $seance->nombre_participants()));
       if (! $places_dispo)
