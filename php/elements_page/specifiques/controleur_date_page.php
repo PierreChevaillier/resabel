@@ -225,17 +225,27 @@ class Menu_Navigation_Date extends Controleur_Date_Page {
     echo '<button class="btn btn-outline-primary" type="submit">Afficher</button>';
     echo'</form>';
     echo '<ul class="navbar-nav me-auto mb-2 mb-lg-0">';
+    $nb_date = count($this->jours);
+    $i = 0;
     foreach ($this->jours as $jour) {
-      if ($jour < $this->date_ref)
-        $texte_jour = '< ' . $jour->date_texte_court();
-      elseif ($jour == $this->date_ref)
+      if ($jour < $this->date_ref) {
+        if ($i == 0)
+          $texte_jour = '<< ' . $jour->date_texte_court();
+        else
+          $texte_jour = '< ' . $jour->date_texte_court();
+      } elseif ($jour == $this->date_ref) {
         $texte_jour = $jour->date_texte_court();
-      else
-        $texte_jour = $jour->date_texte_court() . ' >';
+      } else {
+        if ($i == ($nb_date - 1))
+          $texte_jour = $jour->date_texte_court() . ' >>';
+        else
+          $texte_jour = $jour->date_texte_court() . ' >';
+      }
       $valeur_jour = $jour->date_html();
       $code_param_url = "?j=" . $valeur_jour . $this->code_html_parametres;
       echo '<a class="nav-link" href="' . $this->page_cible . $code_param_url . '">'
         . '<span>' .$texte_jour . '</span></a>';
+      $i = $i + 1;
     }
     echo '</ul>';
   }

@@ -106,9 +106,9 @@
     
     private function afficher_menu_personnes() {
       echo '<li class="nav-item dropdown">';
-      echo '<a class="nav-link dropdown-toggle" href="#" id="mnu_prs" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Adhérent.e.s</a>';
+      echo '<a class="nav-link dropdown-toggle" href="#" id="mnu_prs" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Membres</a>';
       echo '<ul class="dropdown-menu" aria-labelledby="mnu_prs">';
-      echo '<li><a class="dropdown-item" href="personnes.php?a=l&act=1&cnx=1">Liste adhérent.e.s</a></li>';
+      echo '<li><a class="dropdown-item" href="personnes.php?a=l&act=1&cnx=1">Liste membres</a></li>';
       if ($this->session_club || $this->session_admin) {
         /*
          * Acces au formulaire pour l'enregistrement d'un nouveau membre du club
@@ -120,7 +120,7 @@
         echo '<li><a class="dropdown-item" href="membre.php?a=c&o=n">Enregistrement nouveau</a></li>';
       }
       if ($this->session_admin) {
-        echo '<li><a class="dropdown-item" href="debutants.php">Débutants > Confirmés</a></li>';
+        echo '<li><a class="dropdown-item" href="debutants.php">Débutant.e.s > Confirmé.e.s</a></li>';
         //echo '<a class="dropdown-item" href="page_temporaire.php">Listes visiteurs</a>';
       }
       echo '</ul></li>';

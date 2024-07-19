@@ -756,30 +756,6 @@
     
   }
   
-  
-  /*
-  class Controle_Participation_Activite {
-    private $parent = null;
-    
-    public function __construct($parent) {
-      $this->parent = $parent;
-    }
-    
-    public function formater() {
-      $code_html = utf8_encode('');
-      $modal_id = "aff_Act_" . $this->parent->activite_site->site->code();
-      $params = $modal_id . ', '
-        . $this->parent->activite_site->site->code() . ', '
-        . $this->parent->seance->code_support() . ', '
-        . $this->parent->seance->debut() . ', '
-        . $this->parent->seance->fin();
-      
-      $parmas = $params . ', ' . $this->parent->contexte_action()->utilisateur; //, responsable';
-      
-      $code_html = $code_html . '<img src="../../assets/icons/pencil.svg" alt="" width="24" height="24" data-toggle="modal" data-target="#aff_act_1" title="inscription" onclick=requete_inscription_individuelle(' . $params . ');>';
-      return $code_html;
-    }
-  }
-  */
+
   // ==========================================================================
 ?>
