@@ -5,11 +5,14 @@
   //               Seance_activite
   //               generation du code html pour affichage des informations
   //               sur une seance d'activite
-  // copyright (c) 2018-2023 AMP. Tous droits reserves.
+  // copyright (c) 2018-2024 AMP. Tous droits reserves.
   // --------------------------------------------------------------------------
   // utilisation : php - require_once <chemin_vers_ce_fichier.php>
-  // dependances : bootstratp 4.x
-  //  - actions_seance_activite.js
+// dependances :
+//  - bootstrap 5.3
+//  - valeur variables $_SESSION
+//  - code actions
+//  - actions_seance_activite.js
   // teste avec : PHP 7.1 sur Mac OS 10.14 ;
   //              PHP 7.0 sur hebergeur web
   //  - PHP 8.2 sur macOS 13.1 (> 25-dec-2022)
@@ -18,18 +21,17 @@
   // revision : 25-aug-2020 pchevaillier@gmail.com contexte actions + des actions
   // revision : 29-dec-2022 pchevaillier@gmail.com fix erreur 8.2 : utf8_encode deprecated
   // revision : 17-feb-2023 pchevaillier@gmail.com + changement horaire
+// revision: 04-jul-2024 pchevaillier@gmail.com + affichage photo support activite
+// revision: 13-jul-2024 pchevaillier@gmail.com + couleur / seance passee et indispo
   // --------------------------------------------------------------------------
   // commentaires :
-  // - en evolution
-  // - s'inspirer de resabel V1 (sortie_presentations.php)
-  //   donc pas 1 Element ?
+  // -
   // attention :
-  // - experimental
-  // a faire : Afficheur simple : sans controle et Afficheur avec controle(s)
-  //  - afficher information : sortie et participant
+  // -
+  // a faire :
+  // - afficher champ information pour seance et participation
   // ==========================================================================
   
-  // --------------------------------------------------------------------------
   require_once 'php/metier/seance_activite.php';
   require_once 'php/metier/personne.php';
   require_once 'php/metier/calendrier.php';
@@ -590,9 +592,16 @@
         . ' à ' . $this->seance->debut()->heure_texte();
       
       $id_menu = 'mnu_seance_' . $this->seance->support->code() . '_' . $this->seance->debut()->date_heure_sql();
-      
+      $sous_classe = 'btn-outline-primary';
+      $activite_possible = $this->site_ouvert && $this->support_disponible;
+      if (!$activite_possible)
+        $sous_classe = 'btn-dark';
+      else {
+        if ($this->seance->debut() < Calendrier::maintenant())
+          $sous_classe = 'btn-outline-warning';
+      }
       $code_html = $code_html
-        . '<button class="btn btn-outline-primary btn-sm dropdown-toggle" type="button" id="' . $id_menu
+        . '<button class="btn ' . $sous_classe . ' btn-sm dropdown-toggle" type="button" id="' . $id_menu
         . '" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">'
         . $texte_bouton . '</button>';
       $code_html = $code_html . '<div class="dropdown-menu" aria-labelledby="' . $id_menu . '">';
@@ -615,13 +624,18 @@
       $menu = "";
       
       // copie de page_accueil_perso.php
-      $details = ""; //utf8_encode("");
+      $details = "";
       $seance = $this->seance;
       $aff_tel = new Afficheur_Telephone();
       $aff_mail = new Afficheur_Courriel_Actif();
       
-      $entete = $seance->site->nom() . ", le " . $seance->debut()->date_texte_court()
-      . " de " . $seance->debut()->heure_texte() . " à " . $seance->fin()->heure_texte();
+      $entete = "";
+      if ($this->seance->debut() < Calendrier::maintenant())
+        $entete = $entete . '<span class="bg-warning">séance passée</span> <br />';
+      $entete =  $entete . $seance->debut()->date_texte_court()
+        . " " . $seance->debut()->heure_texte() . " - " . $seance->fin()->heure_texte()
+        . "<br />" . $seance->site->nom();
+      
       $sujet = "Sortie du " . $seance->debut()->date_texte()
              . " à " . $seance->debut()->heure_texte();
       $info_support = " sur " . $seance->support->nom();
@@ -630,6 +644,10 @@
       $sujet = $sujet . " " . $info_support;
       $sujet = $sujet . " - " . $seance->site->nom();
       $entete = $entete . $info_support;
+      if (strlen($seance->support->nom_fichier_image()) > 0) {
+          $chemin_fichier_image = '../photos/supports_activite/' . $seance->support->nom_fichier_image();
+          $entete  = $entete . '<img src="' . $chemin_fichier_image . '" alt="' . $seance->support->nom_fichier_image() . '" width=256>';
+        }
       foreach ($seance->inscriptions as $participation) {
         $p = $participation->participant;
         $details = $details . $p->prenom() . " " . $p->nom();
@@ -638,26 +656,14 @@
         $details = $details . " " . $aff_mail->formatter("Je te contacte ", $sujet);
         $details = $details . "<br />";
       }
-      $details = htmlspecialchars($details); // indispensable car il y a des " dans $details
+      $entete = htmlspecialchars($entete); // indispensable car il y a des " dans $entete
+      $details = htmlspecialchars($details); // idem pour $details
       $modal_id = "aff_act";
       $menu = $menu . '<a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#' . $this->id_dialogue_action . '" onclick="return afficher_info_seance(\'' . $this->id_dialogue_action . '\', \''
           . $entete . '\', \'' . $details . '\');">Afficher informations</a>';
       
       // --- Actions dependant du contexte
-      if ($this->possible_inscrire_responsable()) {
-        $rang = 0;
-        $id_participation = $this->afficheur->generer_id($rang);
-        $params = $params_seance . ', \'' . $id_participation . '\', ' . $rang;
-        $menu = $menu . '<a class="dropdown-item" onclick="activer_formulaire(' . $params . '); return false; " >Inscrire Chef de bord</a>';
-      }
-      
-      if ($this->possible_inscrire_equipier()) {
-        $rang = $this->seance->nombre_participants() + ($this->seance->a_un_responsable() ? 0:1);
-        $id_participation = $this->afficheur->generer_id($rang);
-        $params = $params_seance . ', \'' . $id_participation . '\', ' . $rang;
-        $menu = $menu . '<a class="dropdown-item" onclick="activer_formulaire(' . $params . '); return false;" >Inscrire équipier</a>';
-      }
-      
+ 
       if ($this->possible_inscrire_equipage()) {
         // url retour = activites.php?a=ie&j=2024-01-27&sa=1&pc=PT09H30M&dc=PT10H30M&ts=0&s=0
         // cf. page_activites.php
@@ -680,6 +686,21 @@
           . $code_param_url
           .  '" >Inscrire équipage</a>';
       }
+      
+      if ($this->possible_inscrire_responsable()) {
+        $rang = 0;
+        $id_participation = $this->afficheur->generer_id($rang);
+        $params = $params_seance . ', \'' . $id_participation . '\', ' . $rang;
+        $menu = $menu . '<a class="dropdown-item" onclick="activer_formulaire(' . $params . '); return false; " >Inscrire Chef de bord</a>';
+      }
+      
+      if ($this->possible_inscrire_equipier()) {
+        $rang = $this->seance->nombre_participants() + ($this->seance->a_un_responsable() ? 0:1);
+        $id_participation = $this->afficheur->generer_id($rang);
+        $params = $params_seance . ', \'' . $id_participation . '\', ' . $rang;
+        $menu = $menu . '<a class="dropdown-item" onclick="activer_formulaire(' . $params . '); return false;" >Inscrire équipier</a>';
+      }
+      
       
       if ($this->seance->nombre_participants() > 0) {
         $html_info_seance = htmlspecialchars($this->formater_info_seance());
@@ -734,30 +755,6 @@
     
   }
   
-  
-  /*
-  class Controle_Participation_Activite {
-    private $parent = null;
-    
-    public function __construct($parent) {
-      $this->parent = $parent;
-    }
-    
-    public function formater() {
-      $code_html = utf8_encode('');
-      $modal_id = "aff_Act_" . $this->parent->activite_site->site->code();
-      $params = $modal_id . ', '
-        . $this->parent->activite_site->site->code() . ', '
-        . $this->parent->seance->code_support() . ', '
-        . $this->parent->seance->debut() . ', '
-        . $this->parent->seance->fin();
-      
-      $parmas = $params . ', ' . $this->parent->contexte_action()->utilisateur; //, responsable';
-      
-      $code_html = $code_html . '<img src="../../assets/icons/pencil.svg" alt="" width="24" height="24" data-toggle="modal" data-target="#aff_act_1" title="inscription" onclick=requete_inscription_individuelle(' . $params . ');>';
-      return $code_html;
-    }
-  }
-  */
+
   // ==========================================================================
 ?>

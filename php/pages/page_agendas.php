@@ -47,16 +47,20 @@
  
       // --- Calendrier du club -----------------------------------------------
       
+      /*
+       * demande xavier Herve du 13 juillet 2024
       $element = new Entete_Section();
       $element->def_titre("Agenda du club");
       $this->ajoute_contenu($element);
+      */
       
       $agenda = new Cadre_Inclusion();
       $element->def_id('frm_agd_club');
       $agenda->def_source("https://calendar.google.com/calendar/embed?src=avironplougonvelin.fr_gsun3r3is0cffmtcckquag8esg%40group.calendar.google.com&ctz=Europe%2FParis");
       $agenda->def_ratio('1x1');
       $this->ajoute_contenu($agenda);
-
+      /*
+       * demande xavier Herve du 13 juillet 2024
       // --- Calendrier des competitions --------------------------------------
       $element = new Entete_Section();
       $element->def_titre("Compétitions");
@@ -94,6 +98,7 @@
       $agenda->def_source('https://calendar.google.com/calendar/embed?src=avironplougonvelin.fr_3s243n6g52q0pjug9hra5i5k3k%40group.calendar.google.com&ctz=Europe%2FParis');
       $agenda->def_ratio('1x1');
       $this->ajoute_contenu($agenda);
+       */
       
     }
     

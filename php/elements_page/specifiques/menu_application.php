@@ -23,12 +23,12 @@
   // revision : 17-mar-2023 pchevaillier@gmail.com bootstrap v5.3
 // revision : 14-jan-2024 pchevaillier@gmail.com + menu competitions
 // revision : 22-may-2024 pchevaillier@gmail.com + utilisation Profil_Session
+// revision : 22-may-2024 pchevaillier@gmail.com * afficher_menu_competition
   // --------------------------------------------------------------------------
   // commentaires :
   // attention :
 //  - certains liens sont specifiques AMP
   // a faire :
-  //  - completer au fur et a mesure du developpement (nouvelles pages) 
   // - variables pour acronyme club et lien home-page
   // ==========================================================================
 
@@ -90,7 +90,7 @@
       echo '<a class="nav-link dropdown-toggle" href="#" id="mnu_support" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Supports activités</a>';
       echo '<ul class="dropdown-menu" aria-labelledby="mnu_support">';
       echo '<li><a class="dropdown-item" href="indisponibilites.php">Indisponibilités supports</a></li>';
-      echo '<li><a class="dropdown-item" href="https://docs.google.com/spreadsheets/d/14zDfgiiELgDnSE4GkX0tpoB2RK1tlmWS3hywiklecFc/edit#gid=795898690">Signalements anomalie</a></li>';
+      echo '<li><a class="dropdown-item" href="https://docs.google.com/spreadsheets/d/14zDfgiiELgDnSE4GkX0tpoB2RK1tlmWS3hywiklecFc/edit#gid=795898690">Signalements anomalies</a></li>';
      /* if ($this->session_admin) {
         echo '<li><a class="dropdown-item" href="motifs_indispo_support.php">Motifs indisponibilités</a></li>';
       }
@@ -106,9 +106,9 @@
     
     private function afficher_menu_personnes() {
       echo '<li class="nav-item dropdown">';
-      echo '<a class="nav-link dropdown-toggle" href="#" id="mnu_prs" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Personnes</a>';
+      echo '<a class="nav-link dropdown-toggle" href="#" id="mnu_prs" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Membres</a>';
       echo '<ul class="dropdown-menu" aria-labelledby="mnu_prs">';
-      echo '<li><a class="dropdown-item" href="personnes.php?a=l&act=1&cnx=1">Liste personnes</a></li>';
+      echo '<li><a class="dropdown-item" href="personnes.php?a=l&act=1&cnx=1">Liste membres</a></li>';
       if ($this->session_club || $this->session_admin) {
         /*
          * Acces au formulaire pour l'enregistrement d'un nouveau membre du club
@@ -120,7 +120,7 @@
         echo '<li><a class="dropdown-item" href="membre.php?a=c&o=n">Enregistrement nouveau</a></li>';
       }
       if ($this->session_admin) {
-        echo '<li><a class="dropdown-item" href="debutants.php">Débutants > Confirmés</a></li>';
+        echo '<li><a class="dropdown-item" href="debutants.php">Débutant.e.s > Confirmé.e.s</a></li>';
         //echo '<a class="dropdown-item" href="page_temporaire.php">Listes visiteurs</a>';
       }
       echo '</ul></li>';
@@ -140,8 +140,8 @@
     echo '<li class="nav-item dropdown">';
     echo '<a class="nav-link dropdown-toggle" href="#" id="mnu_compet" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Compétitions</a>';
     echo '<ul class="dropdown-menu" aria-labelledby="mnu-compet">';
-    echo '<li><a class="dropdown-item" href="https://docs.google.com/spreadsheets/d/1jDx-ZHJd75ovZLKHATITXX3gjzHwaQwHk48lTsKuT6M/edit?usp=drive_link">Régates</a></li>';
-    echo '<li><a  class="dropdown-item" href="https://drive.google.com/drive/folders/1LRFUzREEHQZjcsy6BeK6UUhBeeoYA-3D?usp=drive_link">Entrainements</a></li>';
+    echo '<li><a class="dropdown-item" href="https://docs.google.com/spreadsheets/d/1jDx-ZHJd75ovZLKHATITXX3gjzHwaQwHk48lTsKuT6M/edit?usp=drive_link" target ="_blank">Régates</a></li>';
+    echo '<li><a  class="dropdown-item" href="https://drive.google.com/drive/folders/1LRFUzREEHQZjcsy6BeK6UUhBeeoYA-3D?usp=drive_link" target="_blank">Entrainements</a></li>';
     echo '</ul></li>';
   }
       
@@ -150,14 +150,16 @@
         echo '<li class="nav-item"><a class="nav-link" href="accueil_perso.php">Accueil</a></li>';
       else if ($this->session_club)
         echo '<li class="nav-item"><a class="nav-link" href="accueil_club.php">Accueil</a></li>';
-        
-      echo '<li class="nav-item"><a class="nav-link" href="activites.php?a=l&j=' . $this->jour->valeur_cle_date() . '">Sorties</a></li>';
-      
-      //if (!isset($_SESSION['prs']) || (isset($_SESSION['prs']) && isset($_SESSION['act'])))
-      
+
       if ($this->session_club || $this->membre_actif)
         $this->afficher_menu_inscription();
 
+      /*
+       * Affichage du tableau des activites pour le jour courrant
+       * a =l : action lecture ; pas de modfication possible
+       */
+      echo '<li class="nav-item"><a class="nav-link" href="activites.php?a=l&j=' . $this->jour->valeur_cle_date() . '">Sorties</a></li>';
+      
       $this->afficher_menu_competitions();
       
       $this->afficher_menu_club();

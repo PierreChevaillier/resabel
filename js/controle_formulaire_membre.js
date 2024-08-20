@@ -50,6 +50,7 @@ function initialiser_id(champ_id, champ_prn, champ_nom) {
   identifiant = identifiant.replace(/ô/g, "o");
   identifiant = identifiant.replace(/ç/g, "c");
   identifiant = identifiant.replace(/ñ/g, "n");
+  identifiant = identifiant.replace(/ü/g, "u");
   identifiant = identifiant.replace(/'/g, "");
   identifiant = identifiant.replace(/\ /g, "");
   champ_id.value = identifiant;
@@ -177,7 +178,7 @@ function verifier_identifiant(element) {
     initialiser_id(champ_id, champ_prenom, champ_nom);
     
     const nom_champ = "prénom";
-    const pattern = "^[a-zA-Zéèëçñìï\ '-]+$";
+    const pattern = "^[a-zA-Zéèëçñìïü\ '-]+$";
     const libelle_pattern = "des lettres, espace, tiret ou apostrophe";
     controle_validite_saisie_texte(this, nom_champ, pattern, libelle_pattern, true);
     }
@@ -186,7 +187,7 @@ function verifier_identifiant(element) {
   champ_nom.addEventListener("input", function() {
     initialiser_id(champ_id, champ_prenom, champ_nom);
     const nom_champ = "nom";
-    const pattern = "^[a-zA-Zéèëçñìï\ '-]+$";
+    const pattern = "^[a-zA-Zéèëçñìïü\ '-]+$";
     const libelle_pattern = "des lettres, espace, tiret ou apostrophe";
     controle_validite_saisie_texte(this, nom_champ, pattern, libelle_pattern, true);
   });

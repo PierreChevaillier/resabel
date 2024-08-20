@@ -3,7 +3,7 @@
   // contexte : Resabel - systeme de REServAtion de Bateaux En Ligne
   // description : Definition de la classe Page_Accueil_Perso
   //               Sorte de portail / personne
-  // copyright (c) 2018-2023 AMP. Tous droits reserves.
+  // copyright (c) 2018-2024 AMP. Tous droits reserves.
   // --------------------------------------------------------------------------
   // utilisation : php - require_once <chemin-fichier.php>
   // dependances :
@@ -18,6 +18,8 @@
   // revision : 29-mar-2020 pchevaillier@gmail.com ameliorerations + marees
   // revision : 29-dec-2022 pchevaillier@gmail.com fix erreur 8.2, utf8_encode deprecated
   // revision : 30-mar-2023 pchevaillier@gmail.com actions changement de role
+// revision: 04-jul-2024 pchevaillier@gmail.com + affichage photo support activite
+// revision: 05-jul-2024 pchevaillier@gmail.com * affichage marees
   // --------------------------------------------------------------------------
   // commentaires :
   // - en cours d'evolution
@@ -229,10 +231,17 @@
           $details = $details . " " . $aff_mail->formatter("Je te contacte ", $sujet);
           $details = $details . "<br />";
         }
+        if (strlen($seance->support->nom_fichier_image()) > 0) {
+          $chemin_fichier_image = '../photos/supports_activite/' . $seance->support->nom_fichier_image();
+          $entete_modal  = $entete . '<img src="' . $chemin_fichier_image . '" alt="' . $seance->support->nom_fichier_image() . '" width=256>';
+          $entete_modal = htmlspecialchars($entete_modal);
+        } else {
+          $entete_modal  = $entete;
+        }
         $details = htmlspecialchars($details); // indispensable car il ya des " dans $details
         $modal_id = "aff_act";
         $code_menu = $code_menu . '<a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#aff_act" onclick="return afficher_info_seance(\'aff_act\', \''
-            . $entete . '\', \'' . $details . '\');">Afficher informations</a>';
+            . $entete_modal . '\', \'' . $details . '\');">Afficher informations</a>';
 
         $params = '\'' . $modal_id . '\', '
                            . $seance->code() . ', '
@@ -280,16 +289,19 @@
     }
 
     protected function definir_affichage_marees() {
-      $cadre = new Conteneur_Repliable();
-      $cadre->def_id('cadre_maree');
-      $cadre->def_titre("Marées");
       
-      $this->ajoute_contenu($cadre);
       $code_site = 1;
       $maintenant = Calendrier::maintenant();
       $marees = Enregistrement_Maree::recherche_marees_jour($code_site,  $maintenant->jour());
-      $table_marees = new Table_Marees_jour($marees);
-      $cadre->ajouter_element($table_marees);
+      
+      if (!is_null($marees) && count($marees) > 0) {
+        $cadre = new Conteneur_Repliable();
+        $cadre->def_id('cadre_maree');
+        $cadre->def_titre("Marées");
+        $this->ajoute_contenu($cadre);
+        $table_marees = new Table_Marees_jour($marees);
+        $cadre->ajouter_element($table_marees);
+      }
     }
     
    }

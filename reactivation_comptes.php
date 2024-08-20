@@ -3,65 +3,72 @@
 <?php
 /* ============================================================================
  * contexte : Resabel - systeme de REServAtion de Bateau En Ligne
- * description : page web permettant la saise ou modification
- *               d'une indisponibilite (support indisponible ou fermeture site)
- * copyright (c) 2023-2023 AMP. Tous droits reserves.
+ * description : creation dynamique de la page pour la (re)activation
+ *               du compte d'une personne
+ * copyright (c) 2018-2024 AMP. Tous droits reserves.
  * ----------------------------------------------------------------------------
  * utilisation : navigateur web
  * dependances :
- * - aucune
+ * - variable $_SESSION
  * utilise avec :
+ * - depuis 2023 :
  *   PHP 8.2 sur macOS 13.x
  *   PHP 8.1 sur hebergeur web
  * ----------------------------------------------------------------------------
- * creation : 06-mai-2024 pchevaillier@gmail.com
- * revision : 15-jul-2024 pchevaillier@gmail.com + jquery
+ * creation : 30-jul-2024 pchevaillier@gmail.com
+ * revision :
  * ----------------------------------------------------------------------------
  * commentaires :
- * -
+ * - en evolution
  * attention :
  * -
  * a faire :
- *-
+ * -
  * ============================================================================
  */
+
 set_include_path('./');
 include('php/utilitaires/controle_session.php');
 include('php/utilitaires/definir_locale.php');
 
-// ============================================================================
+// ----------------------------------------------------------------------------
+// Verification acces a cette fonctionnalite
+// normalement le controle est fait en amont, dans le menu de l'application
 
+include 'php/metier/profil_session.php';
+
+$profil = new Profil_Session();
+$profil->initialiser();
+
+// Fonctionnalite uniquement offerte a un.e administrateurice Resabel
+$possible = $profil->est_admin();
+if (!$possible) {
+  header("location: index.html");
+  die("erreur : autorisation requise");
+}
+
+// ----------------------------------------------------------------------------
 // --- connection a la base de donnees
 include 'php/bdd/base_donnees.php';
 
 // --- Information sur le site Web
 require_once 'php/bdd/enregistrement_site_web.php';
 
-// --- Classe definissant la page a afficher
-require_once 'php/pages/page_indisponibilite.php';
+if (isset($_SESSION['swb']))
+  new Enregistrement_site_web($_SESSION['swb']);
 
-// --- Classes des elements de la page
-require_once 'php/elements_page/generiques/element.php';
-// ============================================================================
-// parametres
-$code_site_web = (isset($_SESSION['swb']))? intval($_SESSION['swb']): 1;
+// --- Classe definissant la page a afficher
+require_once 'php/pages/page_reactivation_comptes.php';
 
 // ----------------------------------------------------------------------------
 // --- Creation dynamique de la page
-new Enregistrement_site_web($code_site_web);
-$nom_site = Site_Web::accede()->sigle() . " Resabel";
 
 $feuilles_style = array();
 $feuilles_style[] = "css/resabel_ecran.css";
-$feuilles_style[] = "./../jquery-ui/1.13.2/jquery-ui.css";
+$nom_site = Site_Web::accede()->sigle() . " Resabel";
+$page = new Page_Reactivation_Comptes($nom_site, "Réactivation compte membres", $feuilles_style);
 
-$page = new Page_Indisponibilite($nom_site, "indisponibilite", $feuilles_style);
-$page->ajouter_script('./../jquery/3.6.3/jquery.min.js');
-$page->ajouter_script('./../jquery-ui/1.13.2/jquery-ui.min.js');
-
-$info = new Element_Code();
-$info->def_code('<div class="alert alert-warning" role="alert">version de développement incomplète</div>');
-$page->ajoute_contenu($info);
+$page->criteres_selection = $criteres_selection;
 
 // --- Affichage de la page
 $page->initialiser();

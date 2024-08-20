@@ -52,9 +52,11 @@
       $nom_site = Site_Web::accede()->sigle() . " Resabel";
       $page = new Page_Connexion($nom_site, "connexion", $feuilles_style);
       
+/*
       $info = new Element_Code();
       $info->def_code('<div class="alert alert-warning" role="alert">version de développement incomplète</div>');
       $page->ajoute_contenu($info);
+*/
 
       $info = new Element_Code();
       $code_html = "<div class=\"alert alert-info\" role=\"alert\">Vous devez vous identifez pour accéder à ce service</div>";

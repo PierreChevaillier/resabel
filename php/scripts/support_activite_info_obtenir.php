@@ -10,7 +10,7 @@
   //              PHP 7.0 sur hebergeur web
   // --------------------------------------------------------------------------
   // creation : 29-aug-2020 pchevaillier@gmail.com
-  // revision :
+// revision: 05-jul-2024 pchevaillier@gmail.com + affichage photo
   // --------------------------------------------------------------------------
   // commentaires :
   // -
@@ -57,6 +57,11 @@
       $donnee[] = "Bateau de type " . $support->nom_type();
     } else {
       $donnee[] = $support->nom_type();
+    }
+    
+    if (strlen($support->nom_fichier_image()) > 0) {
+      $chemin_fichier_image = '../photos/supports_activite/' . $support->nom_fichier_image();
+      $donnee[] = '<img src="' . $chemin_fichier_image . '" alt="' . $support->nom_fichier_image() . '" width=256>';
     }
     
     if (!$support->est_actif()) {

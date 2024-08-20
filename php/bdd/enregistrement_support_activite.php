@@ -19,13 +19,15 @@
  * revision : 23-jan-2020 pchevaillier@gmail.com champs nb_pers (type support)
  * revision : 28-jan-2024 pchevaillier@gmail.com coherence lire, ajouter, collecter
  * revision : 03-jun-2024 pchevaillier@gmail.com *modifier, *ajouter
+ * revision : 03-jul-2024 pchevaillier@gmail.com + nom fichier image
  * ----------------------------------------------------------------------------
  * commentaires :
  * - En evolution : certains champs/attributs ne sont pas (encore) traites
+ *   fichier_image n'est pas traite dans modifier et ajouter.
  * attention :
  * - pas teste avec support de type Ergo
  * a faire :
- * -
+ * - pouvoir definir/changer le nom du fichier image (methodes specifiques ?)
  * ============================================================================
  */
   
@@ -99,7 +101,7 @@ class Enregistrement_Support_Activite {
           . ' INNER JOIN ' . $prefix . 'sites_activite AS site ON (support.code_site_base = site.code) '
         ;
                 
-        $code_sql = 'SELECT support.code AS code, numero, modele, constructeur, annee_construction, support.actif AS support_actif, competition, loisir, support.nom AS nom, support.nombre_postes AS nb_postes, nb_initiation_min, nb_initiation_max, type_support.nom_court AS nom_type, support.code_type_support AS code_type, type_support.code_type AS code_type_support, type_support.nb_pers_min AS pers_min, type_support.nb_pers_max AS pers_max, type_support.cdb_requis AS cdb_requis, support.code_site_base AS code_site, site.code_type AS code_type_site FROM '
+        $code_sql = 'SELECT support.code AS code, numero, modele, constructeur, annee_construction, fichier_image, support.actif AS support_actif, competition, loisir, support.nom AS nom, support.nombre_postes AS nb_postes, nb_initiation_min, nb_initiation_max, type_support.nom_court AS nom_type, support.code_type_support AS code_type, type_support.code_type AS code_type_support, type_support.nb_pers_min AS pers_min, type_support.nb_pers_max AS pers_max, type_support.cdb_requis AS cdb_requis, support.code_site_base AS code_site, site.code_type AS code_type_site FROM '
           . $source
           . ' WHERE support.code = :code_support_activite LIMIT 1';
         $requete= $bdd->prepare($code_sql);
@@ -117,6 +119,8 @@ class Enregistrement_Support_Activite {
           }
           $this->support_activite->def_numero($donnee->numero);
           $this->support_activite->def_nom($donnee->nom);
+          if (!is_null($donnee->fichier_image))
+            $this->support_activite->def_nom_fichier_image($donnee->fichier_image);
           $this->support_activite->actif = ($donnee->support_actif == '1');
           $this->support_activite->pour_competition = ($donnee->competition == '1');
           $this->support_activite->pour_loisir = ($donnee->loisir == '1');
@@ -336,7 +340,7 @@ class Enregistrement_Support_Activite {
         
 //        $requete = 'SELECT support.code AS code, numero, support.actif AS support_actif, competition, loisir, support.nom AS nom, support.nombre_postes AS nb_postes, type_support.nom_court AS nom_type, support.code_type_support AS code_type, type_support.code_type AS code_type_support, type_support.nb_pers_min AS pers_min, type_support.nb_pers_max AS pers_max, type_support.cdb_requis AS cdb_requis, support.code_site_base AS code_site, site.code_type AS code_type_site FROM ' . $source . $selection . $tri;
         
-        $requete = 'SELECT support.code AS code, numero, modele, constructeur, annee_construction, support.actif AS support_actif, competition, loisir, support.nom AS nom, support.nombre_postes AS nb_postes, nb_initiation_min, nb_initiation_max, type_support.nom_court AS nom_type, support.code_type_support AS code_type, type_support.code_type AS code_type_support, type_support.nb_pers_min AS pers_min, type_support.nb_pers_max AS pers_max, type_support.cdb_requis AS cdb_requis, support.code_site_base AS code_site, site.code_type AS code_type_site FROM ' . $source . $selection . $tri;
+        $requete = 'SELECT support.code AS code, numero, modele, constructeur, annee_construction, fichier_image, support.actif AS support_actif, competition, loisir, support.nom AS nom, support.nombre_postes AS nb_postes, nb_initiation_min, nb_initiation_max, type_support.nom_court AS nom_type, support.code_type_support AS code_type, type_support.code_type AS code_type_support, type_support.nb_pers_min AS pers_min, type_support.nb_pers_max AS pers_max, type_support.cdb_requis AS cdb_requis, support.code_site_base AS code_site, site.code_type AS code_type_site FROM ' . $source . $selection . $tri;
         
         //echo "<p>" . $requete . "</p>";
          $resultat = $bdd->query($requete);
@@ -349,6 +353,8 @@ class Enregistrement_Support_Activite {
           }
           $support_activite->def_numero($donnee->numero);
           $support_activite->def_nom($donnee->nom);
+          if (!is_null($donnee->fichier_image))
+            $support_activite->def_nom_fichier_image($donnee->fichier_image);
           $support_activite->actif = ($donnee->support_actif == '1');
           $support_activite->pour_competition = ($donnee->competition == '1');
           $support_activite->pour_loisir = ($donnee->loisir == '1');

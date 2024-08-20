@@ -13,6 +13,7 @@
   // creation : 06-jul-2019 pchevaillier@gmail.com
   // revision : 21-mar-2023 pchevaillier@gmail.com bootstrap 5.2 + Menu_Navigation_Date
 // revision : 19-fev-2024 pchevaillier@gmail.com correction definir_parametres_url()
+// revision : 15-jul-2024 pchevaillier@gmail.com * nav date
   // --------------------------------------------------------------------------
   // commentaires :
   // - ergonomie de Menu_navigation_Date sans doute meilleure que Selecteur_Date
@@ -197,7 +198,7 @@ class Menu_Navigation_Date extends Controleur_Date_Page {
   }
   
   protected function afficher_debut() {
-    echo '<nav class="navbar navbar-expand-md" id ="' . $this->id() . '">';
+    echo '<nav class="navbar navbar-expand-md bg-body-tertiary" id ="' . $this->id() . '">';
     echo '<div class="container-fluid">';
     $txt = ($this->titre() == "") ? "Date": $this->titre();
     echo '<a class="navbar-text">' . $txt . '</a>';
@@ -217,15 +218,34 @@ class Menu_Navigation_Date extends Controleur_Date_Page {
     $code_action = $this->page_cible . '?x=0' . $code_param_url;
     echo '<form class="d-flex" action="' . $code_action . '" method="GET">';
     echo '<input class="form-control me-2" id="j" name="j" type="date" value="' . $valeur_jour
-      . '" aria-label="Date"><button class="btn btn-outline-primary" type="submit">Afficher</button>';
+      . '" aria-label="Date">';
+    foreach ($this->parametres as $cle => $valeur) {
+      echo '<input type="hidden" id="' . $cle . '" name="' . $cle .'" value="' . $valeur . '">';
+    }
+    echo '<button class="btn btn-outline-primary" type="submit">Afficher</button>';
     echo'</form>';
     echo '<ul class="navbar-nav me-auto mb-2 mb-lg-0">';
+    $nb_date = count($this->jours);
+    $i = 0;
     foreach ($this->jours as $jour) {
-      $texte_jour = $jour->date_texte_court();
+      if ($jour < $this->date_ref) {
+        if ($i == 0)
+          $texte_jour = '<< ' . $jour->date_texte_court();
+        else
+          $texte_jour = '< ' . $jour->date_texte_court();
+      } elseif ($jour == $this->date_ref) {
+        $texte_jour = $jour->date_texte_court();
+      } else {
+        if ($i == ($nb_date - 1))
+          $texte_jour = $jour->date_texte_court() . ' >>';
+        else
+          $texte_jour = $jour->date_texte_court() . ' >';
+      }
       $valeur_jour = $jour->date_html();
       $code_param_url = "?j=" . $valeur_jour . $this->code_html_parametres;
       echo '<a class="nav-link" href="' . $this->page_cible . $code_param_url . '">'
-        . $texte_jour . '</a></li>';
+        . '<span>' .$texte_jour . '</span></a>';
+      $i = $i + 1;
     }
     echo '</ul>';
   }

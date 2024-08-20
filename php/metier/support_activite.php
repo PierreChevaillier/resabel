@@ -16,6 +16,8 @@
   // revision : 08-sep-2019 pchevaillier@gmail.com identite_texte()
   // revision : 29-dec-2022 pchevaillier@gmail.com MaJ suite tests unitaires
 // revision : 26-fev-2024 pchevaillier@gmail.com typage
+// revision : 03-jul-2024 pchevaillier@gmail.com + nom fichier image
+// revision : 13-jul-2024  pchevaillier@gmail.com * identite_texte()
   // --------------------------------------------------------------------------
   // commentaires :
   // -
@@ -61,6 +63,12 @@
     public $constructeur = "";
     public $annee_construction = 2020;
     
+    private $nom_fichier_image = "";
+    public function nom_fichier_image(): string { return $this->nom_fichier_image; }
+    public function def_nom_fichier_image(string $nom_fichier): void {
+      $this->nom_fichier_image = $nom_fichier;
+    }
+    
     public function __construct(int $code) { $this->code = $code; }
     
     public function nom_type() {
@@ -77,7 +85,9 @@
     public function est_pour_loisir() { return $this->pour_loisir; }
     public function est_pour_competition() { return $this->pour_competition; }
     
-    public function identite_texte() { return $this->nom() .  ' (' .  $this->nom_type() . ')'; }
+    public function identite_texte() {
+      return $this->nom_type() .  ' n° ' . $this->numero() . '(' . $this->nom() . ')';
+    }
     
   }
   
@@ -87,7 +97,9 @@
     public $immatriculation = "";
     public $categorie_navigation;
         
-    public function identite_texte() { return $this->numero() . ' ' . $this->nom() .  ' (' .  $this->nom_type() . ')'; }
+    public function identite_texte() {
+      return $this->nom_type() .  ' n° ' . $this->numero() . ' (' . $this->nom() . ')';
+    }
     
   }
   

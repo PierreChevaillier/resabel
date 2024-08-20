@@ -60,9 +60,11 @@ $nom_site = Site_Web::accede()->sigle() . " Resabel";
 
 $page = new Page_Connexion_Club($nom_site, "connexion_club", $feuilles_style);
 
+/*
 $info = new Element_Code();
 $info->def_code('<div class="alert alert-warning" role="alert">version de développement incomplète</div>');
 $page->ajoute_contenu($info);
+*/
 
 // --- Affichage de la page
 $page->initialiser();

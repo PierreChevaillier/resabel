@@ -28,7 +28,7 @@ function afficher_info_seance(modal_id, entete, corps) {
   const bouton_modal = document.getElementById(modal_id + "_btn");
   
   titre_modal.innerHTML = entete;
-  corps_modal.innerHTML= "<div>" + corps + "</div>";
+  corps_modal.innerHTML = "<div>" + corps + "</div>";
   bouton_modal.textContent = "Fermer";
   bouton_modal.classList.add("btn-success");
   
