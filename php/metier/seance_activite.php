@@ -180,7 +180,7 @@
       $nb_resp_dest = 0;
       if ($this->a_un_responsable()) $nb_resp_dest = 1;
       $nb_places_resp_dest = 0;
-      /*
+      
       if ($this->responsable_requis()) $nb_places_resp_dest = 1 - $nb_resp_dest;
       
       // les autres membres des seances
@@ -200,7 +200,7 @@
         $ok = (($nb_resp_source + $nb_equip_source) <= $nb_places_equip_dest);
         if (!$ok) return false;
       }
-      */
+      
       /*
       $places_dispo = ((!$this->nombre_places_est_limite()) || ($this->nombre_places_disponibles() >= $seance->nombre_participants()));
       if (! $places_dispo)

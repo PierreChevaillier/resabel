@@ -20,6 +20,7 @@
   // revision : 30-mar-2023 pchevaillier@gmail.com actions changement de role
 // revision: 04-jul-2024 pchevaillier@gmail.com + affichage photo support activite
 // revision: 05-jul-2024 pchevaillier@gmail.com * affichage marees
+// revision: 20-aug-2024 pchevaillier@gmail.com * action seance (fix issue #18)
   // --------------------------------------------------------------------------
   // commentaires :
   // - en cours d'evolution
@@ -260,7 +261,7 @@
           $params = $params . ', \'' . $code_action . '\'';
           $code_menu = $code_menu . '<a class="dropdown-item" onclick="requete_changement_role_seance(' . $params . ');return false;">Passer Chef de bord</a>';
         }
-        if ($seance->a_un_responsable() && $seance->responsable->code() == $this->code_utilisateur()) {
+        if ($seance->a_un_responsable() && $seance->responsable->code() == $this->code_utilisateur() && $seance->nombre_places_equipiers_disponibles() > 0) {
           $params = $seance->code . ', ' . $this->contexte->utilisateur->code();
           $code_action = 'mre'; // Modification : passage Responsable a Equipier
           $params = $params . ', \'' . $code_action . '\'';

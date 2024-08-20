@@ -130,6 +130,10 @@ $ok = Enregistrement_Seance_Activite::collecter($site,
                                           $seances);
 if (!$ok) retourne_erreur(6);
 
+// Enlever le support de la seance actuelle
+$cle = $seance->code_support();
+unset($supports[$cle]);
+
 // il faut enlever les supports utilises par des activites ne pouvant accueillir
 // l'equipage actuel
 foreach ($seances as $s) {
