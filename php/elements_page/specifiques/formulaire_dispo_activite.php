@@ -12,6 +12,7 @@
   // creation : 10-jul-2019 pchevaillier@gmail.com
   // revision : 21-mar-2020 pchevaillier@gmail.com val. defaut creneaux horaires
 // revision : 13-jul-2024  pchevaillier@gmail.com * libelle choix support activite
+// revision : 19-aug-2024  pchevaillier@gmail.com * premier - dernier creneaux par defaut
   // --------------------------------------------------------------------------
   // commentaires :
   // - pas complet
@@ -118,13 +119,19 @@
                                                                      $site->longitude);
       $possibilites = array();
       $rang = 0;
-      // valeurs par defaut : 1er et 2e creneau
+      /*
+       * valeurs par defaut : 2e et 5e creneau
+       * le premier creneau (08:00) est rarement utilise (a l'AMP)
+       * l'affichage de 4 creneaux couvre une bonne demie journéee et le rendu affiche est meilleur
+       */
+      $rang_premier = 1;
+      $rang_dernier = 4;
       foreach ($creneaux_activite as $creneau) {
-        $cle = $creneau->debut()->valeur_cle_horaire(); //$creneau->getTimestamp();
+        $cle = $creneau->debut()->valeur_cle_horaire();
         $label = $creneau->debut()->format("H:i");
-        if ($rang == 0)
+        if ($rang == $rang_premier)
           $this->champ($id_premier)->def_valeur($cle);
-        elseif ($rang == 1)
+        elseif ($rang == $rang_dernier)
           $this->champ($id_dernier)->def_valeur($cle);
         $possibilites[$cle] = $label;
         $rang += 1;

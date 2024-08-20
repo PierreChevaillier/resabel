@@ -98,21 +98,6 @@ require_once 'php/elements_page/specifiques/vue_indisponibilite.php';
      
       $this->definir_affichage_activite_sites();
       
-      // script execute apres chargement de la page
-      /*
-          // tentative 20-apr-2020
-          $url = 'activites.php';
-          $params = '';
-          foreach ($_GET as $cle => $valeur)
-            $params = $params . '&' . $cle . '=' . $valeur;
-          $params[0] = '?';
-          $url = $url . $params;
-          //echo $url;
-          $code = '<script type="text/javascript">window.onload=creer_gestionnaire_evenement("' . $url . '"); </script>';
-          $element = new Element_Code();
-          $element->def_code($code);
-          $this->ajoute_element_bas($element);
-       */
     }
  
     

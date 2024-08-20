@@ -150,14 +150,16 @@
         echo '<li class="nav-item"><a class="nav-link" href="accueil_perso.php">Accueil</a></li>';
       else if ($this->session_club)
         echo '<li class="nav-item"><a class="nav-link" href="accueil_club.php">Accueil</a></li>';
-        
-      echo '<li class="nav-item"><a class="nav-link" href="activites.php?a=l&j=' . $this->jour->valeur_cle_date() . '">Sorties</a></li>';
-      
-      //if (!isset($_SESSION['prs']) || (isset($_SESSION['prs']) && isset($_SESSION['act'])))
-      
+
       if ($this->session_club || $this->membre_actif)
         $this->afficher_menu_inscription();
 
+      /*
+       * Affichage du tableau des activites pour le jour courrant
+       * a =l : action lecture ; pas de modfication possible
+       */
+      echo '<li class="nav-item"><a class="nav-link" href="activites.php?a=l&j=' . $this->jour->valeur_cle_date() . '">Sorties</a></li>';
+      
       $this->afficher_menu_competitions();
       
       $this->afficher_menu_club();

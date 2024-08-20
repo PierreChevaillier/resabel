@@ -25,16 +25,13 @@
 // revision: 13-jul-2024 pchevaillier@gmail.com + couleur / seance passee et indispo
   // --------------------------------------------------------------------------
   // commentaires :
-  // - en evolution
-  // - s'inspirer de resabel V1 (sortie_presentations.php)
-  //   donc pas 1 Element ?
+  // -
   // attention :
-  // - experimental
-  // a faire : Afficheur simple : sans controle et Afficheur avec controle(s)
-  //  - afficher champ information pour seance et participation
+  // -
+  // a faire :
+  // - afficher champ information pour seance et participation
   // ==========================================================================
   
-  // --------------------------------------------------------------------------
   require_once 'php/metier/seance_activite.php';
   require_once 'php/metier/personne.php';
   require_once 'php/metier/calendrier.php';
@@ -627,7 +624,7 @@
       $menu = "";
       
       // copie de page_accueil_perso.php
-      $details = ""; //utf8_encode("");
+      $details = "";
       $seance = $this->seance;
       $aff_tel = new Afficheur_Telephone();
       $aff_mail = new Afficheur_Courriel_Actif();
@@ -666,20 +663,7 @@
           . $entete . '\', \'' . $details . '\');">Afficher informations</a>';
       
       // --- Actions dependant du contexte
-      if ($this->possible_inscrire_responsable()) {
-        $rang = 0;
-        $id_participation = $this->afficheur->generer_id($rang);
-        $params = $params_seance . ', \'' . $id_participation . '\', ' . $rang;
-        $menu = $menu . '<a class="dropdown-item" onclick="activer_formulaire(' . $params . '); return false; " >Inscrire Chef de bord</a>';
-      }
-      
-      if ($this->possible_inscrire_equipier()) {
-        $rang = $this->seance->nombre_participants() + ($this->seance->a_un_responsable() ? 0:1);
-        $id_participation = $this->afficheur->generer_id($rang);
-        $params = $params_seance . ', \'' . $id_participation . '\', ' . $rang;
-        $menu = $menu . '<a class="dropdown-item" onclick="activer_formulaire(' . $params . '); return false;" >Inscrire équipier</a>';
-      }
-      
+ 
       if ($this->possible_inscrire_equipage()) {
         // url retour = activites.php?a=ie&j=2024-01-27&sa=1&pc=PT09H30M&dc=PT10H30M&ts=0&s=0
         // cf. page_activites.php
@@ -702,6 +686,21 @@
           . $code_param_url
           .  '" >Inscrire équipage</a>';
       }
+      
+      if ($this->possible_inscrire_responsable()) {
+        $rang = 0;
+        $id_participation = $this->afficheur->generer_id($rang);
+        $params = $params_seance . ', \'' . $id_participation . '\', ' . $rang;
+        $menu = $menu . '<a class="dropdown-item" onclick="activer_formulaire(' . $params . '); return false; " >Inscrire Chef de bord</a>';
+      }
+      
+      if ($this->possible_inscrire_equipier()) {
+        $rang = $this->seance->nombre_participants() + ($this->seance->a_un_responsable() ? 0:1);
+        $id_participation = $this->afficheur->generer_id($rang);
+        $params = $params_seance . ', \'' . $id_participation . '\', ' . $rang;
+        $menu = $menu . '<a class="dropdown-item" onclick="activer_formulaire(' . $params . '); return false;" >Inscrire équipier</a>';
+      }
+      
       
       if ($this->seance->nombre_participants() > 0) {
         $html_info_seance = htmlspecialchars($this->formater_info_seance());
