@@ -160,6 +160,12 @@
      */
     public function peut_accueillir_participants(Seance_Activite $seance): bool {
       $ok = true;
+      
+      /*
+       * s'il y avait un doublon, cela creerait une incoherence
+       * dans la table des partipations aux seances d'activite
+       * unicite (code_seance, code_participant)
+       */
       $doublon = false;
       foreach ($seance->inscriptions as $x) {
         if ($this->a_comme_participant($x->participant)) {
@@ -179,8 +185,8 @@
       if ($seance->a_un_responsable()) $nb_resp_source = 1;
       $nb_resp_dest = 0;
       if ($this->a_un_responsable()) $nb_resp_dest = 1;
-      $nb_places_resp_dest = 0;
       
+      $nb_places_resp_dest = 0;
       if ($this->responsable_requis()) $nb_places_resp_dest = 1 - $nb_resp_dest;
       
       // les autres membres des seances
@@ -200,24 +206,7 @@
         $ok = (($nb_resp_source + $nb_equip_source) <= $nb_places_equip_dest);
         if (!$ok) return false;
       }
-      
-      /*
-      $places_dispo = ((!$this->nombre_places_est_limite()) || ($this->nombre_places_disponibles() >= $seance->nombre_participants()));
-      if (! $places_dispo)
-        return false;
 
-      if ($this->nombre_places_est_limite()) {
-        if ($this->nombre_places_equipiers_disponibles() >= $seance->nombre_equipiers())
-          return false;
-      }
- 
-      $ok = true;
-      $cond_resp = ($this->responsable_requis() && ! $this->a_un_responsable());
-      $complet = ($this->nombre_places_disponibles() == $seance->nombre_participants());
-      if ($complet && $cond_resp) {
-        $ok = $seance->a_un_responsable();
-      }
-       */
       return $ok;
     }
   }

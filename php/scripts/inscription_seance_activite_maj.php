@@ -1,27 +1,32 @@
 <?php
-  // ==========================================================================
-  // contexte : Resabel - systeme de REServAtion de Bateau En Ligne
-  // description : traitement requete (json) pour la mise a jour des informations
-  //               relatives a la participation a une seance d'actvite :
-  //               inscription, desinscription...
-  // copyright (c) 2018-2024 AMP. Tous droits reserves.
-  // --------------------------------------------------------------------------
-  // utilisation : php - pour traitement requete ajax
-  // dependances : javascript qui lance cette requete ($_GET)
-  // teste avec : PHP 7.1 sur Mac OS 10.14 ;
-  //  - depuis jan-2023 :/Volumes/partage/photos/2023_Singapour/IMG_1168.jpeg
-  //              PHP 8.2 sur macOS 13.2
-  // --------------------------------------------------------------------------
-  // creation : 08-feb-2020 pchevaillier@gmail.com
-  // revision : 20-apr-2020 pchevaillier@gmail.com
-  // revision : 17-feb-2023 pchevaillier@gmail.com + changement horaire
-// revision : 25-jan-2024 pchevaillier@gmail.com + changement support
-  // --------------------------------------------------------------------------
-  // commentaires :
-  // attention :
-  // a faire :
-// - TODO: utiliser Enregistrement_Site_Activite::creer
-  // ==========================================================================
+/* ============================================================================
+ * Resabel - systeme de REServAtion de Bateau En Ligne
+ * Copyright (C) 2024 Pierre Chevaillier
+ * ----------------------------------------------------------------------------
+ * description : traitement requete (json) pour la mise a jour des informations
+ *               relatives a la participation a une seance d'actvite :
+ *               inscription, desinscription, changement horaire ou support...
+ * ----------------------------------------------------------------------------
+ * utilisation : php -  XMLHttpRequest (javascript)
+ * dependances : javascript qui lance cette requete ($_GET)
+ * utilise avec :
+ * - depuis 2023 :
+ *   PHP 8.2 sur macOS 13.x
+ * PHP 8.1 sur hebergeur web
+ * ----------------------------------------------------------------------------
+ * creation : 08-feb-2020 pchevaillier@gmail.com
+ * revision : 17-feb-2023 pchevaillier@gmail.com + changement horaire
+ * revision : 25-jan-2024 pchevaillier@gmail.com + changement support
+ * revision : 21-aug-2024 pchevaillier@gmail.com + seance accueil sans resp et source avec
+ * ----------------------------------------------------------------------------
+ * commentaires :
+ * -
+ * attention :
+ * -
+ * a faire :
+ * - TODO: utiliser Enregistrement_Site_Activite::creer
+ * ============================================================================
+*/
   set_include_path('./../../');
   
   include('php/utilitaires/controle_session.php');
@@ -32,8 +37,9 @@
   
   // --- classes utilisees
 require_once 'php/bdd/enregistrement_site_activite.php';
-  require_once 'php/bdd/enregistrement_seance_activite.php';
-  
+require_once 'php/bdd/enregistrement_seance_activite.php';
+require_once 'php/bdd/enregistrement_support_activite.php';
+
   // --------------------------------------------------------------------------
   
   // Champs json de la requete
@@ -119,6 +125,22 @@ require_once 'php/bdd/enregistrement_site_activite.php';
         $ok = Enregistrement_Seance_Activite::changer_seance($seance->code(),
                                                               $seance_accueil->code()
                                                               );
+        // si la seance d'accueil n'avait pas de responsable
+        // et que le seance source en avait un,
+        // alors ce dernier devient le responsable de la seance d'accueil.
+        $supports = array();
+        $criteres = "support.code = " . $support_accueil;
+        Enregistrement_Support_Activite::collecter($criteres, "", $supports);
+        foreach ($supports as $sa)
+          $seance_accueil->def_support($sa);
+        if ($seance_accueil->responsable_requis()) {
+          if ((!$seance_accueil->a_un_responsable()) && $seance->a_un_responsable()) {
+            $code_resp = $seance->responsable->code();
+            $ok = Enregistrement_Seance_Activite::passer_equipier_responsable($seance_accueil->code(),
+                                                                              $code_resp);
+          }
+        }
+        
         // puis on supprime la seance qui est alors vide de participation
         // il faut le faire *apres* le changement de seance
         // car cette derniere supprime les eventuelles participations

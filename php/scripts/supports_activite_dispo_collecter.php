@@ -1,9 +1,10 @@
 <?php
 /* ============================================================================
- * contexte : Resabel - systeme de REServAtion de Bateau En Ligne
+ * Resabel - systeme de REServAtion de Bateau En Ligne
+ * Copyright (C) 2024 Pierre Chevaillier
+ * ----------------------------------------------------------------------------
  * description : traitement requete (json) : recherche supports disponibles
  *               en vue du changement de support pour une activite
- * copyright (c) 2018-2024 AMP. Tous droits reserves.
  * ----------------------------------------------------------------------------
  * utilisation : php - traitement XMLHttpRequest (javascript)
  * dependances :
@@ -14,12 +15,13 @@
  *   PHP 8.1 sur hebergeur web
  * ----------------------------------------------------------------------------
  * creation : 18-dec-2023 pchevaillier@gmail.com
- * revision : 24-jan-2024 pchevaillier@gmail.com
  * revision : 23-fev-2024 pchevaillier@gmail.com cas supports pas utilises
  * revision : 16-jul-2024 pchevaillier@gmail.com + retour erreur
+ * revision : 21-aug-2024 pchevaillier@gmail.com + exlut support de la seance 'source'
  * ----------------------------------------------------------------------------
  * commentaires :
- * - il ya deux requetes sur la table des activites => fusionner en une seule
+ * - il y a deux requetes sur la table des activites
+ *   => envisager de les fusionner en une seule
  * attention :
  * -
  * a faire :
@@ -56,13 +58,11 @@ function retourne_erreur(int $code_erreur): void {
   exit();
 }
 
-//$action = (isset($_GET['act']))? $_GET['act']: '';
+// ============================================================================
 
 $code_seance = (isset($_GET['id']))? intval($_GET['id']): 0;
 $code_site = (isset($_GET['sa']))? intval($_GET['sa']): 1;
 
-//$info_participation = new Information_Participation_Seance_Activite();
-//$info_participation->code_seance = (isset($_GET['id']))? intval($_GET['id']): 0;
 $status = 1;
 $ok = ($code_seance != 0);
 if (!$ok) retourne_erreur(1);
@@ -116,6 +116,10 @@ foreach ($indispos as $indispo) {
   unset($supports[$cle]);
 }
 
+// --- Enlever le support de la seance actuelle
+$cle = $seance->code_support();
+unset($supports[$cle]);
+
 // --- Les seances d'activites sur le creneau horaire
 
 $seances = array();
@@ -129,10 +133,6 @@ $ok = Enregistrement_Seance_Activite::collecter($site,
                                           $critere_tri,
                                           $seances);
 if (!$ok) retourne_erreur(6);
-
-// Enlever le support de la seance actuelle
-$cle = $seance->code_support();
-unset($supports[$cle]);
 
 // il faut enlever les supports utilises par des activites ne pouvant accueillir
 // l'equipage actuel
@@ -165,6 +165,9 @@ foreach ($supports as $sa) {
   }
 }
 
+// ----------------------------------------------------------------------------
+// Reponse a la requete :
+
 // Creation du tableau des supports possibles
 $possibles = array();
 foreach ($supports as $support) {
@@ -173,9 +176,6 @@ foreach ($supports as $support) {
   $x['places'] = 'XX places';
   $possibles[$support->code()] = json_encode($x);
 }
-
-// ----------------------------------------------------------------------------
-// Reponse a la requete :
 
 $resultat_json = json_encode($possibles);
 echo $resultat_json;
