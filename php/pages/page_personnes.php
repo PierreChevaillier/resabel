@@ -38,7 +38,7 @@
       parent::definir_elements();
       
       $element = new Entete_Contenu_Page();
-      $element->def_titre("Carnet d'adresses");
+      $element->def_titre($this->titre());
       $this->ajoute_element_haut($element);
     
       $formulaire_selection = new Formulaire_Selection_Personne($this);

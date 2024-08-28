@@ -13,7 +13,6 @@
   //   - PHP 8.1 sur hebergeur web
   // --------------------------------------------------------------------------
   // creation : 14-oct-2018 pchevaillier@gmail.com
-  // revision : 29-dec-2018 pchevaillier@gmail.com deconnexion
   // revision : 11-mar-2019 pchevaillier@gmail.com $_SESSION['prs'] pas necessairement defini
   // revision : 07-mai-2019 pchevaillier@gmail.com logique / affichage item
   // revision : 23-mai-2019 pchevaillier@gmail.com + afficher_menu_club
@@ -24,6 +23,7 @@
 // revision : 14-jan-2024 pchevaillier@gmail.com + menu competitions
 // revision : 22-may-2024 pchevaillier@gmail.com + utilisation Profil_Session
 // revision : 22-may-2024 pchevaillier@gmail.com * afficher_menu_competition
+// revision : 28-aug-2024 pchevaillier@gmail.com + reactivation compte
   // --------------------------------------------------------------------------
   // commentaires :
   // attention :
@@ -121,6 +121,7 @@
       }
       if ($this->session_admin) {
         echo '<li><a class="dropdown-item" href="debutants.php">Débutant.e.s > Confirmé.e.s</a></li>';
+        echo '<li><a class="dropdown-item" href="reactivation_comptes.php?a=l&act=0&cnx=0">Réactivation comptes</a></li>';
         //echo '<a class="dropdown-item" href="page_temporaire.php">Listes visiteurs</a>';
       }
       echo '</ul></li>';

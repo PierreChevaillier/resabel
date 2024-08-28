@@ -88,15 +88,7 @@
     public function est_apres(DateTimeInterface $autre_instant): bool {
       return $autre_instant->est_avant($this);
     }
-    /*
-    public function est_apres(Instant $autre_instant) {
-      return $this->getTimestamp() >= $autre_instant->getTimestamp();
-    }
-    
-    public function est_avant(Instant $autre_instant) {
-         return $this->getTimestamp() <= $autre_instant->getTimestamp();
-    }
-    */
+
     public function date_html() {
       return $this->format('Y-m-d');
     }
@@ -287,7 +279,7 @@
       $d = new Instant("today");
       $un_jour = new DateInterval('P1D');
       for ($j = 0; $j < $nJours; $j++) {
-        $ts = $d->valeur_cle_date(); //$d->getTimestamp();
+        $ts = $d->valeur_cle_date();
         $resultat[$ts] = $d->date_texte();
         $d = $d->add($un_jour);
       }

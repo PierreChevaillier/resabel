@@ -82,7 +82,7 @@
       $feuilles_style = array();
       $feuilles_style[] = "css/resabel_ecran.css";
       $nom_site = Site_Web::accede()->sigle() . " Resabel";
-      $page = new Page_Personnes($nom_site, "Carnet addresses", $feuilles_style);
+      $page = new Page_Personnes($nom_site, "Carnet adresses", $feuilles_style);
       $page->def_id("pg_prs");
       
       $page->criteres_selection = $criteres_selection;

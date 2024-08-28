@@ -1,36 +1,44 @@
 <?php
-  // ==========================================================================
-  // contexte : Resabel - systeme de REServAtion de Bateau En Ligne
-  // description : formulaire pour recherche disponibilite support activite
-  // copyright (c) 2018-2020 AMP. Tous droits reserves.
-  // --------------------------------------------------------------------------
-  // utilisation : php - require_once <chemin_fichier.php>
-  // dependances :
-  // teste avec : PHP 7.1 sur Mac OS 10.14 ;
-  //              PHP 7.3 sur hebergeur web
-  // --------------------------------------------------------------------------
-  // creation : 10-jul-2019 pchevaillier@gmail.com
-  // revision : 21-mar-2020 pchevaillier@gmail.com val. defaut creneaux horaires
-// revision : 13-jul-2024  pchevaillier@gmail.com * libelle choix support activite
-// revision : 19-aug-2024  pchevaillier@gmail.com * premier - dernier creneaux par defaut
-  // --------------------------------------------------------------------------
-  // commentaires :
-  // - pas complet
-  // attention :
-  // - 
-  // a faire :
-// - cas ou un seul site actif => pas de champ
-// - cas ou un seul type de support => pas de champ
-  // ==========================================================================
-
+/* ============================================================================
+ * Resabel - systeme de REServAtion de Bateau En Ligne
+ * Copyright (C) 2024 Pierre Chevaillier
+ * contact: pchevaillier@gmail.com 70 allee de Broceliande, 29200 Brest, France
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License,
+ * or any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ * ----------------------------------------------------------------------------
+ * description : formulaire pour recherche disponibilite support(s) activite(s)
+ * utilisation : php - require_once <chemin_vers_ce_fichier_php>
+ * dependances :
+ * - aucune
+ * ----------------------------------------------------------------------------
+ * creation : 10-jul-2019 pchevaillier@gmail.com
+ * revision : 19-aug-2024 pchevaillier@gmail.com * init prem - dern creneaux
+ * revision : 28-aug-2024 pchevaillier@gmail.com - private $club (non utilise)
+ * ----------------------------------------------------------------------------
+ * commentaires :
+ * -
+ * attention :
+ * -
+ * a faire :
+ * - cas ou un seul type de support => champ cache
+ * ============================================================================
+ */
+ 
+// ============================================================================
   // --- Classes utilisees
   require_once 'php/elements_page/generiques/formulaire.php';
   require_once 'php/elements_page/generiques/champ_formulaire.php';
 
   require_once 'php/metier/calendrier.php';
-  
-  require_once 'php/metier/club.php';
-  require_once 'php/bdd/enregistrement_club.php';
   
   require_once 'php/metier/site_activite.php';
   require_once 'php/bdd/enregistrement_site_activite.php';
@@ -44,13 +52,11 @@
   // ==========================================================================
   class Formulaire_Disponibilite_Activite extends Formulaire {
     
-    private $club;
-    private $code_site_selectionne;
+    private int $code_site_selectionne;
     private $sites = null;
     private $supports_activite = null;
     
     public function __construct($page, $mode, $code_site_selectionne) {
-      //$this->mode = $mode;
       $this->code_site_selectionne = $code_site_selectionne;
       $this->collecter_informations();
       
@@ -64,15 +70,7 @@
       $page->javascripts[] = 'js/controle_dispo_activite.js'; // pour info contextuelle sur horaires et supports
       parent::__construct($page, $script_traitement, $action, $id);
     }
-    
-    protected function collecter_info_club() {
-      $code_club = isset($_SESSION['clb']) ? $_SESSION['clb'] : 1;
-      $this->club = new Club($code_club);
-      $enreg = new Enregistrement_Club();
-      $enreg->def_club($this->club);
-      $enreg->lire();
-    }
-    
+        
     protected function collecter_info_sites() {
       // Sites actifs, tries par type
       Enregistrement_Site_Activite::collecter(" actif = 1 ", " code_type ",  $this->sites);
@@ -88,7 +86,6 @@
     }
     
     private function collecter_informations() {
-      $this->collecter_info_club(); // pour le fuseau horaire et les sites
       $this->collecter_info_sites();
       $this->collecter_info_supports_actifs();
     }
@@ -97,7 +94,6 @@
       $this->initialiser_dates('j');
       $this->initialiser_creneaux('pc', 'dc');
       
-      //$this->champ('id')->def_valeur($this->membre->identifiant);
       $this->initialiser_sites('sa');
       $this->initialiser_types_support('ts');
       $this->initialiser_supports('s');
@@ -105,7 +101,7 @@
     
     private function initialiser_dates($id_champ) {
       $nJours = 21;
-      $dates = array(); // timestamp, texte_court
+      $dates = array(); // cle_date, texte_court
       Calendrier::jours_futurs_texte($nJours, $dates);
       $this->champ($id_champ)->options = $dates;
     }
@@ -197,7 +193,7 @@
         if (isset($this->sites) && (count($this->sites) > 1)) {
           // Plusieurs sites sont actifs : on pose donc la question
           $item = new Champ_Selection($id);
-          $item->def_titre("Site");
+          $item->def_titre("Site activité");
           $item->valeurs_multiples = false;
         } else {
           // Un seul site : on ne pose pas la question
@@ -231,12 +227,6 @@
         $item->valeurs_multiples = false;
         $this->ajouter_champ($item);
         
-        //Enregistrement_Commune::collecter("acces = 'O'"," nom ASC", $communes);
-        //$item->options[0] = "Toutes";
-        //foreach ($possibilites as $code => $elem)
-        //  $item->options[$code] = $elem->nom();
-        //if (isset($_POST[$id]))
-        //  $item->def_valeur($_POST[$id]);
         parent::initialiser();
       } catch(Exception $e) {
         die('Exception dans la methode initialiser de la classe Formulaire_Disponibilite_Activite : ' . $e->getMessage());
@@ -258,5 +248,5 @@
       
     }
   }
-  // ==========================================================================
+// ============================================================================
 ?>

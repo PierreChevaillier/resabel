@@ -91,7 +91,7 @@
     }
     
     public function __construct($nom_site, $nom_page, $liste_feuilles_style = null) {
-      $this->def_titre($nom_site . " - " . $nom_page);
+      $this->def_titre( $nom_page); //$nom_site . " - " . $nom_page);
       if ($liste_feuilles_style != null)
         $this->feuilles_style = $liste_feuilles_style;
       $this->page = $this; // peut pas etre null
@@ -196,7 +196,7 @@ class Page_Simple extends Page {
   public function __construct($nom_site, $nom_page, $liste_feuilles_style = null) {
     parent::__construct($nom_site, $nom_page, $liste_feuilles_style);
     $pp = new Pied_Page();
-    $pp->def_titre("Resabel - V2");
+    $pp->def_titre("Resabel");
     $this->ajoute_element_bas($pp);
   }
     

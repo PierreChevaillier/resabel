@@ -1,23 +1,30 @@
 <?php
 /* ============================================================================
- * contexte : Resabel - systeme de REServAtion de Bateau En Ligne
- * description :  verifie les informations de connexion d'un utilisateur
- *              - identification de l'utilisateur pour la session
- * copyright (c) 2014-2023 AMP. Tous droits reserves.
+ * Resabel - systeme de REServAtion de Bateau En Ligne
+ * Copyright (C) 2024 Pierre Chevaillier
+ * contact: pchevaillier@gmail.com 70 allee de Broceliande, 29200 Brest, France
+ * -----------------------------------------------------------------------------
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License,
+ * or any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  * ----------------------------------------------------------------------------
- * utilisation : php - require_once <chemin_vers_ce_fichier.php>
+ * description : actions sur la table rsbl_connexion
+ * utilisation : php - require_once <chemin_vers_ce_fichier_php>
  * dependances :
- * -
- * utilise avec :
- * - depuis 2023 :
- *   PHP 8.2 sur macOS 13.x
- *   PHP 8.1 sur hebergeur web
+ * - structure table rsbl_connexion
  * ----------------------------------------------------------------------------
  * creation : 12-nov-2023 pchevaillier@gmail.com
- * revision :
+ * revision : 28-aug-2024 pchevaillier@gmail.com + activer_compte
  * ----------------------------------------------------------------------------
  * commentaires :
- * - en chantier V2 - pas completement teste
+ * -
  * attention :
  * -
  * a faire :
@@ -100,7 +107,6 @@ class Enregistrement_Connexion {
     }
   }
   
-  
 
 //    public function verifier_identifiant_unique(string $identifiant): bool {
   public function verifier_identifiant_unique(string $identifiant): bool {
@@ -138,6 +144,24 @@ class Enregistrement_Connexion {
     return $status;
   }
   
+  public function activer_compte(int $nouveau_statut): bool {
+    $status = true;
+    if (is_null($this->connexion)) return false;
+    $date_modif = (Calendrier::maintenant())->date_heure_sql();
+    $code_sql = 'UPDATE ' . self::source()
+      . ' SET actif = "' . $nouveau_statut
+      . '", connexion = "' . $nouveau_statut
+      . '", date_actif = "' . $date_modif
+      . '" WHERE code_membre = '. $this->connexion->code_membre();
+    try {
+      $bdd = Base_Donnees::acces();
+      $n = $bdd->exec($code_sql);
+      $status = ($n == 1);
+    } catch (PDOException  $e) {
+      Base_Donnees::sortir_sur_exception(self::source(), $e);
+    }
+    return $status;
+  }
  }
 // ============================================================================
 ?>

@@ -6,13 +6,12 @@
   // --------------------------------------------------------------------------
   // utilisation : php - require_once <chemin_vers_ce_fichier.php>
   // dependances : bootstratp 4.x, variables de SESSION
-  // teste avec : PHP 7.1 sur Mac OS 10.14 ;
-  //              PHP 7.0 sur hebergeur web
   // --------------------------------------------------------------------------
   // creation : 04-mar-2019 pchevaillier@gmail.com
   // revision : 11-mar-2019 pchevaillier@gmail.com id_club
   // revision : 16-mar-2019 pchevaillier@gmail.com Menu_Actions_Personne
   // revision : 29-mar-2019 pchevaillier@gmail.com Menu_Actions_Membre
+// revision : 28-aug-2024 pchevaillier@gmail.com Menu_Actions_Membre : + activ/desact. compte
   // --------------------------------------------------------------------------
   // commentaires :
   // -
@@ -20,7 +19,6 @@
   // -
   // a faire :
   // - titre et id de l'element
-  // - completer les actions du menu
   // ==========================================================================
   
   require_once 'php/metier/membre.php';
@@ -91,10 +89,11 @@
     
     public function __construct($page) {
       $this->def_page($page);
-      // ajour du script qui declenchera l'affichage des informations sur le personne
+      // ajour des script qui controlent les scripts de modification des donnees
       $page->javascripts[] = "js/requete_info_personne.js";
       $page->javascripts[] = "js/requete_maj_statut_cdb.js";
       $page->javascripts[] = "js/requete_maj_niveau.js";
+      $page->javascripts[] = "js/requete_maj_statut_cnx.js";
       
       // element modal pour affichage des informations sur la personne
       $this->afficheur_info = new Element_Modal();
@@ -137,31 +136,36 @@
     
   }
   
-  // --------------------------------------------------------------------------
-  class Menu_Actions_Membre extends Menu_Actions_Personne {
-    
-    protected function afficher_actions() {
-      parent::afficher_actions();
-      if (isset($_SESSION['adm'])) {
-        // Changements de statuts possibles (reversibles)
-        if (!$this->personne->est_chef_de_bord() && !$this->personne->est_debutant())
-          echo '<a class="dropdown-item" id="ctrl_cdb" data-bs-toggle="modal" data-bs-target="#aff_msg" href="#" onclick="return requete_maj_statut_cdb(this, ' . $this->personne->code() .', 1, \'aff_msg\');">Passer chef de bord</a>';
-        elseif ($this->personne->est_chef_de_bord())
-          echo '<a class="dropdown-item" id="ctrl_cdb" data-bs-toggle="modal" data-bs-target="#aff_msg" href="#" onclick="return requete_maj_statut_cdb(this, ' . $this->personne->code() .', 0, \'aff_msg\');">Plus chef de bord</a>';
-        
-        if ($this->personne->est_debutant())
-          echo '<a class="dropdown-item" id="ctrl_nouv" data-bs-toggle="modal" data-bs-target="#aff_msg" href="#" onclick="return requete_maj_niveau(this, ' . $this->personne->code() .', 2, \'aff_msg\');">Passer non débutant</a>';
-        elseif (!$this->personne->est_chef_de_bord())
-          echo '<a class="dropdown-item" id="ctrl_nouv" data-bs-toggle="modal" data-bs-target="#aff_msg" href="#" onclick="return requete_maj_niveau(this, ' . $this->personne->code() .', 1, \'aff_msg\');">Repasser débutant</a>';
-        /*
-        if ($this->personne->est_actif())
-          echo '<a class="dropdown-item" href="#">Désactiver compte</a>';
-        else
-          echo '<a class="dropdown-item" href="#">Réactiver compte</a>';
-         */
+// ----------------------------------------------------------------------------
+class Menu_Actions_Membre extends Menu_Actions_Personne {
+  
+  protected function afficher_actions() {
+    parent::afficher_actions();
+    if (isset($_SESSION['adm'])) {
+      if (array_key_exists('cnx', $this->page->criteres_selection)) {
+        if ($this->page->criteres_selection['cnx'] == 0) {
+          echo '<a class="dropdown-item" id="ctrl_cnx" data-bs-toggle="modal" data-bs-target="#aff_msg" href="#" onclick="return requete_maj_statut_cnx(this, ' . $this->personne->code() .', 1, \'aff_msg\');">Réactiver compte</a>';
+        } else {
+          echo '<a class="dropdown-item" id="ctrl_cnx" data-bs-toggle="modal" data-bs-target="#aff_msg" href="#" onclick="return requete_maj_statut_cnx(this, ' . $this->personne->code() .', 0, \'aff_msg\');">Désactiver compte</a>';
+        }
+      }
+      // Changements de statuts possibles (reversibles)
+      if (array_key_exists('act', $this->page->criteres_selection)) {
+        if ($this->page->criteres_selection['act'] == 1) {
+          if (!$this->personne->est_chef_de_bord() && !$this->personne->est_debutant())
+            echo '<a class="dropdown-item" id="ctrl_cdb" data-bs-toggle="modal" data-bs-target="#aff_msg" href="#" onclick="return requete_maj_statut_cdb(this, ' . $this->personne->code() .', 1, \'aff_msg\');">Passer chef de bord</a>';
+          elseif ($this->personne->est_chef_de_bord())
+            echo '<a class="dropdown-item" id="ctrl_cdb" data-bs-toggle="modal" data-bs-target="#aff_msg" href="#" onclick="return requete_maj_statut_cdb(this, ' . $this->personne->code() .', 0, \'aff_msg\');">Plus chef de bord</a>';
+          
+          if ($this->personne->est_debutant())
+            echo '<a class="dropdown-item" id="ctrl_nouv" data-bs-toggle="modal" data-bs-target="#aff_msg" href="#" onclick="return requete_maj_niveau(this, ' . $this->personne->code() .', 2, \'aff_msg\');">Passer non débutant</a>';
+          elseif (!$this->personne->est_chef_de_bord())
+            echo '<a class="dropdown-item" id="ctrl_nouv" data-bs-toggle="modal" data-bs-target="#aff_msg" href="#" onclick="return requete_maj_niveau(this, ' . $this->personne->code() .', 1, \'aff_msg\');">Repasser débutant</a>';
+        }
       }
     }
   }
+}
   
-  // ==========================================================================
+// ============================================================================
 ?>
