@@ -1,24 +1,33 @@
 <?php
 /* ============================================================================
- * contexte : Resabel - systeme de REServAtion de Bateau En Ligne
- * description :  verifie les informations de connexion en tant que Club
- *              - donc sans utlisateur indetifie de maniere personnelle
- * copyright (c) 2014-2023 AMP. Tous droits reserves.
+ * Resabel - systeme de REServAtion de Bateau En Ligne
+ * Copyright (C) 2024 Pierre Chevaillier
+ * contact: pchevaillier@gmail.com 70 allee de Broceliande, 29200 Brest, France
  * ----------------------------------------------------------------------------
- * utilisation : action suite soumission formulaire connexion club
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License,
+ * or any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ * ----------------------------------------------------------------------------
+ * description : action suite soumission formulaire connexion club
+ *  verifie les informations de connexion en tant que Club,
+ *  donc sans utilisateur identifie de maniere personnelle
+ * utilisation : php - require_once <chemin_vers_ce_fichier_php>
  * dependances :
- * - variables transmises depuis le formulaire html/javascript
- * - variable $_SESSION
- * utilise avec :
- * - depuis 2023 :
- *   PHP 8.2 sur macOS 13.x
- *   PHP 8.1 sur hebergeur web
  * ----------------------------------------------------------------------------
  * creation : 03-dec-2023 pchevaillier@gmail.com
- * revision :
+ * revision : 31-aug-2024 pchevaillier@gmail.com * page accueil
  * ----------------------------------------------------------------------------
  * commentaires :
  * - les informations de connexion sont stockees dans $_SESSION
+ * - connexion club : on va sur la page des incriptions equipages,
+ *   en effet, c'est la raison principale pour se connecter.
  * attention :
  * -
  * a faire :
@@ -113,7 +122,7 @@ if ($identification_ok) {
   $_SESSION['n_clb'] = $club->nom();
   
   $jour = Calendrier::aujourdhui();
-  $url = '../../activites.php?a=l&j=' . $jour->valeur_cle_date();
+  $url = '../../activites.php?a=ie&j=' . $jour->valeur_cle_date() . '&sa=1&pc=PT08H00M&dc=PT12H00M&ts=0&s=0';
   header('location: ' . $url);
 }
 

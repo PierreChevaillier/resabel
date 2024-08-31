@@ -220,7 +220,14 @@ require_once 'php/elements_page/specifiques/vue_indisponibilite.php';
     }
     
     public function initialiser() {
-      $this->entete->def_titre($this->jour()->date_texte());
+      $texte_entete = $this->jour()->date_texte();
+      if (isset($_GET['a'])) {
+        if ($_GET['a'] == 'l')
+          $texte_entete = " Vue séances " . $texte_entete;
+        elseif ($_GET['a'] == 'ii' || $_GET['a'] == 'ie')
+          $texte_entete = "Inscriptions séances " . $texte_entete;
+      }
+      $this->entete->def_titre($texte_entete);
       parent::initialiser();
     }
     

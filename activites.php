@@ -47,7 +47,14 @@ $feuilles_style = array();
 $feuilles_style[] = "css/resabel_ecran.css";
 $feuilles_style[] = "./../jquery-ui/1.13.2/jquery-ui.css";
 $nom_site = Site_Web::accede()->sigle() . " Resabel";
-$page = new Page_Activites($nom_site, "Séances du jour", $feuilles_style);
+$titre = "séances du jour";
+if (isset($_GET['a'])) {
+  if ($_GET['a'] == 'l')
+    $titre = " Vue " . $titre;
+  elseif ($_GET['a'] == 'ii' || $_GET['a'] == 'ie')
+    $titre = "Inscpriptions séance";
+}
+$page = new Page_Activites($nom_site, $titre, $feuilles_style);
 
 $page->ajouter_script('./../jquery/3.6.3/jquery.min.js');
 $page->ajouter_script('./../jquery-ui/1.13.2/jquery-ui.min.js');
