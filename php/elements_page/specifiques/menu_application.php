@@ -24,6 +24,7 @@
 // revision : 22-may-2024 pchevaillier@gmail.com + utilisation Profil_Session
 // revision : 22-may-2024 pchevaillier@gmail.com * afficher_menu_competition
 // revision : 28-aug-2024 pchevaillier@gmail.com + reactivation compte
+// revision : 12-sep-2024 pchevaillier@gmail.com + lien vers docs inscription
   // --------------------------------------------------------------------------
   // commentaires :
   // attention :
@@ -108,7 +109,15 @@
       echo '<li class="nav-item dropdown">';
       echo '<a class="nav-link dropdown-toggle" href="#" id="mnu_prs" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Membres</a>';
       echo '<ul class="dropdown-menu" aria-labelledby="mnu_prs">';
+      
       echo '<li><a class="dropdown-item" href="personnes.php?a=l&act=1&cnx=1">Liste membres</a></li>';
+      
+      /*
+       * Acces documents inscriptions - licence - assurance
+       * ATTENTION : specifique AMP
+       */
+      echo '<li><a class="dropdown-item" href="https://drive.google.com/drive/folders/1_ZSrgs3q5olRmF7wrI1RhCtQTB4CwrAV">Docs inscription</a></li>';
+      
       if ($this->session_club || $this->session_admin) {
         /*
          * Acces au formulaire pour l'enregistrement d'un nouveau membre du club

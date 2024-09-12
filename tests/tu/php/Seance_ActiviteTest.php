@@ -1,38 +1,53 @@
 <?php
-// ==========================================================================
-// contexte : Resabel - systeme de REServAtion de Bateau En Ligne
-//            Tests unitaires
-// description : Test unitaire de la classe Seance_activite et
-//  et de la classe Participation_Activite dont elle depend
-// copyright (c) 2023-2024 AMP. Tous droits reserves.
-// --------------------------------------------------------------------------
-// utilisation : phpunit --testdox <chemin_vers_ce_fichier_php>
-// dependances :
-// utilise avec :
-//  - depuis 2023 :
-//    PHP 8.2 et PHPUnit 9.5 sur macOS 13.2 ;
-// --------------------------------------------------------------------------
-// creation : 06-fev-2023 pchevaillier@gmail.com
-// revision : 23-jan-2024 pchevaillier@gmail.com + peut_accueillir_participants
-// --------------------------------------------------------------------------
-// commentaires :
-// -
-// attention :
-// -
-// a faire :
-// -
-// ==========================================================================
+/* ============================================================================
+ * Resabel - systeme de REServAtion de Bateau En Ligne
+ * Copyright (C) 2024 Pierre Chevaillier
+ * contact: pchevaillier@gmail.com 70 allee de Broceliande, 29200 Brest, France
+ * ----------------------------------------------------------------------------
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License,
+ * or any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ * ----------------------------------------------------------------------------
+ * description : Tests unitaires de la classe Seance_activite
+ *               et de la classe Participation_Activite dont elle depend
+ * utilisation : phpunit --testdox <chemin_vers_ce_fichier_php>
+ * dependances :
+ * - aucune
+ * utilise avec :
+ *    PHP 8.2 et PHPUnit 9.5 sur macOS 13.2
+ * ----------------------------------------------------------------------------
+ * creation : 06-fev-2023 pchevaillier@gmail.com
+ * revision : 23-jan-2024 pchevaillier@gmail.com + peut_accueillir_participants
+ * revision : 23-jan-2024 pchevaillier@gmail.com + creer_support, creer_seance
+ * ----------------------------------------------------------------------------
+ * commentaires :
+ * - creer_support, creer_seance non utilisees pour l'instant
+ * attention :
+ * -
+ * a faire :
+ * -
+ * ============================================================================
+ */
 declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
 
 // --------------------------------------------------------------------------
-// --- Classes de l'enviromment de test
+// --- Classes de l'environnement de test
 
-// --- Classes de l'application
 set_include_path('./../../../');
 
-require_once('php/metier/seance_activite.php');
+require_once('php/metier/seance_activite.php'); // classe sous test
+
+require_once('php/metier/support_activite.php');
+require_once('php/metier/membre.php');
 
 // ==========================================================================
 /**
@@ -57,6 +72,29 @@ class Seance_ActiviteTest extends TestCase {
     parent::tearDown();
   }
 
+  private function creer_support(int $code_support, int $capacite, bool $resp_requis): Support_Activite {
+    $support =  new Support_Activite($code_support);
+    $type_support = new Type_Support_Activite(1);
+    $support->def_type($type_support);
+    $type_support->nombre_personnes_max = $capacite;
+    $type_support->requiert_responsable($resp_requis);
+    return $support;
+  }
+  
+  private function creer_seance(Support_Activite $support,
+                       bool $resp,
+                       int $nombre_equipiers): Seance_Activite
+  {
+    $seance = new Seance_Activite();
+    $this->seance->def_support($support);
+    for ($i = 0; $i < $nombre_equipiers; $i++) {
+      $participant = new Membre($i + 1); // attention : 0 code = zero est un cas particulier
+      $participation = $seance->creer_participation($participant);
+    }
+    if ($resp) $seance->changer_responsable(1);
+    return $seance;
+  }
+  
   /**
    * 
    */

@@ -18,6 +18,7 @@
  * revision : 23-fev-2024 pchevaillier@gmail.com cas supports pas utilises
  * revision : 16-jul-2024 pchevaillier@gmail.com + retour erreur
  * revision : 21-aug-2024 pchevaillier@gmail.com + exlut support de la seance 'source'
+ * revision : 12-sep-2024 pchevaillier@gmail.com bug fix: * supports non utilises
  * ----------------------------------------------------------------------------
  * commentaires :
  * - il y a deux requetes sur la table des activites
@@ -153,17 +154,30 @@ $supports_utilises = array();
 foreach ($seances as $s) {
   $support_utilises[$s->code_support()] = $s->support;
 }
-
-foreach ($supports as $sa) {
-  $code_support = $sa->code();
+/*
+foreach ($supports as $support) {
+  $code_support = $support->code();
   if (!array_key_exists($code_support, $support_utilises)) {
     $s = new Seance_Activite();
-    $s->def_support($sa);
+    $s->def_support($support);
     if (! $s->peut_accueillir_participants($seance)) {
       unset($supports[$code_support]);
     }
   }
 }
+ */
+
+$codes_support = array_keys($supports);
+foreach ($codes_support as $code_support) {
+  if (!array_key_exists($code_support, $support_utilises)) {
+    $s = new Seance_Activite();
+    $s->def_support($supports[$code_support]);
+    if (! $s->peut_accueillir_participants($seance)) {
+      unset($supports[$code_support]);
+    }
+  }
+}
+
 
 // ----------------------------------------------------------------------------
 // Reponse a la requete :
