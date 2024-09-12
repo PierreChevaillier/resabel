@@ -116,7 +116,7 @@
        * Acces documents inscriptions - licence - assurance
        * ATTENTION : specifique AMP
        */
-      echo '<li><a class="dropdown-item" href="https://drive.google.com/drive/folders/1_ZSrgs3q5olRmF7wrI1RhCtQTB4CwrAV">Docs inscription</a></li>';
+      echo '<li><a class="dropdown-item" href="https://drive.google.com/drive/folders/1_ZSrgs3q5olRmF7wrI1RhCtQTB4CwrAV" target ="_blank">Docs inscription</a></li>';
       
       if ($this->session_club || $this->session_admin) {
         /*
