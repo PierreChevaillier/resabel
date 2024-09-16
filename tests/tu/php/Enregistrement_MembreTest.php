@@ -1,27 +1,38 @@
 <?php
-// ==========================================================================
-// contexte : Resabel - systeme de REServAtion de Bateau En Ligne
-//            Tests unitaires
-// description : Test unitaire de la classe Enregitrement_Membre
-// copyright (c) 2023 AMP. Tous droits reserves.
-// --------------------------------------------------------------------------
-// utilisation : phpunit --testdox <chemin_vers_ce_fichier_php>
-// dependances :
-// utilise avec :
-//  - depuis 2023 :
-//    PHP 8.2 et PHPUnit 9.5 sur macOS 13.2 ;
-// --------------------------------------------------------------------------
-// creation : 20-fev-2023 pchevaillier@gmail.com
-// revision : 30-nov-2023 pchevaillier@gmail.com
-// --------------------------------------------------------------------------
-// commentaires :
-// - debut
-// attention :
-//  - incomplet
-//  - donnees de test lues dans la base de donnees
-// a faire :
-// - beaucoup de choses
-// ==========================================================================
+/* ============================================================================
+ * Resabel - systeme de REServAtion de Bateau En Ligne
+ * Copyright (C) 2024 Pierre Chevaillier
+ * contact: pchevaillier@gmail.com 70 allee de Broceliande, 29200 Brest, France
+ * ----------------------------------------------------------------------------
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License,
+ * or any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ * ----------------------------------------------------------------------------
+ * description : Test unitaire de la classe Enregitrement_Membre
+ * utilisation : (shell) phpunit --testdox <chemin_vers_ce_fichier_php>
+ * dependances :
+ * - presence enregistrements dans les tables de test
+ * utilise avec :
+ * - PHP 8.2 et PHPUnit 9.5
+ * ----------------------------------------------------------------------------
+ * creation : 20-fev-2023 pchevaillier@gmail.com
+ * revision : 16-sep-2024 pchevaillier@gmail.com + test valeurs lues
+ * ----------------------------------------------------------------------------
+ * commentaires :
+ * -
+ * attention :
+ * -
+ * a faire :
+ * -
+ * ============================================================================
+ */
 declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
@@ -35,6 +46,7 @@ set_include_path('./../../../');
 
 include_once('php/utilitaires/definir_locale.php');
 require_once('php/bdd/enregistrement_membre.php');
+require_once('php/metier/membre.php');
 
 // ==========================================================================
 /**
@@ -51,10 +63,13 @@ class Enregistrement_MembreTest extends TestCase {
   private int $code_cdb = 20;
   private int $code_equipier = 19007;
   private int $code_visiteur = 9021;
+  private int $code_lambda = 9999;
   
   private $personae = array();
   
   private Enregistrement_Membre $enreg;
+  
+  private Membre $membre;
   
   public static function setUpBeforeClass(): void {
     print("Connection to the database" . PHP_EOL);
@@ -89,6 +104,48 @@ class Enregistrement_MembreTest extends TestCase {
     return $status;
   }
   
+  private function initialiser_membre(): void {
+    $this->membre = new membre($this->code_lambda);
+    $this->membre->genre = "F";
+    $this->membre->prenom = "Hélène";
+    $this->membre->nom = "Créac'h";
+    $this->membre->date_naissance = new Instant("2004-12-23");
+    $this->membre->code_commune = 29190;
+    $this->membre->rue = "Françoise Fañch";
+    $this->membre->telephone = "0605040302";
+    $this->membre->telephone2 = "9805040302";
+    $this->membre->courriel = "duduche@mail.bzh";
+    
+    $this->membre->def_chef_de_bord(1);
+    $this->membre->niveau = 2;
+    $this->membre->type_licence = "B";
+    $this->membre->num_licence = "29200";
+    
+    $this->membre->def_identifiant("helene.creach");
+    $this->membre->def_actif(1);
+    $this->membre->def_autorise_connecter(1);
+  }
+  
+  private static function supprimer_enregistrement_membre(int $code_membre): bool {
+    self::$bdd->beginTransaction();
+    
+    // d'abord dans la table des connexions car table fille
+    $code_sql = "DELETE FROM " . Enregistrement_Connexion::source()
+    . " WHERE code_membre = " . $code_membre;
+    $n = self::$bdd->exec($code_sql);
+    $ok = ($n == 1);
+    
+    // ensuite dans la table des membres car table mere
+    if ($ok) {
+      $code_sql = "DELETE FROM " . Enregistrement_Membre::source()
+      . " WHERE code = " . $code_membre;
+      $n = self::$bdd->exec($code_sql);
+      $ok = ($n == 1);
+    }
+    self::$bdd->commit();
+    return $ok;
+  }
+  
   /**
    * Prepares the environment before running a test.
    */
@@ -100,6 +157,7 @@ class Enregistrement_MembreTest extends TestCase {
       print(PHP_EOL . "Erreur dans données de test - code membre : " . $status . PHP_EOL);
       die();
     }
+    $this->initialiser_membre();
   }
 
   /**
@@ -135,6 +193,18 @@ class Enregistrement_MembreTest extends TestCase {
     $this->assertTrue(password_verify('motdepassebidon', $mdp));
   }
   
+  public function testFormatterTelephoneTable() {
+    $numero_attendu = '060504030201';
+    
+    $numero = $numero_attendu;
+    $numero_formatte = Enregistrement_Membre::formatter_telephone_table($numero);
+    $this->assertEquals($numero_attendu, $numero_formatte);
+    
+    $numero = ' 06 05.04/03.02-01  ';
+    $numero_formatte = Enregistrement_Membre::formatter_telephone_table($numero);
+    $this->assertEquals($numero_attendu, $numero_formatte);
+  }
+  
   /**
    * Teste si une personne a le role administrateurice pour resabel
    */
@@ -148,12 +218,41 @@ class Enregistrement_MembreTest extends TestCase {
   }
   
   public function testLire(): void {
-    $code = $this->code_admin_resabel;
-    $this->enreg->def_membre($this->personae[$code]);
-    $resultat = null;
-    $resultat = $this->enreg->lire();
-    $this->assertTrue($resultat);
-    // TODO: tester les valeurs lues
+    $code = $this->membre->code();
+    self::supprimer_enregistrement_membre($code); // au cas ou...
+    
+    $this->enreg->def_membre($this->membre);
+    $ok = $this->enreg->ajouter();
+    
+    if ($ok) {
+      $membre = new Membre($code);
+      $this->enreg->def_membre($membre);
+      $resultat = null;
+      $resultat = $this->enreg->lire(); // appel methode sous test
+      
+      $this->assertTrue($resultat);
+      $this->assertEquals($this->membre->code(), $membre->code());
+      $this->assertEquals($this->membre->genre, $membre->genre);
+      $this->assertEquals($this->membre->prenom, $membre->prenom);
+      $this->assertEquals($this->membre->nom, $membre->nom);
+      $this->assertEquals($this->membre->code_commune, $membre->code_commune);
+      $this->assertEquals($this->membre->rue, $membre->rue);
+      $this->assertEquals($this->membre->telephone, $membre->telephone);
+      $this->assertEquals($this->membre->telephone2, $membre->telephone2);
+      $this->assertEquals($this->membre->courriel, $membre->courriel);
+      
+      $this->assertTrue($membre->date_naissance->est_egal($this->membre->date_naissance));
+      $this->assertEquals($this->membre->est_chef_de_bord(), $membre->est_chef_de_bord());
+      $this->assertEquals($this->membre->niveau, $membre->niveau);
+      //$this->assertEquals($this->membre->type_licence, $membre->type_licence);
+      $this->assertEquals($this->membre->num_licence, $membre->num_licence);
+      
+      $this->assertEquals($this->membre->identifiant(), $membre->identifiant());
+      $this->assertEquals($this->membre->est_actif(), $membre->est_actif());
+      $this->assertEquals($this->membre->est_autorise_connecter(), $membre->est_autorise_connecter());
+    }
+    
+    self::supprimer_enregistrement_membre($code);
   }
   
   public function testModifier(): void {
@@ -226,56 +325,24 @@ class Enregistrement_MembreTest extends TestCase {
   }
   
   public function testAjouter(): void {
-    $code = 99999;
-    $membre = new Membre($code);
-    $enreg = new Enregistrement_Membre();
+    $code = $this->code_lambda;
     
     // cas ou l'enregistreur n'est pas associe a un membre
+    $membre = new Membre($code);
+    $enreg = new Enregistrement_Membre();
     $this->assertFalse($enreg->ajouter());  // appel de la methode sous test
     
-    $enreg->def_membre($membre);
-    // informations sur le membre
-    $membre->genre = "F";
-    $membre->prenom = "Hélène";
-    $membre->nom = "Créac'h";
-    
-    $membre->code_commune = 29190;
-    $membre->rue = "Françoise Fañch";
-    $membre->telephone = "0605040302";
-    $membre->telephone2 = "9805040302";
-    $membre->courriel = "duduche@mail.bzh";
-    
-    $membre->def_chef_de_bord(0);
-    $membre->niveau = 2;
-    $membre->type_licence = "B";
-    $membre->num_licence = "29200";
-    
-    $membre->def_identifiant("helene.creach");
-    $membre->def_actif(1);
-    $membre->def_autorise_connecter(0);
+    // enregistreur avec un membre bien initialise
+    $enreg->def_membre($this->membre);
   
     $status = $enreg->ajouter(); // appel de la methode sous test
     $this->assertTrue($status);
-    // TODO: verfier les valeurs de champs
+    // la verification des valeurs de champs est faire dans testLire()
 
-    // Suppression des effets de bord du test :
-    // suppression des 2 enregistrements ajoutes
-    
-    self::$bdd->beginTransaction();
-    
-    // d'abord dans la table des connexions car table fille
-    $code_sql = "DELETE FROM " . Enregistrement_Connexion::source()
-    . " WHERE code_membre = " . $code;
-    $n = self::$bdd->exec($code_sql);
-    $this->assertEquals(1, $n); // si on peut le detruire c'est qu'il a ete ajoute
-    
-    // ensuite dans la table des membres car table mere
-    $code_sql = "DELETE FROM " . Enregistrement_Membre::source()
-    . " WHERE code = " . $code;
-    $n = self::$bdd->exec($code_sql);
-    $this->assertEquals(1, $n); // si on peut le detruire c'est qu'il a ete ajoute
-
-    self::$bdd->commit();
+    // Suppression des effets de bord du test
+    $ok = self::supprimer_enregistrement_membre($code);
+    // si on peut supprimer l'enregistrement, c'est qu'il a ete ajoute
+    $this->assertTrue($ok);
   }
   
   public function testCollecter(): void {

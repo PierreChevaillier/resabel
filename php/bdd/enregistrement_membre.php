@@ -1,49 +1,52 @@
 <?php
-  // ==========================================================================
-  // contexte : Resabel - systeme de REServAtion de Bateau En Ligne
-  // description : classe Enregistrement_Membre : interface base donnees
-  // copyright (c) 2018-2023 AMP. Tous droits reserves.
-  // --------------------------------------------------------------------------
-  // utilisation : php - require_once <chemin_vers_ce_fichier.php>
-  // dependances : Classes Membre, Instant et Base_Donnees
-  //               dictionnaire de donnees cree dans personnes.php :
-  // teste avec : PHP 7.1 sur Mac OS 10.14 ;
-  //              PHP 7.0 sur hebergeur web
-  // --------------------------------------------------------------------------
-  // creation : 08-dec-2018 pchevaillier@gmail.com
-  // revision : 23-dec-2018 pchevaillier@gmail.com requetes preparees
-  // revision : 23-dec-2018 pchevaillier@gmail.com requetes preparees
-  // revision : 28-dec-2018 pchevaillier@gmail.com renomme Enregistrement_Membre
-  // revision : 03-mar-2019 pchevaillier@gmail.com fonction collecter
-  // revision : 16-mar-2019 pchevaillier@gmail.com collecter : criteres de selection
-  // revision : 04-mai-2019 pchevaillier@gmail.com modifier_niveau_debutants
-  // revision : 26-dec-2019 pchevaillier@gmail.com impact revision calendrier
-  // revision : 20-nov-2023 pchevailler@gmail.com tables emebres ET connexion
-  // --------------------------------------------------------------------------
-  // commentaires :
-  // - en chantier : pas complet
-  // - lire, ajouter, modifier, supprimer,
-  //   tester_existe, compter, collecter, verfier_xxx
-  // attention :
-  // -
-  // a faire :
-// - voir les TODO
-  // - lire_identite : nom, prenom
-  // - lire_info_activite
-  // - dans lire : recuperer la commune
-  // - ajouter lire_roles : ? personne qui depend de role ou l'inverse ?
-  // ==========================================================================
+/* ============================================================================
+ * Resabel - systeme de REServAtion de Bateau En Ligne
+ * Copyright (C) 2024 Pierre Chevaillier
+ * contact: pchevaillier@gmail.com 70 allee de Broceliande, 29200 Brest, France
+ * ----------------------------------------------------------------------------
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License,
+ * or any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ * ----------------------------------------------------------------------------
+ * description : Enregistrement_Membre : interface base donnees
+ * utilisation : php - require_once <chemin_vers_ce_fichier_php>
+ * dependances :
+ * - aucune
+ * ----------------------------------------------------------------------------
+ * creation : 08-dec-2018 pchevaillier@gmail.com
+ * revision : 20-nov-2023 pchevailler@gmail.com tables mmebres ET connexion
+ * revision : 16-sep-2024 pchevailler@gmail.com + formatter_telephone_table
+ * ----------------------------------------------------------------------------
+ * commentaires :
+ * -
+ * attention :
+ * -
+ * a faire :
+ * - voir TODOs
+ * - lire_identite : nom, prenom
+ * - lire_info_activite
+ * - dans lire : recuperer la commune et type de licence
+ * - ajouter lire_roles : ? personne qui depend de role ou l'inverse ?
+ * ============================================================================
+ */
 
-  require_once 'php/metier/membre.php';
-  require_once 'php/metier/calendrier.php';
+require_once 'php/metier/membre.php';
+require_once 'php/metier/calendrier.php';
 
 require_once 'php/bdd/enregistrement_connexion.php';
   
-  class Erreur_Membre_Introuvable extends Exception { }
-  class Erreur_Mot_Passe_Membre extends Exception { }
-  class Erreur_Doublon_Identifiant_Membre extends Exception { }
+class Erreur_Membre_Introuvable extends Exception { }
+class Erreur_Mot_Passe_Membre extends Exception { }
+class Erreur_Doublon_Identifiant_Membre extends Exception { }
   
-  // ==========================================================================
+// ============================================================================
   class Enregistrement_Membre {
     static function source() {
       return Base_Donnees::$prefix_table . 'membres';
@@ -52,6 +55,13 @@ require_once 'php/bdd/enregistrement_connexion.php';
     private ? membre $membre = null;
     public function membre(): ? Membre { return $this->membre; }
     public function def_membre(Membre $membre): void { $this->membre = $membre; }
+    
+    static function formatter_telephone_table(string $numero): string {
+      $mauvais_separateurs = array(' ', '.', '-', '/');
+      $bon_separateur = '';
+      $resultat = str_replace($mauvais_separateurs, $bon_separateur, $numero);
+      return $resultat;
+    }
     
     /*
     public function verifier_identite($mot_passe) {
@@ -320,8 +330,12 @@ require_once 'php/bdd/enregistrement_connexion.php';
         
         $requete_mbr->bindParam(':code_commune', $this->membre->code_commune, PDO::PARAM_INT);
         $requete_mbr->bindParam(':rue', $this->membre->rue, PDO::PARAM_STR);
-        $requete_mbr->bindParam(':telephone', $this->membre->telephone, PDO::PARAM_STR);
-        $requete_mbr->bindParam(':telephone2', $this->membre->telephone2, PDO::PARAM_STR);
+        
+        $tel1 = self::formatter_telephone_table($this->membre->telephone);
+        $requete_mbr->bindParam(':telephone', $tel1, PDO::PARAM_STR);
+        $tel2 = self::formatter_telephone_table($this->membre->telephone2);
+        $requete_mbr->bindParam(':telephone2', $tel2, PDO::PARAM_STR);
+        
         $requete_mbr->bindParam(':courriel', $this->membre->courriel, PDO::PARAM_STR);
         $requete_mbr->bindParam(':num_licence', $this->membre->num_licence, PDO::PARAM_STR);
         
@@ -396,8 +410,12 @@ require_once 'php/bdd/enregistrement_connexion.php';
         }
         $requete->bindParam(':code_commune', $this->membre->code_commune, PDO::PARAM_INT);
         $requete->bindParam(':rue', $this->membre->rue, PDO::PARAM_STR);
-        $requete->bindParam(':telephone', $this->membre->telephone, PDO::PARAM_STR);
-        $requete->bindParam(':telephone2', $this->membre->telephone2, PDO::PARAM_STR);
+        
+        $tel1 = self::formatter_telephone_table($this->membre->telephone);
+        $requete->bindParam(':telephone', $tel1, PDO::PARAM_STR);
+        $tel2 = self::formatter_telephone_table($this->membre->telephone2);
+        $requete->bindParam(':telephone2', $tel2, PDO::PARAM_STR);
+        
         $requete->bindParam(':courriel', $this->membre->courriel, PDO::PARAM_STR);
         
         $cdb = ($this->membre->est_chef_de_bord()) ? 1: 0;

@@ -1,44 +1,50 @@
 <?php
-  // ==========================================================================
-  // contexte : Resabel - systeme de REServAtion de Bateau En Ligne
-  // description : definition du menu de navigation de l'application
-  // copyright (c) 2018-2023 AMP. Tous droits reserves.
-  // --------------------------------------------------------------------------
-  // utilisation : php - require_once <chemin-fichier.php>
-  // dependances :
-  //   - bootstrap 5.3, depuis mars 2023
-  //   - variables de session (identification_verif.php)
-  // utilise avec :
- //    - (depuis 2023) PHP 8.2 sur macOS 13.2 ;
-  //   - PHP 8.1 sur hebergeur web
-  // --------------------------------------------------------------------------
-  // creation : 14-oct-2018 pchevaillier@gmail.com
-  // revision : 11-mar-2019 pchevaillier@gmail.com $_SESSION['prs'] pas necessairement defini
-  // revision : 07-mai-2019 pchevaillier@gmail.com logique / affichage item
-  // revision : 23-mai-2019 pchevaillier@gmail.com + afficher_menu_club
-  // revision : 10-jun-2019 pchevaillier@gmail.com + menu_indisponibilites
-  // revision : 25-dec-2019 pchevaillier@gmail.com impact refonte calendrier
-  // revision : 29-dec-2019 pchevaillier@gmail.com reorganisation items menu
-  // revision : 17-mar-2023 pchevaillier@gmail.com bootstrap v5.3
-// revision : 14-jan-2024 pchevaillier@gmail.com + menu competitions
-// revision : 22-may-2024 pchevaillier@gmail.com + utilisation Profil_Session
-// revision : 22-may-2024 pchevaillier@gmail.com * afficher_menu_competition
-// revision : 28-aug-2024 pchevaillier@gmail.com + reactivation compte
-// revision : 12-sep-2024 pchevaillier@gmail.com + lien vers docs inscription
-  // --------------------------------------------------------------------------
-  // commentaires :
-  // attention :
-//  - certains liens sont specifiques AMP
-  // a faire :
-  // - variables pour acronyme club et lien home-page
-  // ==========================================================================
+/* ============================================================================
+ * Resabel - systeme de REServAtion de Bateau En Ligne
+ * Copyright (C) 2024 Pierre Chevaillier
+ * contact: pchevaillier@gmail.com 70 allee de Broceliande, 29200 Brest, France
+ * ----------------------------------------------------------------------------
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License,
+ * or any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ * ----------------------------------------------------------------------------
+ * description : definition du menu de navigation de l'application
+ * utilisation : php - require_once <chemin_vers_ce_fichier_php>
+ * dependances :
+ * - bootstrap 5.3
+ * - variables $_SESSION (identification_verif.php) et $GET
+ * - liens vers documents AMP
+ * ----------------------------------------------------------------------------
+ * creation : 14-oct-2018 pchevaillier@gmail.com
+ * revision : 07-mai-2019 pchevaillier@gmail.com logique / affichage item
+ * revision : 17-mar-2023 pchevaillier@gmail.com bootstrap v5.3
+ * revision : 22-may-2024 pchevaillier@gmail.com + utilisation Profil_Session
+ * revision : 22-may-2024 pchevaillier@gmail.com * afficher_menu_competition
+ * revision : 28-aug-2024 pchevaillier@gmail.com + reactivation compte
+ * revision : 16-sep-2024 pchevaillier@gmail.com * menu competition AMP
+ * ----------------------------------------------------------------------------
+ * commentaires :
+ * -
+ * attention :
+ * - certains liens sont specifiques AMP
+ * a faire :
+ * - variables pour acronyme club et lien home-page
+ * ============================================================================
+ */
 
-  // --- Classes utilisees
-  require_once 'php/elements_page/generiques/menu_navigation.php';
-  require_once 'php/metier/calendrier.php';
- require_once 'php/metier/profil_session.php';
+// --- Classes utilisees
+require_once 'php/elements_page/generiques/menu_navigation.php';
+require_once 'php/metier/calendrier.php';
+require_once 'php/metier/profil_session.php';
 
-  // ==========================================================================
+// ============================================================================
   class Menu_Application extends Menu_Navigation {
     
     // regles 'metier' pour le controle de ce qu'il est permis de faire
@@ -150,8 +156,9 @@
     echo '<li class="nav-item dropdown">';
     echo '<a class="nav-link dropdown-toggle" href="#" id="mnu_compet" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Compétitions</a>';
     echo '<ul class="dropdown-menu" aria-labelledby="mnu-compet">';
-    echo '<li><a class="dropdown-item" href="https://docs.google.com/spreadsheets/d/1jDx-ZHJd75ovZLKHATITXX3gjzHwaQwHk48lTsKuT6M/edit?usp=drive_link" target ="_blank">Régates</a></li>';
-    echo '<li><a  class="dropdown-item" href="https://drive.google.com/drive/folders/1LRFUzREEHQZjcsy6BeK6UUhBeeoYA-3D?usp=drive_link" target="_blank">Entrainements</a></li>';
+    echo '<li><a class="dropdown-item" href="https://docs.google.com/spreadsheets/d/1NCVO0pP9FDNUNUXjOcKnhu9LAIUaQbqF7Dq4IN8_NV8/edit?usp=sharing" target ="_blank">Inscription régates</a></li>';
+    echo '<li><a class="dropdown-item" href=" https://drive.google.com/drive/folders/1XD37ip3r_62DF6ZMz5LS98kzZaDftBUE?usp=sharing" target ="_blank">Avant-programmes</a></li>';
+    echo '<li><a  class="dropdown-item" href="https://drive.google.com/drive/folders/1s0s_qEy7ge7se3OLEDvR5tCWlQkLVR1f?usp=sharing" target="_blank">Entrainements</a></li>';
     echo '</ul></li>';
   }
       
@@ -171,9 +178,7 @@
       echo '<li class="nav-item"><a class="nav-link" href="activites.php?a=l&j=' . $this->jour->valeur_cle_date() . '">Sorties</a></li>';
       
       $this->afficher_menu_competitions();
-      
       $this->afficher_menu_club();
-      
       $this->afficher_menu_personnes();
       $this->afficher_menu_supports_activite();
       /*
@@ -197,5 +202,5 @@
     }
     
   }
-  // ==========================================================================
+// ============================================================================
 ?>
