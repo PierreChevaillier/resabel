@@ -361,7 +361,7 @@ function afficher_retour_inscription(reponse) {
         }
         break;
       case 'cdb':
-        console.log("nn cdb:" + cdb);
+        console.log("nn cdb:" + valeur);
         break;
     }
   }

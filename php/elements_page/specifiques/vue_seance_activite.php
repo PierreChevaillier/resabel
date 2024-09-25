@@ -257,10 +257,51 @@
       // - OU (le participant est l'utilisateur ou l'utilisateur est un des participants
       $desinscription_possible = $action_autorisee;
       if ($desinscription_possible) {
+        /*
         $params = $this->params_action_seance . ', ' . $participant->code() . ', ' . $resp;
         $code_action = "di";
         $params = $params . ', \'' . $code_action . '\'';
         $menu = $menu . '<a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#' . $this->id_dialogue_action . '" onclick="requete_inscription_individuelle(' . $params . ');return false;">Annuler participation</a>';
+         */
+        $params = $this->params_action_seance . ', ' . $participant->code() . ', ' . $resp;
+        $code_action = "di";
+        $params = $params . ', \'' . $code_action . '\'';
+        
+        $html_info_seance = ""; //utf8_encode('');
+        $html_info_seance = $html_info_seance . $this->seance->debut()->date_texte();
+        $html_info_seance = $html_info_seance . ' de ' . $this->seance->debut()->heure_texte();
+        $html_info_seance = $html_info_seance . ' à ' . $this->seance->fin()->heure_texte();
+        $support = $this->seance->support->nom();
+        if (is_a($this->seance->support, 'Bateau'))
+          $support = $support . ' (' . $this->seance->support->numero() . ')';
+        $html_info_seance = $html_info_seance .'<br />sur ' . $support;
+        $html_info_seance = $html_info_seance . ', ' . $this->activite_site->site->nom();
+        $html_info_seance = htmlspecialchars($html_info_seance);
+        
+        $presentation_nom = new Afficheur_Nom();
+        $presentation_tel = new Afficheur_telephone();
+        $presentation_nom->def_personne($participant);
+        $html_info_participation = '<div class="container"><table class="table table-sm"><tbody><tr><td>'
+          . $presentation_nom->formatter() . '</td><td>'
+          . $presentation_tel->formatter($participant->telephone)
+          . '</td></tr></tbody></table></div>';
+        $html_info_participation = htmlspecialchars($html_info_participation);
+        
+        $html_info_mailto = "";
+        if (strlen($participant->courriel) > 0) {
+          $html_info_mailto = 'mailto:';
+          $html_info_mailto = $html_info_mailto . ',' . $participant->courriel;
+        
+          $html_info_mailto = $html_info_mailto . '?Subject=AMP%20:%20annulation participation à la séance du ' . $this->seance->debut()->date_texte();
+          $html_info_mailto = $html_info_mailto . ' de ' . $this->seance->debut()->heure_texte();
+          $html_info_mailto = $html_info_mailto . ' à ' . $this->seance->fin()->heure_texte();
+        }
+        $params = $params . ', \'' . $html_info_seance
+          . '\', \'' . $html_info_participation
+          . '\', \'' . $html_info_mailto
+          . '\'';
+        // activer_controle_annulation_participation(modal_id, code_seance, code_site, code_support, debut, fin, code_personne, responsable, code_action)
+        $menu = $menu . '<a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#' . $this->id_dialogue_action . '" onclick="activer_controle_annulation_participation(' . $params . ');return false;">Annuler participation</a>';
       }
       
       // Passage du role responsable au role equipier. Possible si

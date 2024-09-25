@@ -239,10 +239,11 @@ function activer_controle_annulation_seance(code_seance, modal_id, html_info_sea
   html_corps = '<div class="alert alert-warning" role="alert">Opération irréversible !<br />Ne pas oublier de prévenir les personnes intéressées.</div>';
   html_corps = html_corps + '<div class="card"><div class="card-body"><p>' + html_info_seance + '</p><p>' + html_info_partipations + '</p></div></div>';
   html_corps = html_corps + '<div><button type="button" class="btn btn-outline-primary"><a href="' + html_mailto + '">Envoyez un mail aux participants</a></button></div>';
-  html_corps = html_corps + '<div><button type="button" class="btn btn-primary" onclick="supprimer_seance_activite(' + code_seance + '); return false;">Confirmer annulation</button></div>';
+  html_corps = html_corps + '<div><button type="button" class="btn btn-danger" onclick="supprimer_seance_activite(' + code_seance + '); return false;">Confirmer annulation</button></div>';
   corps_modal.innerHTML = "<div>" + html_corps + "</div>";
   bouton_modal.textContent = "Ne rien faire";
-
+  bouton_modal.classList.add("btn-secondary");
+  
   return true;
 }
 
