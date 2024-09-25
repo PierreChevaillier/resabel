@@ -104,8 +104,8 @@ if (!$ok) retourne_erreur(4);
 $seance->def_support($supports[$cle]);
 
 // --- Les indisponibites de support couvrant le creneau horaire de l'activite
-$criteres = " date_debut <= '" . $seance->fin()->date_heure_sql()
-  . "' AND  date_fin >= '" . $seance->debut()->date_heure_sql() . "'";
+$criteres = " date_debut < '" . $seance->fin()->date_heure_sql()
+  . "' AND  date_fin > '" . $seance->debut()->date_heure_sql() . "'";
   
 $indispos = array();
 $type_indispo = 1;
@@ -125,8 +125,8 @@ unset($supports[$cle]);
 
 $seances = array();
 $critere_selection = "code_site = " . $site->code()
-  . " AND date_debut <= '" . $seance->fin()->date_heure_sql()
-  . "' AND date_fin >= '" . $seance->debut()->date_heure_sql() . "'";
+  . " AND date_debut < '" . $seance->fin()->date_heure_sql()
+  . "' AND date_fin > '" . $seance->debut()->date_heure_sql() . "'";
 $critere_tri = ""; // code_support ASC ";
 
 $ok = Enregistrement_Seance_Activite::collecter($site,

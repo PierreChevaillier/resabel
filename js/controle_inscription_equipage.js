@@ -12,7 +12,8 @@
  * ----------------------------------------------------------------------------
  * creation : 31-jan-2024 pchevaillier@gmail.com
  * revision : 19-fev-2024 pchevaillier@gmail.com
- * ----------------------------------------------------------------------------http://localhost/resabel-v2/resabel/activites.php?a=ii&j=2024-02-19&sa=1&pc=PT08H30M&dc=PT09H30M&ts=0&s=0
+ * ----------------------------------------------------------------------------
+ * http://localhost/resabel-v2/resabel/activites.php?a=ii&j=2024-02-19&sa=1&pc=PT08H30M&dc=PT09H30M&ts=0&s=0
  * commentaires :
  * - en construction
  * attention :
@@ -329,11 +330,42 @@ function afficher_retour_inscription(reponse) {
   const modal = document.getElementById(modal_id);
   const titre_modal = document.getElementById(modal_id + "_titre");
   const corps_modal = document.getElementById(modal_id + "_corps");
+  
   const bouton_modal = document.getElementById(modal_id + "_btn");
-  corps_modal.innerHTML = "<div><p>Opération réalisée avec succès</p></div>";
   bouton_modal.textContent = "Fermer";
   bouton_modal.addEventListener("click", function() { window.location=document.referrer; });
-  bouton_modal.classList.add("btn-success");
+  
+  titre_modal.textContent = "Inscription(s) à une séance";
+  
+  var dict = JSON.parse(reponse);
+  for (var entree in dict) {
+    valeur = dict[entree];
+    console.log("JSON retour inscription_groupe_seance : " + entree + " =>" + valeur);
+    switch (entree) {
+      case 'status':
+        ok = (valeur === 1);
+        if (!ok) {
+          console.log("pas bon");
+          titre_modal.textContent = "Echec opération";
+          if (valeur === 7) {
+            // autres codes erreur sont pour debug
+            // (cf. Enregistrement_Seance_Activite::ajouter_participation)
+            corps_modal.textContent = "Au moins 1 personne déjà inscrite sur le même créneau horaire";
+          } else {
+            corps_modal.textContent = ""; // efface le contenu initial
+          }
+          bouton_modal.classList.add("btn-warning");
+        } else {
+          corps_modal.textContent = "Opération réalisée avec succès";
+          bouton_modal.classList.add("btn-success");
+        }
+        break;
+      case 'cdb':
+        console.log("nn cdb:" + cdb);
+        break;
+    }
+  }
+//  corps_modal.innerHTML = "<div><p>Opération réalisée avec succès</p></div>";
   ok = true;
   return ok;
 }
@@ -345,10 +377,17 @@ function requete_inscription_groupe(formulaire) {
   let checkboxes = document.getElementsByName('participants');
   let code_participants = [];
   for (var i = 0; i < checkboxes.length; i++) {
-    if (checkboxes[i].checked) {
+    if (checkboxes[i].checked && !checkboxes[i].disabled) {
       code_participants.push(checkboxes[i].value);
     }
   }
+  const modal_id = 'aff_act';
+  const modal = document.getElementById(modal_id);
+  const titre_modal = document.getElementById(modal_id + "_titre");
+  const corps_modal = document.getElementById(modal_id + "_corps");
+  titre_modal.textContent = "Inscription à une séance";
+  corps_modal.textContent = "Opération en cours...";
+  
   const envoi = {act: code_action, id: code_seance, sa: code_site, s: code_support, deb: heure_debut, fin: heure_fin, resp: code_resp, part: code_participants};
   console.log("requete_inscription_groupe envoi = " + envoi);
   

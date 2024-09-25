@@ -179,12 +179,47 @@ require_once 'php/bdd/enregistrement_site_activite.php';
       return $status;
     }
 
+    static function verifier_disponibilite_membre(Information_Participation_Seance_Activite $infos): bool {
+      $dispo = false;
+      try {
+        $bdd = Base_Donnees::acces();
+        $table_seances = self::source() . " AS seance";
+        $table_participations = Base_Donnees::$prefix_table . "participations_activite AS participation";
+        $source = $table_seances . " INNER JOIN " . $table_participations. " ON (participation.code_seance = seance.code) ";
+        $selection = " seance.date_debut < '" . $infos->fin . "' AND seance.date_fin > '"  . $infos->debut
+          . "' AND participation.code_membre = " . $infos->code_participant;
+        $code_sql = "SELECT COUNT(*) as n FROM " . $source . " WHERE " . $selection;
+        //echo $code_sql . PHP_EOL;
+        $resultat = $bdd->query($code_sql);
+        $donnee = $resultat->fetch(PDO::FETCH_OBJ);
+        $dispo = ($donnee->n == 0);
+      } catch (PDOexception $e) {
+        echo $e->getMessage();
+        Base_Donnees::sortir_sur_exception(self::source(), $e);
+      }
+      return $dispo;
+      }
+    
     // ------------------------------------------------------------------------
     static public function ajouter_participation(Information_Participation_Seance_Activite $infos): int {
       $status = 1;
       $bdd = Base_Donnees::acces();
       
       $bdd->beginTransaction();
+      
+      $x = Enregistrement_Seance_Activite::compter_participations($infos);
+      if ($x > 0) {
+        $bdd->rollBack();
+        return 1;
+      }
+      
+      // verifie si le participant est bien dispo
+      $dispo = Enregistrement_Seance_Activite::verifier_disponibilite_membre($infos);
+      if (!$dispo) {
+        $bdd->rollBack();
+        return 7;
+      }
+      
       
       // test si seance existe deja
       $nouvelle_seance = false;
@@ -396,14 +431,33 @@ require_once 'php/bdd/enregistrement_site_activite.php';
       return $status;
     }
 
+    static public function seance_existe(int $code_seance): bool {
+      if ($code_seance <= 0) return false;
+      $ok = false;
+      $bdd = Base_Donnees::acces();
+      $source = self::source();
+      try {
+        $requete = "SELECT COUNT(*) AS n FROM " . $source
+          . " WHERE code = " . $code_seance;
+        $resultat = $bdd->query($requete);
+        $donnee = $resultat->fetch(PDO::FETCH_OBJ);
+        $ok = ($donnee->n  == 1);
+      } catch (PDOException $e) {
+        Base_Donnees::sortir_sur_exception($source, $e);
+      }
+      return $ok;
+    }
+    
     static public function compter_participations(Information_Participation_Seance_Activite $infos): int {
       $resultat = 0;
       $source = self::source() . " AS seance INNER JOIN rsbl_participations_activite AS participation ON (participation.code_seance = seance.code) ";
-      $selection = " seance.code = :seance AND seance.code_site = :site AND seance.code_support = :support AND seance.date_debut = :debut AND seance.date_fin = :fin AND  participation.code_membre = :participant";
+      $selection = " seance.code = :seance AND seance.code_site = :site AND seance.code_support = :support AND seance.date_debut = :debut AND seance.date_fin = :fin AND  participation.code_membre = :participant ";
+      /*
       if ($infos->responsable == 1)
         $selection = $selection . " AND seance.code_responsable = " . $infos->code_participant;
       else
         $selection = $selection . " AND seance.code_responsable IS NULL ";
+       */
       $code_sql = "SELECT COUNT(*) AS n FROM " . $source . " WHERE " . $selection;
       //print($code_sql . PHP_EOL);
       try {
@@ -459,6 +513,12 @@ require_once 'php/bdd/enregistrement_site_activite.php';
     }
  
     static public function changer_seance(int $code_actuel, int $nouveau_code): bool {
+      if (($code_actuel <= 0) || ($nouveau_code <= 0)) return false;
+      $actuelle_existe = self::seance_existe($code_actuel);
+      $nouvelle_existe = self::seance_existe($nouveau_code);
+      if (!$actuelle_existe || !$nouvelle_existe) return false;
+      if ($nouveau_code == $code_actuel) return true;
+      
       $status = false;
       $bdd = Base_Donnees::acces();
       $source = Base_Donnees::$prefix_table . 'participations_activite';

@@ -14,7 +14,7 @@
  *   PHP 8.1 sur hebergeur web
  * ----------------------------------------------------------------------------
  * creation : 15-fev-2024 pchevaillier@gmail.com
- * revision :
+ * revision : 19 sep-2024  pchevaillier@gmail.com + cas erreur ajouter_participation
  * ----------------------------------------------------------------------------
  * commentaires :
  * - 
@@ -43,55 +43,51 @@ require_once 'php/bdd/enregistrement_seance_activite.php';
 $info_participation = new Information_Participation_Seance_Activite();
 
 // --- Champs json de la requete
-$info_participation->code_seance = (isset($_GET['id']))? intval($_GET['id']): -1;
-$info_participation->code_site = (isset($_GET['sa']))? intval($_GET['sa']): -1;
-$info_participation->code_support_activite = (isset($_GET['s']))? intval($_GET['s']): -1;
+$info_participation->code_seance = (isset($_GET['id']))? intval($_GET['id']): 0; // 0 <=> nouvelle seance
+$info_participation->code_site = (isset($_GET['sa']))? intval($_GET['sa']): 0;
+$info_participation->code_support_activite = (isset($_GET['s']))? intval($_GET['s']): 0;
 $info_participation->debut = (isset($_GET['deb']))? $_GET['deb']: 'undef';
 $info_participation->fin = (isset($_GET['fin']))? $_GET['fin']: 'undef';
 $code_resp = (isset($_GET['resp']))? intval($_GET['resp']): 0;
 
-$participants = explode(',', $_GET['part']);
+if (isset($_GET['part']) && ($_GET['part'] != ""))
+  $participants = explode(',', $_GET['part']);
+else
+  $participants = array();
 
 // --- Verification des donnees d'entree
 $status = 0;
 // -1 et undef
-$ok = false;
 
 // ----------------------------------------------------------------------------
 // --- Requetes en base de donnees
 
+// ATTENTION : on traite TOUTES les participations à la seance (existantes et nouvellement saisies)
+
+$code_erreur = 1; // pas d'erreur
+$n_cdb = 0;
 // responsable seance (si on en a saisi un.e)
 if ($code_resp > 0) {
   $info_participation->code_participant = $code_resp;
   $info_participation->responsable = 1;
   $status = Enregistrement_Seance_Activite::ajouter_participation($info_participation);
-  $ok = ($status == 1);
+  if ($status != 1) $code_erreur = $status;
 }
 
 // Eventuelle(s) autre(s) participation(s)
+$n_part = 0;
 foreach ($participants as $p) {
+  $n_part = $n_part + 1;
   $info_participation->code_participant = $p;
   $info_participation->responsable = 0;
   $status = Enregistrement_Seance_Activite::ajouter_participation($info_participation);
-  $ok = ($status == 1);
+  if (($status != 1) && ($code_erreur == 1)) $code_erreur = $status;
 }
+
 // ----------------------------------------------------------------------------
 // --- Reponse a la requete
 
-//$parts = json_encode($participants);
-
-$donnees = array('status' => $status);
-/*,
-  'seance' => $info_participation->code_seance,
-  'site' => $info_participation->code_site,
-  'support' => $info_participation->code_support_activite,
-  'debut' => $info_participation->debut,
-  'fin' => $info_participation->fin,
-  'resp' =>$info_participation->responsable,
-  'part' => $parts
-);
- */
-
+$donnees = array('status' => $code_erreur, 'cdb' => $n_cdb, 'part' => $n_part);
 $resultat_json = json_encode($donnees);
 echo $resultat_json;
 exit();

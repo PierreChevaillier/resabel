@@ -140,42 +140,6 @@ function activer_formulaire(code_seance, code_site, code_support, debut, fin, id
   xmlhttp.send();
   console.log("request sent");
   return ok;
-  
-  /*
-  $.getJSON("php/scripts/membres_dispo_collecter.php?", envoi, function(retour) {
-            console.log( "success membres_dispo_collecter" );
-            $.each( retour, function(cle, valeur) {
-                   p = JSON.parse(valeur);
-                   //console.log(p);
-                   possibilites.push(p);
-                 })
-            })
-           .fail(function(retour) {
-                 console.log("error membres_dispo_collecter");
-                 //$("#statut_requete_json").html("<p>Oups: ça ce marche pas...</p>");
-                 return false;
-                 });
-   */
-  /*
-  possibilites = [ {value: "1", label: "Adèle Gamby"},{value: "111", label: "Catherine Bocher"},{value: "17000", label: "Catherine Bruneau"},{value: "18020", label: "Catherine Causeur"},{value: "16", label: "Catherine Lagadec "},{value: "112", label: "Catherine Lamour"},{value: "17", label: "Cathou Viollette"},{value: "18030", label: "Céline Gueneugues"},
-  {value: "18", label: "Céline Prince"},{value: "152", label: "Christian Lannuzel"},{value: "20", label: "Christian Venot"},{value: "16039", label: "Christine Arsant"},{value: "22", label: "Christophe Perrochon"},{value: "23", label: "Claude Langlois"},{value: "115", label: "Claudie Dubrana"},{value: "24", label: "Claudine Lassée "},
-  {value: "18037", label: "Corinne Paillet"},{value: "26", label: "David Banks"},{value: "117", label: "Denis Creach"},{value: "137", label: "Marcelline Calzas"},{value: "17031", label: "Marie Boeuf"},
-  {value: "17039", label: "Marie Aude Pina Silas"},{value: "67", label: "Marie-Christine Robelet"},{value: "1521", label: "Marie-Françoise Kermaidic"},{value: "68", label: "Marie-Josée Le Beux"},{value: "9009", label: "Marie-No Guével"},{value: "69", label: "Marie-Noelle Bénard"},{value: "138", label: "Marine Lombard"},{value: "18011", label: "Marion Lorzil"},{value: "17044", label: "Maryse Pichon"},{value: "101", label: "Pierre Chevaillier"} ];
-  */
-  /*
-  document.getElementById("nom_part").autocomplete({ minLength: 2,
-                                  source: possibilites,
-                                  focus: function( event, ui ) {
-                                    $( "#nom_part" ).val( ui.item.label );
-                                    return false;
-                                  },
-                                 select: function( event, ui ) {
-                                          $( "#nom_part" ).val( ui.item.label );
-                                          $( "#code_part" ).val( ui.item.value );
-                                          return false;
-                                        }
-                                      });
-   */
   }
 
 function fin_saisie_participant(code_seance, code_site, code_support, debut, fin, id_contexte_saisie, rang) {

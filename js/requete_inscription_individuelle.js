@@ -45,6 +45,15 @@ function afficher_retour_inscription(modal_id, code_action, reponse) {
         ok = (valeur === 1);
         if (!ok) {
           console.log("pas bon");
+          titre_modal.textContent = "Echec opération";
+          if ((valeur === 7) && (code_action == "ii")) {
+            // autres codes erreur sont pour debug
+            // (cf. Enregistrement_Seance_Activite::ajouter_participation)
+            corps_modal.textContent = "Déjà inscrite sur le même créneau horaire";
+          } else {
+            corps_modal.textContent = ""; // efface le contenu initial
+          }
+          bouton_modal.classList.add("btn-danger");
         } else {
           if (code_action == "ii")
             titre_modal.textContent = "Inscription à une séance";
@@ -53,10 +62,10 @@ function afficher_retour_inscription(modal_id, code_action, reponse) {
           else
             titre_modal.textContent = "ERREUR : Type operation inconnu...";
           corps_modal.textContent = "Opération réalisée avec succès";
-          bouton_modal.textContent = "Fermer";
-          bouton_modal.addEventListener("click", function() { location.reload(); });
           bouton_modal.classList.add("btn-success");
         }
+        bouton_modal.textContent = "Fermer";
+        bouton_modal.addEventListener("click", function() { location.reload(); });
         break;
     }
   }

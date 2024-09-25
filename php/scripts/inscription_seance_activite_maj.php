@@ -27,13 +27,13 @@
  * - TODO: utiliser Enregistrement_Site_Activite::creer
  * ============================================================================
 */
-  set_include_path('./../../');
+set_include_path('./../../');
   
-  include('php/utilitaires/controle_session.php');
+include('php/utilitaires/controle_session.php');
   
-  // --- connection a la base de donnees (et instantiation du 'handler')
-  //     utilise dans les operations de Enregistrement_Seance_Activite
-  include_once 'php/bdd/base_donnees.php';
+// --- connection a la base de donnees (et instantiation du 'handler')
+//     utilise dans les operations de Enregistrement_Seance_Activite
+include_once 'php/bdd/base_donnees.php';
   
   // --- classes utilisees
 require_once 'php/bdd/enregistrement_site_activite.php';
@@ -75,6 +75,12 @@ require_once 'php/bdd/enregistrement_support_activite.php';
   if ($action[0] == 'i') { // ii (inscr. individuelle) ou ie (inscr. equipage)
     $status = Enregistrement_Seance_Activite::ajouter_participation($info_participation);
     $ok = ($status == 1);
+    if ($status != 1) {
+      $donnees = array('status' => $status);
+      $resultat_json = json_encode($donnees);
+      echo $resultat_json;
+      exit();
+    }
   } elseif ($action == 'di') {
     $status = Enregistrement_Seance_Activite::supprimer_participation($info_participation);
     $ok = ($status == 1);
