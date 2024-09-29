@@ -233,19 +233,14 @@
       }
     }
     
-    protected function afficher_corps() {
-      parent::afficher_corps();
-      /*
-       Ca ne marche pas tel quel : il faudrait un script specifique
-       a la place de raz_valeurs_formulaire.
-       Pas certain que ce soit necessaire.
-      echo '<div class="form-group form-btn" id="btn_raz" >';
-      echo '<input type="button" class="btn btn-large btn-outline-secondary"';
-      echo ' onclick="return raz_valeurs_formulaire(' . $this->id() . ')"';
-      echo ' value="Supprimer les critères de sélection" >';
+    protected function afficher_debut(): void {
+      echo '<div class="mx-auto" style="width:50%">';
+      parent::afficher_debut();
+    }
+    
+    protected function afficher_fin(): void {
+      parent::afficher_fin();
       echo '</div>';
-       */
-      
     }
   }
 // ============================================================================

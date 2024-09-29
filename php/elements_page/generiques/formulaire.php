@@ -86,8 +86,7 @@ require_once 'php/elements_page/generiques/champ_formulaire.php';
     protected function afficher_debut() {
       if ($this->a_un_titre())
         echo '<div class="well well-sm"><p class="lead">' . $this->titre() . '</p></div>';
-      echo "\n";
-      echo '<form class="rsbl-form" role="form" id="' . $this->id() . '" name="' . $this->id() . '" onsubmit="return verification_formulaire(this)"  method="' . $this->methode . '" action="' . $this->script_traitement . '">';
+      echo '<form class="rsbl-form m-0 px-3" role="form" id="' . $this->id() . '" name="' . $this->id() . '" onsubmit="return verification_formulaire(this)"  method="' . $this->methode . '" action="' . $this->script_traitement . '">';
       echo '<input type="hidden" name="a" value="' . $this->action . '" />';
       //echo '<input type="hidden" name="id" value="' . $this->id() . '" />';
     }
@@ -133,22 +132,23 @@ require_once 'php/elements_page/generiques/champ_formulaire.php';
     }
     
     protected function afficher_acquitement_saisie() {
-      echo '<div class="form-check">';
+      echo '<div class="my-3"><div class="form-check">';
       echo '<input class="form-check-input" type="checkbox" name="acq_verif" required>';
       echo "<label class=\"form-check-label\"> J'ai vérifié les informations saisies dans ce formulaire, elles sont complètes.</label>";
-       echo '</div>';
+       echo '</div></div>';
     }
     
     protected function afficher_bouton_validation() {
-      echo '<div class="form-group form-btn" >'; //<div class="col-sm-offset-2 col-sm-10">';
+      echo '<div class="form-group form-btn" >';
+      echo '<div class="my-3">';
       echo '<input class="btn btn-large btn-outline-primary" type="submit" id="' . $this->id() . '_valid" value="'
       . $this->message_bouton_validation . '"></div>';
-      echo '<div class="form-group form-btn" >'; //<div class="col-sm-offset-2 col-
-      echo '<input class="btn btn-large btn-outline-secondary" type="reset" id="' . $this->id() . '_reset" value="Ré-initialiser la saisie"></div>'; // '</div>';
-      
+      echo '<div class="my-3">';
+      echo '<input class="btn btn-large btn-outline-secondary" type="reset" id="' . $this->id() . '_reset" value="Ré-initialiser la saisie"></div>';
+      echo '</div>';
     }
     protected function afficher_fin() {
-      echo "\n</form>\n";
+      echo '</form>';
     }
   
   }

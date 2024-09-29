@@ -27,7 +27,8 @@
     public function initialiser() { }
     
     protected function afficher_debut() {
-      echo '<div style="padding:40px;"><div class="mt-4 p-2 rounded bg-primary" style="padding:10px;text-align:center;color:white;">';
+      echo '<div class="my-3 p-3 rounded bg-primary" style="text-align:center;color:white;">';
+      //echo '<div style="padding:40px;"><div class="mt-4 p-2 rounded bg-primary" style="padding:10px;text-align:center;color:white;">';
     }
     
     protected function afficher_corps() {
@@ -36,7 +37,7 @@
     }
     
     protected function afficher_fin() {
-      echo '</div></div>';
+      echo '</div>';
     }
     
   }

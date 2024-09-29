@@ -1,29 +1,43 @@
 <?php
-  // ==========================================================================
-  // contexte : Resabel - systeme de REServAtion de Bateau En Ligne
-  // description : Affichage des seances d'activite, par support et par creneau horaire
-  // copyright (c) 2018-2024 AMP. Tous droits reserves.
-  // --------------------------------------------------------------------------
-  // utilisation : php - require_once <chemin_vers_ce_fichier.php>
-  // dependances : bootstrap 4.x, resabel_ecran.css
-  // teste avec : PHP 7.1 sur Mac OS 10.14 ;
-  //              PHP 7.0 sur hebergeur web
-  // --------------------------------------------------------------------------
-  // creation : 15-jun-2019 pchevaillier@gmail.com
-  // revision : 22-jan-2020 pchevaillier@gmail.com fermeture site et indispo supports
-// revision : 31-may-2024 pchevaillier@gmail.com + affichage compet ou loisir (ou rien)
-// revision : 21-jun-2024 pchevaillier@gmail.com * affichage selon contexte
-//            issue: https://github.com/PierreChevaillier/resabel/issues/14#issue-2366996625
-  // --------------------------------------------------------------------------
-  // commentaires :
-  // - en evolution
-  // attention :
-  //  - incomplet
-  // a faire :
-  // - ne pas afficher d'afficheur seance si aucune sorite sur creneaux selectionnes
-  //   et site ferme ou support indispo : on gaggne de la place d'affichage
-  //   ...
-  // ==========================================================================
+/* ============================================================================
+ * Resabel - systeme de REServAtion de Bateau En Ligne
+ * Copyright (C) 2024 Pierre Chevaillier
+ * contact: pchevaillier@gmail.com 70 allee de Broceliande, 29200 Brest, France
+ * ----------------------------------------------------------------------------
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License,
+ * or any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ * ----------------------------------------------------------------------------
+ * description : Affichage des seances d'activite, par support et par creneau horaire
+ * utilisation : php - require_once <chemin_vers_ce_fichier_php>
+ * dependances :
+ * - bootstrap 5.x
+ * - resabel_ecran.css
+ * ----------------------------------------------------------------------------
+ * creation : 15-jun-2019 pchevaillier@gmail.com
+ * revision : 22-jan-2020 pchevaillier@gmail.com fermeture site et indispo supports
+ * revision : 31-may-2024 pchevaillier@gmail.com + affichage compet ou loisir (ou rien)
+ * revision : 21-jun-2024 pchevaillier@gmail.com * affichage selon contexte
+ *            issue: https://github.com/PierreChevaillier/resabel/issues/14#issue-2366996625
+ * revision : 29-sep-2024 pchevaillier@gmail.com + centrage aff. seance et scroll
+ * ----------------------------------------------------------------------------
+ * commentaires :
+ * - scroll => surface affichage seances réduite.
+ *   idee : ne pas afficher d'afficheur seance si aucune sortie sur creneaux selectionnes
+ *   j'ai essaye, c'est pas terrible.
+ * attention :
+ * -
+ * a faire :
+ * -
+ * ============================================================================
+ */
 
   require_once 'php/metier/calendrier.php';
   require_once 'php/metier/support_activite.php';
@@ -53,8 +67,7 @@
     }
     
     protected function afficher_debut(): void {
-      echo "\n";
-      echo '<div class="container-fluid" style="padding:0px;"><table class="table table-hover">';
+      echo '<div class="scroll-container" style="padding:0px;"><table class="table table-hover">';
       echo '<thead><tr><th></th>';
       foreach ($this->activite_site->creneaux_activite as $creneau) {
         $classe = '';
@@ -63,8 +76,7 @@
           $classe = ' class="indispo"';
           $info = '<br />fermé';
         }
-            
-        echo '<th ', $classe, 'style="text-align:center;">', $creneau->debut()->heure_texte(), '<br />', $creneau->fin()->heure_texte(), $info, '</th>';
+        echo '<th ', $classe, 'style="text-align:center;">', $creneau->debut()->heure_texte(), ' - ', $creneau->fin()->heure_texte(), $info, '</th>';
       }
       echo '</tr></thead><tbody>';
     }
@@ -73,6 +85,7 @@
       $aff = new Afficheur_Vertical_Seance($this->page, $seance, $this->activite_site);
       // Menu des actions possibles sur la seance
       $ctrl = new Controleur_Action_Seance($aff, $index_creneau);
+      echo '<div class="mx-auto" style="width:30%">';
       echo $ctrl->formater_menu_action();
 
       // Affichage des informations sur la seance

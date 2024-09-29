@@ -2,14 +2,14 @@
  ================================================================================
  description : feuille de style pour l'affichage
  utilisation :
- teste avec  : Mac OS 10.14 - Firefox, Safari
  contexte    : resabel - aux couleurs du club
- Copyright (c) 2017-2024 AMP
+ Copyright (C) 2024 Pierre Chevaillier
  -------------------------------------------------------------------------------
  creation : 22-jul-2017 pchevaillier@gmail.com
  revision : 02-mar-2019 pchevaillier@gmail.com
  revision : 15-jun-2019 pchevaillier@gmail.com maree (idem France 2018)
  revision : 24-fev-2024 pchevaillier@gmail.com zones saisie
+ revision : 29-sep-2024 pchevaillier@gmail.com + scroll-container
  -------------------------------------------------------------------------------
  commentaires
  nom de couleurs : https://html-color-codes.info/color-names/
@@ -20,6 +20,16 @@
 @media screen and (max-width: 480px) {
   /* proprietes pour mobile */
   .not_mobile { display: none; }
+}
+
+/*
+ * https://developer.mozilla.org/en-US/docs/Web/CSS/scroll-behavior
+ */
+.scroll-container {
+  width: 1600px;
+  height: 800px;
+  overflow-y: scroll;
+  scroll-behavior: smooth;
 }
 
 body {

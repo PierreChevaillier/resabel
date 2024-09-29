@@ -93,7 +93,7 @@
     protected function afficher_debut() {
       if (!$this->cache()) {
         $marque = ($this->obligatoire())? "*": "";
-        //echo "\n" . '<div class="form-group"><label class="control-label col-sm-2" for="' . $this->id() . '">' . $this->titre() . ' ' . $marque . '</label><div class="col-sm-10">';
+        echo '<div class="mt-1">';
      
         echo "\n" . '<label class="form-label" for="' . $this->id() . '">'
           . $this->titre() . ' ' . $marque . '</label>';
@@ -113,7 +113,7 @@
         if (strlen($this->texte_aide) > 0)
           echo '<div id="' . $this->id() . '_aide" class="form-text">'
             . $this->texte_aide . '</div>';
-//        echo "</div></div>\n";
+        echo '</div>';
         }
     }
     

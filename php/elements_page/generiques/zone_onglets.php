@@ -25,7 +25,7 @@
   class Zone_Onglets extends Conteneur_Elements {
     
     protected function afficher_debut() {
-      echo '<div style="padding:5px">';
+      echo '<div style="padding:1px">';
       echo '<ul class="nav nav-tabs" id="' . $this->id() . '" role="tablist">';
       $n = 1;
       foreach ($this->elements as $onglet) {

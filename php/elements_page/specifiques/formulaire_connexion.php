@@ -21,27 +21,37 @@
   // - script controle saisie : cryptage du mot de passe
   // ==========================================================================
 
-  // --- Classes utilisees
-  require_once 'php/elements_page/generiques/formulaire.php';
-  require_once 'php/elements_page/generiques/champ_formulaire.php';
+// --- Classes utilisees
+require_once 'php/elements_page/generiques/formulaire.php';
+require_once 'php/elements_page/generiques/champ_formulaire.php';
   
-  // ==========================================================================
-  class Formulaire_Connexion extends Formulaire {
+// ============================================================================
+class Formulaire_Connexion extends Formulaire {
 
-    public function initialiser() {
-      $item = null;
-      try {
-        $item = new Champ_Identifiant("id");
-        $this->ajouter_champ($item);
-        
-        $item = new Champ_Mot_Passe("mdp"); //, "js/controle_identification.js");
-        $this->ajouter_champ($item);
-        
-        parent::initialiser();
-      } catch(Exception $e) {
-        die('Exception dans la methode initialiser de la classe Formulaire_Connexion : ' . $e->getMessage());
-      }
+  public function initialiser() {
+    $item = null;
+    try {
+      $item = new Champ_Identifiant("id");
+      $this->ajouter_champ($item);
+      
+      $item = new Champ_Mot_Passe("mdp"); //, "js/controle_identification.js");
+      $this->ajouter_champ($item);
+      
+      parent::initialiser();
+    } catch(Exception $e) {
+      die('Exception dans la methode initialiser de la classe Formulaire_Connexion : ' . $e->getMessage());
     }
   }
-  // ==========================================================================
+  
+  protected function afficher_debut(): void {
+    echo '<div class="card-body m-0 p-0">';
+    parent::afficher_debut();
+  }
+  
+  protected function afficher_fin(): void {
+    parent::afficher_fin();
+    echo '</div>';
+  }
+}
+// ============================================================================
 ?>

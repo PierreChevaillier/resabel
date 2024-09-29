@@ -160,9 +160,9 @@ require_once 'php/elements_page/specifiques/vue_indisponibilite.php';
         $onglet->def_id('tab_site_' . $site->code());
         $onglet->def_titre($site->nom());
         if (is_a($site, 'Site_Activite_Mer')) {
-          $entete = new Entete_Section();
-          $entete->def_titre("Sorties en mer");
-          $onglet->elements[] = $entete;
+          //$entete = new Entete_Section();
+          //$entete->def_titre("Sorties en mer");
+          //$onglet->elements[] = $entete;
           $this->definir_affichage_marees($activite_site, $onglet);
           //$this->definir_affichage_horaires($site, $onglet); // pour debug (a garder ?)
         } elseif  (is_a($site, 'Salle_Sport')){
@@ -220,7 +220,7 @@ require_once 'php/elements_page/specifiques/vue_indisponibilite.php';
     }
     
     public function initialiser() {
-      $texte_entete = $this->jour()->date_texte();
+      $texte_entete = $this->jour()->date_texte_court();
       if (isset($_GET['a'])) {
         if ($_GET['a'] == 'l')
           $texte_entete = " Vue séances " . $texte_entete;
