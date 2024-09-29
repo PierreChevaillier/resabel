@@ -71,11 +71,11 @@ class Page_Connexion_Club extends Page_Simple {
     parent::afficher_debut();
     $titre = Site_Web::accede()->sigle();
     $sous_titre = "Resabel";
-    echo '<div class="mx-auto" style="width:40%">'; // pour que ce soit centre horizontalement
+    echo '<div class="mx-auto" style="width:80%">';
     
     echo '<div class="card" style="width:20rem;">'; // pour controler la largeur du formulaire
     echo '<div class="card-header">';
-    echo '<div class="my-3 p-3 rounded bg-primary" style="text-align:center;color:white;">';
+    echo '<div class="my-3 p-3 rounded bg-warning" style="text-align:center;">';
     echo '<h1>'. $titre . '</h1><p class="lead">' . $sous_titre . '</p>';
     echo '</div>';
     echo '</div>';

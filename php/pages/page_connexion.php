@@ -42,7 +42,7 @@
       parent::afficher_debut();
       $titre = Site_Web::accede()->sigle();
       $sous_titre = "Resabel";
-      echo '<div class="mx-auto" style="width:40%">'; // pour que ce soit centre horizontalement
+      echo '<div class="mx-auto" style="width:80%">'; // pour que ce soit centre horizontalement
       
       echo '<div class="card" style="width:20rem;">'; // pour controler la largeur du formulaire
       echo '<div class="card-header">';

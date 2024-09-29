@@ -26,14 +26,14 @@
  * revision : 31-may-2024 pchevaillier@gmail.com + affichage compet ou loisir (ou rien)
  * revision : 21-jun-2024 pchevaillier@gmail.com * affichage selon contexte
  *            issue: https://github.com/PierreChevaillier/resabel/issues/14#issue-2366996625
- * revision : 29-sep-2024 pchevaillier@gmail.com + centrage aff. seance et scroll
+ * revision : 29-sep-2024 pchevaillier@gmail.com * controle largeur table et colonnes
  * ----------------------------------------------------------------------------
  * commentaires :
  * - scroll => surface affichage seances réduite.
  *   idee : ne pas afficher d'afficheur seance si aucune sortie sur creneaux selectionnes
  *   j'ai essaye, c'est pas terrible.
  * attention :
- * -
+ * - interferences entre les styles (ici) et le CSS 
  * a faire :
  * -
  * ============================================================================
@@ -67,8 +67,18 @@
     }
     
     protected function afficher_debut(): void {
-      echo '<div class="scroll-container" style="padding:0px;"><table class="table table-hover">';
-      echo '<thead><tr><th></th>';
+      $nb_creneau = count($this->activite_site->creneaux_activite);
+      $largeur_support = 92;
+      $largeur_seance = 256;
+      $largeur_table = $largeur_support + $nb_creneau * $largeur_seance;
+      
+      // table dans zone scrollable
+      $largeur_zone_scrollable = $largeur_table + 40;
+      echo '<div style="padding:0px;width:' . $largeur_zone_scrollable . 'px;height:800px;overflow-y:scroll;scroll-behavior:smooth;">';
+      echo '<table class="table table-hover" style="width:' . $largeur_table . 'px;">';
+      
+      // contenu de la table : col gauche = le support ; autres colonnes = les seances par creneau horaire
+      echo '<thead><tr><th style="width:' . $largeur_support . 'px;"></th>';
       foreach ($this->activite_site->creneaux_activite as $creneau) {
         $classe = '';
         $info = '';
@@ -76,7 +86,9 @@
           $classe = ' class="indispo"';
           $info = '<br />fermé';
         }
-        echo '<th ', $classe, 'style="text-align:center;">', $creneau->debut()->heure_texte(), ' - ', $creneau->fin()->heure_texte(), $info, '</th>';
+        echo '<th ', $classe, 'style="text-align:center;width:' . $largeur_seance , 'px;">',
+          $creneau->debut()->heure_texte(), ' - ', $creneau->fin()->heure_texte(),
+          $info, '</th>';
       }
       echo '</tr></thead><tbody>';
     }
@@ -85,7 +97,7 @@
       $aff = new Afficheur_Vertical_Seance($this->page, $seance, $this->activite_site);
       // Menu des actions possibles sur la seance
       $ctrl = new Controleur_Action_Seance($aff, $index_creneau);
-      echo '<div class="mx-auto" style="width:30%">';
+      echo '<div>'; // class="mx-auto" style="width:30%">';
       echo $ctrl->formater_menu_action();
 
       // Affichage des informations sur la seance

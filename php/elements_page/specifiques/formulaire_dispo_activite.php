@@ -234,7 +234,7 @@
     }
     
     protected function afficher_debut(): void {
-      echo '<div class="mx-auto" style="width:50%">';
+      echo '<div class="mx-auto" style="width:70%">';
       parent::afficher_debut();
     }
     
