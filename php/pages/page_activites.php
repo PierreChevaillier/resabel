@@ -90,7 +90,7 @@ require_once 'php/elements_page/specifiques/vue_indisponibilite.php';
     public function definir_elements() {
       parent::definir_elements();
           
-      $this->entete = new Entete_Section(); //Contenu_Page();
+      $this->entete = new Entete_Section();
       $this->ajoute_element_haut($this->entete);
       
       $this->definir_affichage_navigateur_dates();
@@ -160,9 +160,9 @@ require_once 'php/elements_page/specifiques/vue_indisponibilite.php';
         $onglet->def_id('tab_site_' . $site->code());
         $onglet->def_titre($site->nom());
         if (is_a($site, 'Site_Activite_Mer')) {
-          //$entete = new Entete_Section();
-          //$entete->def_titre("Sorties en mer");
-          //$onglet->elements[] = $entete;
+          $entete = new Entete_Section();
+          $entete->def_titre("Sorties en mer");
+          $onglet->elements[] = $entete;
           $this->definir_affichage_marees($activite_site, $onglet);
           //$this->definir_affichage_horaires($site, $onglet); // pour debug (a garder ?)
         } elseif  (is_a($site, 'Salle_Sport')){

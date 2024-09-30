@@ -32,6 +32,7 @@
  * - scroll => surface affichage seances réduite.
  *   idee : ne pas afficher d'afficheur seance si aucune sortie sur creneaux selectionnes
  *   j'ai essaye, c'est pas terrible.
+ *   pour l'instant, pas defilable
  * attention :
  * - interferences entre les styles (ici) et le CSS 
  * a faire :
@@ -72,9 +73,11 @@
       $largeur_seance = 256;
       $largeur_table = $largeur_support + $nb_creneau * $largeur_seance;
       
-      // table dans zone scrollable
-      $largeur_zone_scrollable = $largeur_table + 40;
-      echo '<div style="padding:0px;width:' . $largeur_zone_scrollable . 'px;height:800px;overflow-y:scroll;scroll-behavior:smooth;">';
+      // table dans zone scrollable (a voir, pour l'instant non)
+      //$largeur_zone_scrollable = $largeur_table + 40;
+      //echo '<div style="padding:0px;width:' . $largeur_zone_scrollable . 'px;height:800px;overflow-y:scroll;scroll-behavior:smooth;">';
+      echo '<div style="padding:0px;">';
+      
       echo '<table class="table table-hover" style="width:' . $largeur_table . 'px;">';
       
       // contenu de la table : col gauche = le support ; autres colonnes = les seances par creneau horaire
