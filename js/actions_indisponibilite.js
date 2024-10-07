@@ -49,7 +49,7 @@ function activer_controle_suppression_indisponibilite(code_indispo, type_indispo
   if (type_indispo == 1)
     titre_modal.innerHTML = "Suppression indisponibilité";
   else
-    titre_modal.innerHTML = "Supression fermeture";
+    titre_modal.innerHTML = "Suppression fermeture";
   html_corps = '<div class="alert alert-warning" role="alert">Opération irréversible !</div>';
   html_corps = html_corps + '<div class="card"><div class="card-body"><p>' + html_resume_indispo + '</p></div></div>';
   html_corps = html_corps + '<div><button type="button" class="btn btn-primary" onclick="supprimer_indisponibilite(' + code_indispo + ', ' + type_indispo + '); return false;">Confirmer suppression</button></div>';
@@ -74,14 +74,16 @@ function supprimer_indisponibilite(code_indisponibilite, type_indispo) {
   var ok = false;
   xmlhttp.onreadystatechange = function() {
       if (this.readyState == 4 && this.status == 200) {
+        //console.log("retour suppression indisponibilite");
+        
         /*
-        console.log("suppression indisponibilite : ok");
+         * pour tests uniquement car ne marche pas dans les cas normaux
         var dict = JSON.parse(this.responseText);
         for (var entree in dict) {
           valeur = dict[entree];
           console.log(entree + " >> " + valeur);
         }
-         */
+        */
         location.reload(); // pour prendre en compte nouveau contexte
         ok = true;
       }
@@ -89,7 +91,7 @@ function supprimer_indisponibilite(code_indisponibilite, type_indispo) {
   
   xmlhttp.open('GET', url, true);
   xmlhttp.send();
-  console.log("requete supression envoyee");
+  console.log("requete suppression envoyee");
   return ok;
 }
 

@@ -21,14 +21,15 @@
   // ==========================================================================
   
   require_once 'php/metier/permanence.php';
-  
+
+require_once 'php/metier/personne.php';
   // ==========================================================================
   class Enregistrement_Permanence {
     public $permanence = null;
-    public function permanence() { return $this->permanence; }
-    public function def_permanence($permanence) { $this->permanence = $permanence; }
+    public function permanence(): ?Permanence { return $this->permanence; }
+    public function def_permanence(Permanence $permanence): void { $this->permanence = $permanence; }
     
-    static function source() {
+    static function source(): string {
       return Base_Donnees::$prefix_table . 'permanences';
     }
     
@@ -68,7 +69,8 @@
      * Test si la personne passee en argument est celle de permanence
      * recherche de l'information dans la base de donnees
      */
-    public function a_comme_responsable($personne) {
+    public function a_comme_responsable(Personne $personne): bool {
+      if (is_null($this->permanence) || is_null($personne)) return false;
       $reponse = false;
       try {
         $bdd = Base_Donnees::acces();
@@ -122,22 +124,17 @@
       return $status;
       }
     
-    static function recherche_derniere() {
-      
-      $trouve = false;
-      /*
-      $requete = "SELECT annee, semaine, code_membre FROM permanences ORDER by annee DESC, semaine DESC LIMIT 1";
-      $resultat = mysql_query($requete);
-      if ($resultat) {
-        $donnee = mysql_fetch_assoc($resultat);
-        $this->semaine = $donnee['semaine'];
-        $this->annee = $donnee['annee'];
-        $personne = new Personne($donnee['id_membre']);
-        $this->def_responsable($personne);
-        $status = true;
+    static function recherche_derniere(): ?Permanence {
+      $permanence_trouvee = null;
+      $requete = "SELECT annee, semaine, code_membre FROM " . self::source() . " ORDER by annee DESC, semaine DESC LIMIT 1";
+      $bdd = Base_Donnees::acces();
+      $resultat = $bdd->query($requete);
+      if ($donnee = $resultat->fetch(PDO::FETCH_OBJ)) {
+        $permanence_trouvee = new Permanence($donnee->semaine, $donnee->annee);
+        $responsable = new Personne($donnee->code_membre);
+        $permanence_trouvee->def_responsable($responsable);
       }
-       */
-      return $trouve;
+      return $permanence_trouvee;
     }
     
     public function enregistre() {
@@ -165,13 +162,21 @@
       return $fait;
     }
     
-    public function enregistre_changement_responsable($code_membre) {
+    public function change_responsable(int $code_membre): bool {
+      if (is_null($this->permanence) || ($code_membre <= 0)) return false;
       $fait = false;
-      $annee = $this->permanence->annee();
-      $semaine = $this->permanence->semaine();
-      $code_sql = "UPDATE permanences SET code_membre = '" . $code_membre . "' WHERE annee = '" . $annee . "' AND semaine = '" . $semaine . "' LIMIT 1";
-      echo $code_sql . "<br />";
-      
+      $code_sql = "UPDATE " . self::source()
+        . " SET code_membre = '" . $code_membre
+        . "' WHERE annee = '" . $this->permanence->annee()
+        . "' AND semaine = '" . $this->permanence->semaine()
+        . "' LIMIT 1";
+      try {
+        $bdd = Base_Donnees::acces();
+        $bdd->query($code_sql);
+        $fait = true;
+      } catch (PDOException $e) {
+        Base_Donnees::sortir_sur_exception(self::source(), $e);
+      }
       return $fait;
     }
     

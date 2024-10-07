@@ -1,19 +1,28 @@
 <?php
 /* ============================================================================
- * contexte : Resabel - systeme de REServAtion de Bateau En Ligne
+ * Resabel - systeme de REServAtion de Bateau En Ligne
+ * Copyright (C) 2024 Pierre Chevaillier
+ * contact: pchevaillier@gmail.com 70 allee de Broceliande, 29200 Brest, France
+ * ----------------------------------------------------------------------------
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License,
+ * or any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ * ----------------------------------------------------------------------------
  * description : Definition de la classe Formulaire_Indisponibilite
  *               Formulaire de saisie/modification des informations relatives
  *               a une fermeture de site ou indisponibilite d'un support d'activite
- * copyright (c) 2018-2024 AMP. Tous droits reserves.
- * ----------------------------------------------------------------------------
  * utilisation : php - require_once <chemin_vers_ce_fichier_php>
  * dependances :
- * utilise avec :
- * - depuis 2023 :
- *   PHP 8.2 sur macOS 13.x
- *   PHP 8.1 sur hebergeur web
  * ----------------------------------------------------------------------------
  * creation : 13-mai-2024 pchevaillier@gmail.com
+ * revision : 07-oct-2024 pchevaillier@gmail.com * valeurs initiales heures debut et fin (issue #25)
  * revision :
  * ----------------------------------------------------------------------------
  * commentaires :
@@ -21,7 +30,7 @@
  * attention :
  * -
  * a faire :
- * -
+ * - controle des valeurs des intants de début et fin
  * ============================================================================
  */
 
@@ -159,8 +168,10 @@ class Formulaire_Indisponibilite extends Formulaire {
         $this->champ('motif')->def_valeur($this->indisponibilite->motif()->code());
         $this->champ('info')->def_valeur($this->indisponibilite->information());
       } elseif ($action == 'c') {
-        $debut = Calendrier::aujourdhui();
-        $fin = $debut->lendemain();
+        $aujourdhui = Calendrier::aujourdhui();
+        $debut = $aujourdhui->add(new DateInterval('PT1H0M0S'));
+        $demain = $aujourdhui->lendemain();
+        $fin = $demain->add(new DateInterval('PT23H0M0S'));
         $this->champ('date_deb')->def_valeur($debut->date_html());
         $this->champ('hre_deb')->def_valeur($debut->format('H:i'));
         $this->champ('date_fin')->def_valeur($fin->date_html());

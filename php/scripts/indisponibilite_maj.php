@@ -1,23 +1,33 @@
 <?php
 /* ============================================================================
- * contexte : Resabel - systeme de REServAtion de Bateau En Ligne
+ * Resabel - systeme de REServAtion de Bateau En Ligne
+ * Copyright (C) 2024 Pierre Chevaillier
+ * contact: pchevaillier@gmail.com 70 allee de Broceliande, 29200 Brest, France
+ * ----------------------------------------------------------------------------
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License,
+ * or any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ * ----------------------------------------------------------------------------
  * description : traitement requete pour la mise a jour des informations
  *               relatives a une indisponibilite
- * copyright (c) 2018-2024 AMP. Tous droits reserves.
- * ----------------------------------------------------------------------------
  * utilisation : javascript (XMLHttpRequest - GET)
  * dependances :
  * - script qui envoie la requete
  *   - actions_indisponibilite.js pour la suppression
  * - formulaire
  *   - formulaire_indisponibilite.php pour creation et modification
- * utilise avec :
- * - depuis 2023 :
- *   PHP 8.2 sur macOS 13.x
- *   PHP 8.1 sur hebergeur web
  * ----------------------------------------------------------------------------
  * creation : 03-mai-2024 pchevaillier@gmail.com
  * revision : 21-mai-2024 pchevaillier@gmail.com + creation et modification
+ * revision : 07-oct-2024 pchevaillier@gmail.com * cas suppression support (issue #24)
+ *                                                 assure fin apres debut (issue #25)
  * ----------------------------------------------------------------------------
  * commentaires :
  * -
@@ -66,12 +76,14 @@ $indispo = null;
 $code_objet = 0;
 if ($type_indispo == Enregistrement_Indisponibilite::CODE_TYPE_INDISPO_SUPPORT) {
   $indispo = new Indisponibilite_Support($code_indispo);
-  $code_objet = $_POST['support'];
+  if (isset($_POST['support'])) // ce n'est pas le cas pour une suppression car on n'en a pas besoin
+      $code_objet = $_POST['support'];
   $indispo->def_support(new Support_Activite($code_objet));
   $url_retour = 'indisponibilites.php';
 } elseif ($type_indispo == Enregistrement_Indisponibilite::CODE_TYPE_INDISPO_SITE) {
   $indispo = new Fermeture_Site($code_indispo);
-  $code_objet = $_POST['site'];
+  if (isset($_POST['site'])) // ce n'est pas le cas pour une suppression car on n'en a pas besoin
+      $code_objet = $_POST['site'];
   $indispo->def_site_activite(new Site_Activite($code_objet));
   $url_retour = 'fermetures_sites.php';
 } else {
@@ -89,6 +101,8 @@ $ok = false;
 
 if ($action[0] == 's') {
   $ok = $enregistrement->supprimer();
+  header('location:../../' . $url_retour); // coherence du code
+  exit();
 } elseif ($action[0] == 'c' || $action[0] == 'm') {
   // creation ou modification d'une indispo
   // a partir des donnees saisies
@@ -97,25 +111,27 @@ if ($action[0] == 's') {
   // periode
   $debut = new Instant($_POST['date_deb'] . ' ' . $_POST['hre_deb']);
   $fin = new Instant($_POST['date_fin'] . ' ' . $_POST['hre_fin']);
+  if ($fin->est_avant($debut))
+    $fin = $debut->add(new DateInterval('P1D'));
   $indispo->definir_periode($debut, $fin);
-  // createurice
   
-  // motif
+  // motif et information
   $code = $_POST['motif'];
   $indispo->def_motif(new Motif_Indisponibilite($code));
   $info = $_POST['info'];
   $indispo->def_information($info);
-  
 
   if ($action[0] == 'c') {
-    if (isset($_SESSION['usr']))
+    if (isset($_SESSION['usr'])) {
+      // createurice
         $indispo->def_createurice(new Membre($_SESSION['usr']));
+    }
     if ($type_indispo == Enregistrement_Indisponibilite::CODE_TYPE_INDISPO_SUPPORT) {
       $enregistrement->ajouter_indisponibilite_support();
     } elseif ($type_indispo == Enregistrement_Indisponibilite::CODE_TYPE_INDISPO_SITE) {
       $enregistrement->ajouter_fermeture_site();
     }
-  } else {
+  } elseif ($action[0] == 'm') {
     $ok = $enregistrement->modifier();
   }
   header('location:../../' . $url_retour);
@@ -123,12 +139,7 @@ if ($action[0] == 's') {
 }
 // ----------------------------------------------------------------------------
 // Reponse a la requete :
-
-$status = $ok ? 1 : 0;
-$donnees = array('status' => $status);
-$resultat_json = json_encode($donnees);
-echo $resultat_json;
-exit();
+// PAS de reponse ici
 
 // ============================================================================
 ?>

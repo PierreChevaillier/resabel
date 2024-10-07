@@ -343,7 +343,7 @@ require_once 'php/bdd/enregistrement_support_activite.php';
     $code_sql = 'DELETE FROM ' . self::source()
       . ' WHERE code = ' . $this->indisponibilite->code();
     $n = $bdd->exec($code_sql);
-    $status = ($n == 1);
+    $status = ($n === 1);
     return $status;
   }
 }
