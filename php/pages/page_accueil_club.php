@@ -85,7 +85,7 @@ class Page_Accueil_Club extends Page_Menu {
   
   protected function collecter_info_permanence(): void {
     $jour = $this->maintenant->jour();
-    $sem = $jour->format("W");
+    $sem = intval($jour->format("W"));
     $annee = Calendrier::annee_semaine($jour);
     $this->permanence = new Permanence($sem, $annee);
     $enregistrement_permanence = new Enregistrement_Permanence();

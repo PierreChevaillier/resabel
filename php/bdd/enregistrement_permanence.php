@@ -138,7 +138,6 @@ require_once 'php/metier/personne.php';
     }
     
     public function enregistre() {
-      // TODO
       $fait = false;
       if ($this->permanence == null)
         return $fait;
@@ -148,14 +147,15 @@ require_once 'php/metier/personne.php';
         $semaine = $this->permanence->semaine();
         $code_responsable = $this->permanence->code_responsable();
       
-        $code_sql = "INSERT INTO permanences VALUES(:annee, :semaine, :code_responsable";
-        echo $code_sql . "<br />";
+        $code_sql = "INSERT INTO " .  self::source() . " VALUES(:annee, :semaine, :code_responsable)";
+        //echo $code_sql . PHP_EOL;
         $requete= $bdd->prepare($code_sql);
         $requete->bindParam(':annee', $annee, PDO::PARAM_INT);
         $requete->bindParam(':semaine', $semaine, PDO::PARAM_INT);
         $requete->bindParam(':code_responsable', $code_responsable, PDO::PARAM_INT);
       
         $requete->execute();
+        $fait = true;
       } catch (PDOException $e) {
         Base_Donnees::sortir_sur_exception(self::source(), $e);
       }

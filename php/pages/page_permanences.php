@@ -42,6 +42,16 @@
       $element->def_titre("Permanences");
       $this->ajoute_element_haut($element);
     
+      if (isset($_SESSION['adm'])) {
+        // Possibilite de creer une nouvelle serie de perms
+        $e = new Element_Code();
+        $code_html = '<div>';
+        $code_html = $code_html . '<a href="php/scripts/permanences_creation_pour_equipe.php" class="btn btn-primary btn-lg" role="button">Extension calendrier permanences</a>';
+        $code_html = $code_html . '</div>' . PHP_EOL;
+        $e->def_code($code_html);
+        $this->ajoute_contenu($e);
+      }
+      
       $perm_semaine = null;
       Permanence::cette_semaine($perm_semaine);
       

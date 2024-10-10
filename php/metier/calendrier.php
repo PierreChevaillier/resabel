@@ -17,6 +17,7 @@
   // revision : 05-jan-2020 pchevaillier@gmail.com Instant::valeur_cle_horaire
   // revision : 11-jan-2020 pchevaillier@gmail.com Interval_Temporel
   // revision : 26-dec-2022 pchevaillier@gmail.com compatibilite php 7.x et 8.x
+// revision : 09-oct-2024 pchevaillier@gmail.com typage classe Instant
   // --------------------------------------------------------------------------
   // commentaires :
   // - utilisation des classes DateTime et associees
@@ -31,6 +32,7 @@
   // a faire :
   // - finir intervalle temporel. Utiliser les fonctions php / timeDiff
   //   ou supprimer la classe...
+// Typage complet et plus 'generique' (p. ex DateTimeInterface)
   // ==========================================================================
   
   // --- Classes utilisees
@@ -40,45 +42,45 @@
   // --------------------------------------------------------------------------
   class Instant extends DateTimeImmutable {
 
-    public function valeur_cle() {
+    public function valeur_cle(): string {
       return $this->format('Y-m-d H:i');
     }
     
-    public function valeur_cle_date() {
+    public function valeur_cle_date(): string {
       return $this->format('Y-m-d');
     }
     
-    public function valeur_cle_horaire() {
+    public function valeur_cle_horaire(): string {
       $cle = 'PT' . $this->format('H') . 'H' . $this->format('i') . 'M';
       return $cle;
     }
     
-    public function lendemain() {
+    public function lendemain(): Instant {
       return $this->add(new DateInterval('P1D'));
     }
     
-    public function veille() {
+    public function veille(): Instant {
       return $this->sub(new DateInterval('P1D'));
     }
 
-    public function jour() {
+    public function jour(): Instant {
       $valeur = $this->format('Y-m-d') . " 00:00:00";
       return new Instant($valeur);
     }
     
-    public function numero_semaine() {
-      return $this->format("W"); // ISO-8601 week number of year, weeks starting on Monday
+    public function numero_semaine(): int {
+      return intval($this->format("W")); // ISO-8601 week number of year, weeks starting on Monday
     }
     
-    public function annee_semaine() {
-      return $this->format("o"); // ISO-8601 week-numbering year.
+    public function annee_semaine(): int {
+      return intval($this->format("o")); // ISO-8601 week-numbering year.
     }
     
-    public function heure_hiver() {
+    public function heure_hiver(): bool {
       return (1 - date('I', $this->getTimestamp()));
     }
     
-    public function est_egal(Instant $autre_instant) {
+    public function est_egal(DateTimeInterface $autre_instant): bool {
       return $this->getTimestamp() == $autre_instant->getTimestamp();
     }
     public function est_avant(DateTimeInterface $autre_instant): bool {
@@ -89,15 +91,15 @@
       return $autre_instant->est_avant($this);
     }
 
-    public function date_html() {
+    public function date_html(): string {
       return $this->format('Y-m-d');
     }
   
-    public function date_sql() {
+    public function date_sql(): string {
       return $this->format('Y-m-d');
     }
 
-    public function date_heure_sql() {
+    public function date_heure_sql(): string {
       return $this->format('Y-m-d H:i:s');
     }
   
@@ -142,7 +144,7 @@
       //return strftime('%a %d %h', $this->getTimestamp());  // deprecated 8.x
     }
     
-    public function heure_texte() {
+    public function heure_texte(): string {
       return $this->format('H:i');
     }
   }

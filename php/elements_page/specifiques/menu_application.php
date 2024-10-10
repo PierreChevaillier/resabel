@@ -72,7 +72,7 @@ require_once 'php/metier/profil_session.php';
       echo '<li><a class="dropdown-item" href="agendas.php">Calendrier</a></li>';
       echo '<li><a class="dropdown-item" href="permanences.php">Permanences</a></li>';
       if ($this->session_admin) {
-        echo '<li><a class="dropdown-item" href="equipe_permanence.php">Equipe permanence</a></li>';
+        //echo '<li><a class="dropdown-item" href="equipe_permanence.php">Equipe permanence</a></li>';
         echo '<li><a class="dropdown-item" href="sites_activite.php">Sites d\'activité</a></li>';
       }
       echo '<li><a class="dropdown-item" href="fermetures_sites.php">Fermetures sites</a></li>';

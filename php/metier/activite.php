@@ -128,7 +128,7 @@
     }
     
     protected function collecter_info_permanence(): bool {
-      $sem = $this->date_jour()->format("W");
+      $sem = intval($this->date_jour()->format("W"));
       $annee = Calendrier::annee_semaine($this->date_jour());
       $permanence = new Permanence($sem, $annee);
 
