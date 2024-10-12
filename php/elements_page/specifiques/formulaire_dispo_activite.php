@@ -116,12 +116,10 @@
       $possibilites = array();
       $rang = 0;
       /*
-       * valeurs par defaut : 2e et 5e creneau
-       * le premier creneau (08:00) est rarement utilise (a l'AMP)
        * l'affichage de 4 creneaux couvre une bonne demie journéee et le rendu affiche est meilleur
        */
-      $rang_premier = 1;
-      $rang_dernier = 4;
+      $rang_premier = 0;
+      $rang_dernier = 3;
       foreach ($creneaux_activite as $creneau) {
         $cle = $creneau->debut()->valeur_cle_horaire();
         $label = $creneau->debut()->format("H:i");
