@@ -5,12 +5,12 @@
   // copyright (c) 2018-2019 AMP. Tous droits reserves.
   // --------------------------------------------------------------------------
   // utilisation : php - require_once <chemin_vers_ce_fichier.php>
-  // dependances : cf. require_once + classe Base_Donnees
+  // dependances : 
   // teste avec : PHP 7.1 sur Mac OS 10.14 ;
   //              PHP 7.0 sur hebergeur web
   // --------------------------------------------------------------------------
   // creation : 28-mai-2019 pchevaillier@gmail.com (a partir de resabel V1)
-  // revision :
+  // revision : 12-oct-2024 pchevaillier@gmail.com + lire_code_responsable
   // --------------------------------------------------------------------------
   // commentaires :
   // -
@@ -20,7 +20,7 @@
   // -
   // ==========================================================================
   
-  require_once 'php/metier/permanence.php';
+require_once 'php/metier/permanence.php';
 
 require_once 'php/metier/personne.php';
   // ==========================================================================
@@ -137,6 +137,18 @@ require_once 'php/metier/personne.php';
       return $permanence_trouvee;
     }
     
+    static function lire_code_responsable(int $semaine, int $annee): ?int {
+      $code_responsable = null;
+      $requete = "SELECT code_membre FROM " . self::source()
+        . " WHERE semaine = ". $semaine . " AND annee = " . $annee . " LIMIT 1";
+      $bdd = Base_Donnees::acces();
+      $resultat = $bdd->query($requete);
+      if ($donnee = $resultat->fetch(PDO::FETCH_OBJ)) {
+        $code_responsable = $donnee->code_membre;
+      }
+      return $code_responsable;
+    }
+    
     public function enregistre() {
       $fait = false;
       if ($this->permanence == null)
@@ -172,8 +184,8 @@ require_once 'php/metier/personne.php';
         . "' LIMIT 1";
       try {
         $bdd = Base_Donnees::acces();
-        $bdd->query($code_sql);
-        $fait = true;
+        $resultat = $bdd->exec($code_sql);
+        $fait = ($resultat == 1);
       } catch (PDOException $e) {
         Base_Donnees::sortir_sur_exception(self::source(), $e);
       }

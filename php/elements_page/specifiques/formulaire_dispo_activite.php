@@ -23,6 +23,7 @@
  * creation : 10-jul-2019 pchevaillier@gmail.com
  * revision : 19-aug-2024 pchevaillier@gmail.com * init prem - dern creneaux
  * revision : 28-aug-2024 pchevaillier@gmail.com - private $club (non utilise)
+ * revision : 17-oct-2024 pchevaillier@gmail.com * choix 28 jours au lieu de 21
  * ----------------------------------------------------------------------------
  * commentaires :
  * -
@@ -100,7 +101,7 @@
     }
     
     private function initialiser_dates($id_champ) {
-      $nJours = 21;
+      $nJours = 28;
       $dates = array(); // cle_date, texte_court
       Calendrier::jours_futurs_texte($nJours, $dates);
       $this->champ($id_champ)->options = $dates;

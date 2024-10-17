@@ -43,6 +43,11 @@ require_once 'php/metier/personne.php';
 // ============================================================================
 class Permanence {
   
+  public static function semaine_valide(int $semaine, int $annee): bool {
+    $condition = ($semaine > 0 && $semaine < 54) && ($annee > 2014 && $annee < 2100);
+    return $condition;
+  }
+  
   public $responsable = null;
   public function responsable(): ?Personne { return $this->responsable; }
   public function def_responsable(Personne $personne): void { $this->responsable = $personne;}

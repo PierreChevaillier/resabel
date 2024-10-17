@@ -1,36 +1,46 @@
 <?php
-  // ==========================================================================
-  // contexte : Resabel - systeme de REServAtion de Bateau En Ligne
-  // description : classes definissant les 'vues' d'un objet de la classe
-  //               Seance_activite
-  //               generation du code html pour affichage des informations
-  //               sur une seance d'activite
-  // copyright (c) 2018-2024 AMP. Tous droits reserves.
-  // --------------------------------------------------------------------------
-  // utilisation : php - require_once <chemin_vers_ce_fichier.php>
-// dependances :
-//  - bootstrap 5.3
-//  - valeur variables $_SESSION
-//  - code actions
-//  - actions_seance_activite.js
-  // teste avec : PHP 7.1 sur Mac OS 10.14 ;
-  //              PHP 7.0 sur hebergeur web
-  //  - PHP 8.2 sur macOS 13.1 (> 25-dec-2022)
-  // --------------------------------------------------------------------------
-  // creation : 22-jan-2020 pchevaillier@gmail.com
-  // revision : 25-aug-2020 pchevaillier@gmail.com contexte actions + des actions
-  // revision : 29-dec-2022 pchevaillier@gmail.com fix erreur 8.2 : utf8_encode deprecated
-  // revision : 17-feb-2023 pchevaillier@gmail.com + changement horaire
-// revision: 04-jul-2024 pchevaillier@gmail.com + affichage photo support activite
-// revision: 13-jul-2024 pchevaillier@gmail.com + couleur / seance passee et indispo
-  // --------------------------------------------------------------------------
-  // commentaires :
-  // -
-  // attention :
-  // -
-  // a faire :
-  // - afficher champ information pour seance et participation
-  // ==========================================================================
+/* ============================================================================
+ * Resabel - systeme de REServAtion de Bateau En Ligne
+ * Copyright (C) 2024 Pierre Chevaillier
+ * contact: pchevaillier@gmail.com 70 allee de Broceliande, 29200 Brest, France
+ * ----------------------------------------------------------------------------
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License,
+ * or any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ * ----------------------------------------------------------------------------
+ * description : classes definissant les 'vues' d'un objet de la classe
+ *               Seance_activite
+ *               generation du code html pour affichage des informations
+ *               sur une seance d'activite
+ * utilisation : php - require_once <chemin_vers_ce_fichier_php>
+ * dependances :
+ * - bootstrap 5.3
+ * - valeur variables $_SESSION
+ * - code actions
+ * - actions_seance_activite.js
+ * ----------------------------------------------------------------------------
+ * creation : 22-jan-2020 pchevaillier@gmail.com
+ * revision : 25-aug-2020 pchevaillier@gmail.com contexte actions + des actions
+ * revision : 29-dec-2022 pchevaillier@gmail.com fix erreur 8.2 : utf8_encode deprecated
+ * revision : 17-feb-2023 pchevaillier@gmail.com + changement horaire
+ * revision : 04-jul-2024 pchevaillier@gmail.com + affichage photo support activite
+ * revision : 13-jul-2024 pchevaillier@gmail.com + couleur / seance passee et indispo
+ * ----------------------------------------------------------------------------
+ * commentaires :
+ * -
+ * attention :
+ * -
+ * a faire :
+ * - afficher champ information pour seance et participation
+ * ============================================================================
+ */
   
   require_once 'php/metier/seance_activite.php';
   require_once 'php/metier/personne.php';

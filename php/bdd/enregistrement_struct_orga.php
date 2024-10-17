@@ -36,7 +36,7 @@
 
 require_once 'php/metier/struct_orga.php';
 require_once 'php/metier/membre.php';
-require_once 'php/bdd/base_donnees.php';
+//require_once 'php/bdd/base_donnees.php';
 
 // ============================================================================
 class Enregistrement_Composante {

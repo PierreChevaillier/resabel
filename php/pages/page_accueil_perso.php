@@ -1,37 +1,47 @@
 <?php
-  // ==========================================================================
-  // contexte : Resabel - systeme de REServAtion de Bateaux En Ligne
-  // description : Definition de la classe Page_Accueil_Perso
-  //               Sorte de portail / personne
-  // copyright (c) 2018-2024 AMP. Tous droits reserves.
-  // --------------------------------------------------------------------------
-  // utilisation : php - require_once <chemin-fichier.php>
-  // dependances :
-  //  - bootstrap 5.3
-  //  - valeur variables $_SESSION
-  //  - code actions
-  //  - champs table seances_activite
-  // utilise avec : PHP 7.1 sur Mac OS 10.14 ; PHP 7.0 sur hebergeur web
-  //  - PHP 8.2 sur macOS 13.x (> 25-dec-2022)
-  // --------------------------------------------------------------------------
-  // creation : 04-mar-2020 pchevaillier@gmail.com
-  // revision : 29-mar-2020 pchevaillier@gmail.com ameliorerations + marees
-  // revision : 29-dec-2022 pchevaillier@gmail.com fix erreur 8.2, utf8_encode deprecated
-  // revision : 30-mar-2023 pchevaillier@gmail.com actions changement de role
-// revision: 04-jul-2024 pchevaillier@gmail.com + affichage photo support activite
-// revision: 05-jul-2024 pchevaillier@gmail.com * affichage marees
-// revision: 20-aug-2024 pchevaillier@gmail.com * action seance (fix issue #18)
-  // --------------------------------------------------------------------------
-  // commentaires :
-  // - en cours d'evolution
-  // attention :
-  // - pas complet
-  // - $code_site = 1; EN DUR (suppose etre un site pour lequel il a des marees)
-  //    et etre le site de base du club (cf. definir_affichage_marees)
-  // a faire :
-  // - pas completement teste, a completer
-  // - dans collecter_info_permanence: garder $this->permanence a null si pas de perm trouvee
-  // ==========================================================================
+/* ============================================================================
+ * Resabel - systeme de REServAtion de Bateau En Ligne
+ * Copyright (C) 2024 Pierre Chevaillier
+ * contact: pchevaillier@gmail.com 70 allee de Broceliande, 29200 Brest, France
+ * ----------------------------------------------------------------------------
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License,
+ * or any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ * ----------------------------------------------------------------------------
+ * description : Definition de la classe Page_Accueil_Perso
+ *               Sorte de portail / personne
+ * utilisation : php - require_once <chemin_vers_ce_fichier_php>
+ * dependances :
+ * - bootstrap 5.3
+ * - valeur variables $_SESSION
+ * - code actions
+ * - champs table seances_activite
+ * ----------------------------------------------------------------------------
+ * creation : 04-mar-2020 pchevaillier@gmail.com
+ * revision : 29-mar-2020 pchevaillier@gmail.com ameliorerations + marees
+ * revision : 29-dec-2022 pchevaillier@gmail.com fix erreur 8.2, utf8_encode deprecated
+ * revision : 30-mar-2023 pchevaillier@gmail.com actions changement de role
+ * revision: 04-jul-2024 pchevaillier@gmail.com + affichage photo support activite
+ * revision: 05-jul-2024 pchevaillier@gmail.com * affichage marees
+ * revision: 20-aug-2024 pchevaillier@gmail.com * action seance (fix issue #18)
+ * revision: 17-oct-2024 pchevaillier@gmail.com + action contacter equipage
+ * ----------------------------------------------------------------------------
+ * commentaires :
+ * - en cours d'evolution
+ * attention :
+ * - incomplet
+ * a faire :
+ * - $code_site = 1; EN DUR (suppose etre un site pour lequel il a des marees)
+ *    et etre le site de base du club (cf. definir_affichage_marees)
+ * ============================================================================
+ */
 
   // --- Classes utilisees
   require_once 'php/elements_page/specifiques/page_menu.php';
@@ -267,8 +277,21 @@
           $params = $params . ', \'' . $code_action . '\'';
           $code_menu = $code_menu . '<a class="dropdown-item" onclick="requete_changement_role_seance(' . $params . ');return false;">Laisser la place de chef de bord</a>';
         }
-        if ($seance->nombre_participants() > 1)
-          $code_menu = $code_menu . '<a class="dropdown-item" onclick="return true;">Contacter les participants</a>';
+        if ($seance->nombre_participants() > 1) {
+          $html_mailto = "";
+          $html_mailto = $html_mailto . 'mailto:';
+          foreach ($seance->inscriptions as $participation) {
+            $p = $participation->participant;
+            if (strlen($p->courriel) > 0)
+              $html_mailto = $html_mailto . ',' . $p->courriel;
+          }
+          $html_mailto = $html_mailto . '?Subject=AMP%20:%20Séance du ' . $seance->debut()->date_texte();
+          $html_mailto = $html_mailto . ' de ' . $seance->debut()->heure_texte();
+          $html_mailto = $html_mailto . ' à ' . $seance->fin()->heure_texte();
+         
+          $code_menu = $code_menu . '<a class="dropdown-item"  <a href="' . $html_mailto . '">Contacter les participants</a>';
+//          $code_menu = $code_menu . '<a class="dropdown-item" onclick="return true;">Contacter les participants</a>';
+        }
         $code_menu = $code_menu . '</div></div>' . PHP_EOL;
         
         $x->def_code($code_info_seance . $code_menu);

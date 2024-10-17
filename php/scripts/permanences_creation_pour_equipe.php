@@ -37,7 +37,10 @@ set_include_path('./../../');
 
 include 'php/utilitaires/controle_session.php';
 include_once('php/utilitaires/definir_locale.php');
-  
+
+// --- connexion a la base de donnees (et instantiation du 'handler')
+include_once 'php/bdd/base_donnees.php';
+
 // --- classes utilisees
 require_once('php/collecteur/collecteur_permanence.php');
 require_once('php/enregistreur/enregistreur_permanence.php');

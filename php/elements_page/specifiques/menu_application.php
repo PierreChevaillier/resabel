@@ -97,7 +97,7 @@ require_once 'php/metier/profil_session.php';
       echo '<a class="nav-link dropdown-toggle" href="#" id="mnu_support" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Supports activités</a>';
       echo '<ul class="dropdown-menu" aria-labelledby="mnu_support">';
       echo '<li><a class="dropdown-item" href="indisponibilites.php">Indisponibilités supports</a></li>';
-      echo '<li><a class="dropdown-item" href="https://docs.google.com/spreadsheets/d/14zDfgiiELgDnSE4GkX0tpoB2RK1tlmWS3hywiklecFc/edit#gid=795898690">Signalements anomalies</a></li>';
+      echo '<li><a class="dropdown-item" href="https://docs.google.com/spreadsheets/d/14zDfgiiELgDnSE4GkX0tpoB2RK1tlmWS3hywiklecFc/edit#gid=795898690" target="_blank">Signalements anomalies</a></li>';
      /* if ($this->session_admin) {
         echo '<li><a class="dropdown-item" href="motifs_indispo_support.php">Motifs indisponibilités</a></li>';
       }

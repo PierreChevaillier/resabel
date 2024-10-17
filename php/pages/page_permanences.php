@@ -46,7 +46,7 @@
         // Possibilite de creer une nouvelle serie de perms
         $e = new Element_Code();
         $code_html = '<div>';
-        $code_html = $code_html . '<a href="php/scripts/permanences_creation_pour_equipe.php" class="btn btn-primary btn-lg" role="button">Extension calendrier permanences</a>';
+        $code_html = $code_html . '<a href="php/scripts/permanences_creation_pour_equipe.php" class="btn btn-primary btn" role="button">Extension calendrier permanences</a>';
         $code_html = $code_html . '</div>' . PHP_EOL;
         $e->def_code($code_html);
         $this->ajoute_contenu($e);

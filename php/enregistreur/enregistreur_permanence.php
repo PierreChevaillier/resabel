@@ -51,8 +51,8 @@ class Enregistreur_Permanence {
     $perm = $enreg->recherche_derniere();
     $j = Calendrier::date_jour_semaine(6, $perm->semaine(), $perm->annee());
     
-    echo "derniere : " . $perm->annee() . " " . $perm->semaine() . PHP_EOL;
-    echo "Jour de la perm :" . $j->date_texte() . PHP_EOL;
+    //echo "derniere : " . $perm->annee() . " " . $perm->semaine() . PHP_EOL;
+    //echo "Jour de la perm :" . $j->date_texte() . PHP_EOL;
     
     foreach ($codes_membre as $code_membre) {
       
@@ -65,13 +65,75 @@ class Enregistreur_Permanence {
       
       $perm = new Permanence($num_semaine, $annee);
       $perm->def_responsable($responsable_perm);
-      echo $perm->code_responsable() . ' : ' .  $jour_perm->date_texte() . ' => ' . $perm->semaine() . ' / ' . $perm->annee() . PHP_EOL;
+      //echo $perm->code_responsable() . ' : ' .  $jour_perm->date_texte() . ' => ' . $perm->semaine() . ' / ' . $perm->annee() . PHP_EOL;
       
       $enreg->def_permanence($perm);
       $enreg->enregistre();
       
     }
     $fait = true;
+    return $fait;
+  }
+  
+  public static function permute_responsable(int $semaine_perm1,
+                                             int $annee_perm1,
+                                             int $semaine_perm2,
+                                             int $annee_perm2): bool {
+    $faisable = Permanence::semaine_valide($semaine_perm1, $annee_perm1)
+      && Permanence::semaine_valide($semaine_perm2, $annee_perm2);
+    if (!$faisable) return false;
+    
+    $code_resp1 = Enregistrement_Permanence::lire_code_responsable($semaine_perm1, $annee_perm1);
+    if (is_null($code_resp1)) return false;
+    
+    print("code resp1 :" . $code_resp1 . PHP_EOL);
+    $enreg1 = new Enregistrement_Permanence();
+    $perm1 = new Permanence($semaine_perm1, $annee_perm1);
+    $enreg1->def_permanence($perm1);
+    $resp1 = new Personne($code_resp1);
+    $perm1->def_responsable($resp1);
+    
+    $code_resp2 = Enregistrement_Permanence::lire_code_responsable($semaine_perm2, $annee_perm2);
+    if (is_null($code_resp2)) return false;
+    
+    print("code resp2 :" . $code_resp2 . PHP_EOL);
+    $enreg2 = new Enregistrement_Permanence();
+    $perm2 = new Permanence($semaine_perm2, $annee_perm2);
+    $enreg2->def_permanence($perm2);
+    $resp2 = new Personne($code_resp2);
+    $perm2->def_responsable($resp2);
+    
+    $fait = false;
+    $bdd = Base_Donnees::acces();
+    $bdd->beginTransaction();
+    {
+      $perm1_ok = $enreg1->change_responsable($code_resp2);
+      if ($perm1_ok) {
+        $perm2_ok = $enreg2->change_responsable($code_resp1);
+        if (!$perm2_ok)
+          $bdd->rollback();
+      } else {
+        $bdd->rollback();
+      }
+    }
+    $bdd->commit();
+    $fait = $perm1_ok && $perm2_ok;
+    return $fait;
+  }
+  
+  public static function change_responsable(int $semaine,
+                                            int $annee,
+                                            int $code_nouveau_responsable): bool {
+    $faisable = Permanence::semaine_valide($semaine, $annee)
+      && ($code_nouveau_responsable > 0);
+    if (!$faisable) return false;
+    
+    $enreg = new Enregistrement_Permanence();
+    $perm = new Permanence($semaine, $annee);
+    $enreg->def_permanence($perm);
+    
+    $fait = $enreg->change_responsable($code_nouveau_responsable);
+    
     return $fait;
   }
 }

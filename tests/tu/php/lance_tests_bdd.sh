@@ -15,7 +15,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 # -----------------------------------------------------------------------------
-# description : lance les tests unitaires pour les classes metier
+# description : lance les tests unitaires pour les classes 'bdd',
+#               sous-systeme des classes responsables des acces a la base de donnees
 # utilisation : unix shell
 # dependances :
 # - existence des fichiers des classes de test
@@ -30,20 +31,13 @@
 # a faire :
 # -
 # =============================================================================
- 
-# Fondamentaux
-phpunit --testdox InstantTest.php
-phpunit --testdox Intervalle_TemporelTest.php
 
-phpunit --testdox ConnexionTest.php
-
-# Intermediaires
-phpunit --testdox MembreTest.php
-phpunit --testdox Seance_Activite_Test.php
-phpunit --testdox Site_ActiviteTest.php
-phpunit --testdox IndisponibiliteTest.php
-
-# Composes
-phpunit --testdox Activite_JournaliereTest.php
+phpunit --testdox Enregistrement_ConnexionTest.php
+phpunit --testdox Enregistrement_ClubTest.php
+phpunit --testdox Enregistrement_IndisponibiliteTest.php
+phpunit --testdox Enregistrement_MembreTest.php
+phpunit --testdox Enregistrement_PermanenceTest.php
+phpunit --testdox Enregistrement_Seance_ActiviteTest.php
+phpunit --testdox Enregistrement_Site_ActiviteTest.php
 
 # =============================================================================
