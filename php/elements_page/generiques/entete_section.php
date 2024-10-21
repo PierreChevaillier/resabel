@@ -28,11 +28,11 @@
     }
     
     protected function afficher_debut() {
-      echo '<div class=" mt-4 p-2 rounded entete_sect" style="padding:10px;text-align:center;">';
+      echo '<div class=" mt-2 p-2 rounded entete_sect" style="text-align:center;">';
     }
     
     protected function afficher_corps() {
-      echo '<h2>' . $this->titre() . '</h2>';
+      echo '<h3>' . $this->titre() . '</h3>';
      }
 
     protected function afficher_fin() {

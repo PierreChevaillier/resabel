@@ -1,9 +1,21 @@
 /* ============================================================================
- * contexte : Resabel - systeme de REServAtion de Bateau En Ligne
- *            formulaire de saisie d'un equipage
- * description : controle saisies et requete au serveur modification inscription seance d'activite
- * Copyright (c) 2017-2024 AMP. Tous droits reserves
+ * Resabel - systeme de REServAtion de Bateau En Ligne
+ * Copyright (C) 2024 Pierre Chevaillier
+ * contact: pchevaillier@gmail.com 70 allee de Broceliande, 29200 Brest, France
  * ----------------------------------------------------------------------------
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License,
+ * or any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ * ----------------------------------------------------------------------------
+ * description : controle saisies et requete au serveur modification inscription seance
+ *               (formulaire de saisie equipage)
  * utilisation : javascript - onload
  * dependances :
  * - modal.php (de Resabel) : ids des elements du composant
@@ -12,10 +24,11 @@
  * ----------------------------------------------------------------------------
  * creation : 31-jan-2024 pchevaillier@gmail.com
  * revision : 19-fev-2024 pchevaillier@gmail.com
+ * revision : 21-oct-2024 pchevaillier@gmail.com + desact. boutons et * reinit saisie
  * ----------------------------------------------------------------------------
  * http://localhost/resabel-v2/resabel/activites.php?a=ii&j=2024-02-19&sa=1&pc=PT08H30M&dc=PT09H30M&ts=0&s=0
  * commentaires :
- * - en construction
+ * -
  * attention :
  * a faire :
  * - suppprimer les logs.
@@ -57,6 +70,9 @@ var heure_debut = "";
 var heure_fin = "";
 
 var nouvelles_participations = [];
+
+var elt_btn_valid; // pour pouvoir activer / deactiver le bouton
+var elt_btn_reset;
 
 function initialisation() {
   console.log("Initialisations");
@@ -109,6 +125,13 @@ function initialisation() {
     id_aff_resp = "resp_" + code_support + "_" + heure_debut + "_0";
     elt_aff_resp = document.getElementById(id_aff_resp);
   }
+  
+  // boutons d'action
+  elt_btn_valid = document.getElementById("btn-valid");
+  elt_btn_valid.disabled = true;
+  elt_btn_reset = document.getElementById("btn-reset");
+  elt_btn_reset.disabled = true;
+  
   return;
 }
 
@@ -163,8 +186,17 @@ function controle_saisie_responsable(elt) {
     elt_places_dispo.textContent = nb_places_dispo;
   }
   console.log("modif responsable : " + code + " = " + nom_resp);
+  
   // nouveau contexte
   code_resp = code;
+  
+  if (nb_participations - nb_deja_inscrits > 0) {
+    elt_btn_valid.disabled = false;
+    elt_btn_reset.disabled = false;
+  } else {
+    elt_btn_valid.disabled = true;
+    elt_btn_reset.disabled = true;
+  }
   return;
 }
 
@@ -264,12 +296,23 @@ function controle_saisie_participation(elt, code, nom, peut_etre_resp) {
       elt_places_dispo.textContent = nb_places_dispo;
     }
   }
+  
+  if (nb_participations - nb_deja_inscrits > 0) {
+    elt_btn_valid.disabled = false;
+    elt_btn_reset.disabled = false;
+  } else {
+    elt_btn_valid.disabled = true;
+    elt_btn_reset.disabled = true;
+  }
 }
 
 function reinitialisation_saisie() {
   console.log("REINIT deja inscrits = " + nb_deja_inscrits
               + " max_places = " + max_places_dispo
               + " nb particiaptions = " +nb_participations);
+  
+  elt_btn_valid.disabled = true;
+  elt_btn_reset.disabled = true;
   
   // saisie du responsable [resp_selectionne]
   if (code_resp > 0) {
@@ -285,11 +328,11 @@ function reinitialisation_saisie() {
   let rang_debut = nb_deja_inscrits;
   if (nb_resp_requis > 0) {
     rang_debut += (nb_resp_requis - nb_resp_inscrit);
-    if (code_resp > 0) rang -= 1;
+    //if (code_resp > 0) rang -= 1;
   } else {
     rang_debut += 1; // eh oui l'indice commence a 1 quand l'activite ne necessite pas de resp
   }
-  let rang_fin = nb_participations; //rang_debut + nb_participations;
+  let rang_fin = nb_participations;
   if (nb_resp_requis > 0) {
     rang_fin += (nb_resp_requis - nb_resp_inscrit);
   } else {
@@ -297,9 +340,13 @@ function reinitialisation_saisie() {
   }
   
   for (rang = rang_debut; rang < rang_fin; rang++) {
-    id_aff_equipier = "equip_" + code_support + "_" + heure_debut + "_" + rang;
-    elt_aff_equipier = document.getElementById(id_aff_equipier);
-    elt_aff_equipier.textContent = "";
+      id_aff_equipier = "equip_" + code_support + "_" + heure_debut + "_" + rang;
+    console.log(id_aff_equipier);
+      elt_aff_equipier = document.getElementById(id_aff_equipier);
+    if (elt_aff_equipier != null)
+      elt_aff_equipier.textContent = "";
+    else
+      console.log("est null");
   }
 
   
@@ -320,6 +367,14 @@ function reinitialisation_saisie() {
   }
   nouvelles_participations.length = 0;
 
+  // decocher les equipieres selectionnes
+  let checkboxes = document.getElementsByName('participants');
+  for (var i = 0; i < checkboxes.length; i++) {
+    if (checkboxes[i].checked && !checkboxes[i].disabled) {
+      checkboxes[i].checked = false;
+    }
+  }
+  
   return;
 }
 
@@ -336,7 +391,8 @@ function afficher_retour_inscription(reponse) {
   bouton_modal.addEventListener("click", function() { window.location=document.referrer; });
   
   titre_modal.textContent = "Inscription(s) à une séance";
-  
+  var n_cdb_inscrit = 0;
+  var n_part_inscrit = 0;
   var dict = JSON.parse(reponse);
   for (var entree in dict) {
     valeur = dict[entree];
@@ -355,14 +411,28 @@ function afficher_retour_inscription(reponse) {
             corps_modal.textContent = ""; // efface le contenu initial
           }
           bouton_modal.classList.add("btn-warning");
-        } else {
-          corps_modal.textContent = "Opération réalisée avec succès";
-          bouton_modal.classList.add("btn-success");
         }
         break;
       case 'cdb':
-        console.log("nn cdb:" + valeur);
+        n_cdb_inscrit = valeur;
+        console.log("nn cdb:" + n_cdb_inscrit);
         break;
+      case 'part':
+        n_part_inscrit = valeur;
+        console.log("nn part:" + n_part_inscrit);
+        break;
+
+    }
+  }
+  n_inscrits = n_cdb_inscrit + n_part_inscrit;
+  if (ok) {
+    if (n_inscrits > 0) {
+      corps_modal.textContent = "Opération réalisée avec succès : "
+      + n_inscrits + " personne(s) inscrite(s)";
+      bouton_modal.classList.add("btn-success");
+    } else {
+      corps_modal.textContent = "Aucune personne sélectionnée";
+      bouton_modal.classList.add("btn-warning");
     }
   }
 //  corps_modal.innerHTML = "<div><p>Opération réalisée avec succès</p></div>";

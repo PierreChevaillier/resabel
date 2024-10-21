@@ -1,22 +1,31 @@
 <?php
+
 /* ============================================================================
- * contexte : Resabel - systeme de REServAtion de Bateau En Ligne
- * description : Fichier vide -  modele entete
- * copyright (c) 2018-2024 AMP. Tous droits reserves.
+ * Resabel - systeme de REServAtion de Bateau En Ligne
+ * Copyright (C) 2024 Pierre Chevaillier
+ * contact: pchevaillier@gmail.com 70 allee de Broceliande, 29200 Brest, France
  * ----------------------------------------------------------------------------
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License,
+ * or any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ * ----------------------------------------------------------------------------
+ * description : definition classe Formulaire_Saisie_Equipage
  * utilisation : php - require_once <chemin_vers_ce_fichier_php>
  * dependances :
  * - bootstrap 5.x
  * - fonctions js executees suite actions sur formulaire
  *   (cf. controle_inscription_equipage.js)
- * utilise avec :
- * - depuis 2023 :
- *   PHP 8.2 sur macOS 13.x
- *   PHP 8.1 sur hebergeur web
  * ----------------------------------------------------------------------------
  * creation : 30-jan-2024 pchevaillier@gmail.com
- * revision : 19-fev-2024 pchevaillier@gmail.com
  * revision : 24-fev-2024 pchevaillier@gmail.com mise en page saisie equipage
+ * revision : 21-oct-2024 pchevaillier@gmail.com + id des boutons (cf. controle_inscription_equipage.js)
  * ----------------------------------------------------------------------------
  * commentaires :
  * -
@@ -37,8 +46,8 @@ require_once 'php/metier/seance_activite.php';
 class Formulaire_Saisie_Equipage extends Element {
 
   public ?Seance_Activite $seance;
-  public $personnes_actives;
-  public $personnes_occupees;
+  public $personnes_actives;  // initialise dans le contexte d'instantiation
+  public $personnes_occupees; // initialise dans le contexte d'instantiation
   
   private $data = "";
   
@@ -148,10 +157,10 @@ class Formulaire_Saisie_Equipage extends Element {
   private function afficher_boutons_action(): void {
     echo '<div class="container" style="padding:10px"><div class="row">';
     echo '<div class="col-auto">';
-    echo '<button class="btn btn-primary" type="submit" data-bs-toggle="modal" data-bs-target="#aff_act">Valider saisie</button>';
+    echo '<button class="btn btn-primary" id="btn-valid" type="submit" data-bs-toggle="modal" data-bs-target="#aff_act">Valider saisie</button>';
     echo '</div>';
     echo '<div class="col-auto">';
-    echo '<button class="btn btn-secondary" type="reset" onclick="reinitialisation_saisie();">Ré-initialiser saisie</button>';
+    echo '<button class="btn btn-secondary" id="btn-reset" type="reset" onclick="reinitialisation_saisie();">Ré-initialiser saisie</button>';
     echo '</div>';
     echo '</div></div>';
     return;

@@ -200,8 +200,8 @@ class Menu_Navigation_Date extends Controleur_Date_Page {
   protected function afficher_debut() {
     echo '<nav class="navbar navbar-expand-md bg-body-tertiary" id ="' . $this->id() . '">';
     echo '<div class="container-fluid">';
-    $txt = ($this->titre() == "") ? "Date": $this->titre();
-    echo '<a class="navbar-text">' . $txt . '</a>';
+    $txt = ($this->titre() == "") ? "Date ": $this->titre();
+    echo '<span class="navbar-brand mb-0 h4">' . $txt . '</span>';//echo '<a class="navbar-text">' . $txt . '</a>';
     $content_id = $this->id() . '_navbar-cont';
    
     echo '<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#' . $content_id
