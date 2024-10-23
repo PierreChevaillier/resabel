@@ -175,15 +175,16 @@ $page->ajoute_contenu($info);
 $vue_seance = new Afficheur_Vertical_Seance($page, $seance, null);
 $vue_seance->def_id("aff_seance");
 $vue_seance->est_interactif = false;
+
 $afficheur = new Element_Code();
-$code_aff = '<div class="container text-center"><div class="row"><div class="col">';
+$code_aff = '<div class="container mx-auto" style="width:20rem;"><div class="row"><div class="col">';
 $code_aff = $code_aff . $vue_seance->formater();
 $code_aff = $code_aff . '</div></div></div>';
 $afficheur->def_code($code_aff);
 $page->ajoute_contenu($afficheur);
 
 // --- bouton d'annulation (= retour a la page precedente)
-$code_html = '<div><button class="btn btn-warning" onclick="window.location=document.referrer;">Abandonner saisie</button></div>';
+$code_html = '<div class="container mx-auto" style="width:20rem;"><div class="container mx-auto" style="width:16rem;padding:4px;"><button class="btn btn-warning" onclick="window.location=document.referrer;">Abandonner saisie</button></div></div>';
 $div_bouton = new Element_Code();
 $page->ajoute_contenu($div_bouton);
 $div_bouton->def_code($code_html);

@@ -57,6 +57,12 @@
     
     public $prive = true;
     
+    public $fluid = true;
+    public function classe_container(): string {
+      if ($this->fluid) return 'container-fluid';
+      else return 'container';
+    }
+    
     // --- Elements (code_html) dans la section <head> de la page
     private $elements_entete = array();
     public function ajoute_element_entete(string $code_html): void {
@@ -110,7 +116,9 @@
     // ceci permet de l'identifier comme le parent d'elements du document HTML
     // qui seraient crees dynamiquement par un script
     $html_id = (strlen($this->id()) > 0) ? " id=\"" . $this->id() . "\" " : " ";
-    echo "<div class=\"container-fluid\"" . $html_id . " style=\"padding:10px;\">";
+    echo '<div class="' . $this->classe_container() . '" '
+      . $html_id
+      . ' style="padding:10px;">';
     
     foreach ($this->elements_haut as $e) $e->afficher();
     foreach ($this->contenus as $e) $e->afficher();

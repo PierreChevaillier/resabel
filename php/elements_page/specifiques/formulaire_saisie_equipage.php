@@ -155,7 +155,7 @@ class Formulaire_Saisie_Equipage extends Element {
   }
   
   private function afficher_boutons_action(): void {
-    echo '<div class="container" style="padding:10px"><div class="row">';
+    echo '<div class="container mx-auto" style="width:25rem;padding:2px"><div class="row">';
     echo '<div class="col-auto">';
     echo '<button class="btn btn-primary" id="btn-valid" type="submit" data-bs-toggle="modal" data-bs-target="#aff_act">Valider saisie</button>';
     echo '</div>';
