@@ -55,6 +55,7 @@ if (isset($_GET['a'])) {
     $titre = "Inscpriptions séance";
 }
 $page = new Page_Activites($nom_site, $titre, $feuilles_style);
+$page->refresh = 60;
 
 $page->ajouter_script('./../jquery/3.6.3/jquery.min.js');
 $page->ajouter_script('./../jquery-ui/1.13.2/jquery-ui.min.js');

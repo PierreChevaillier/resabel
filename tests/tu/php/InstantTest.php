@@ -1,27 +1,40 @@
 <?php
-// ==========================================================================
-// contexte : Resabel - systeme de REServAtion de Bateau En Ligne
-//            Tests unitaires
-// description : Test unitaire de la classe Instant
-// copyright (c) 2023 AMP. Tous droits reserves.
-// --------------------------------------------------------------------------
-// utilisation : phpunit --testdox <chemin_vers_ce_fichier_php>
-// dependances :
-// utilise avec :
-//  - depuis 2023 :
-//    PHP 8.2 et PHPUnit 9.5 sur macOS 13.2 ;
-// --------------------------------------------------------------------------
-// creation : 06-fev-2023 pchevaillier@gmail.com
-// revision :
-// --------------------------------------------------------------------------
-// commentaires :
-// -
-// attention :
-// -
-// a faire :
-// -
-// ==========================================================================
+/* ============================================================================
+ * Resabel - systeme de REServAtion de Bateau En Ligne
+ * Copyright (C) 2024 Pierre Chevaillier
+ * contact: pchevaillier@gmail.com 70 allee de Broceliande, 29200 Brest, France
+ * ----------------------------------------------------------------------------
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License,
+ * or any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ * ----------------------------------------------------------------------------
+ * description : Tests fonctionnels unitaires de la classe Instant
+ * utilisation : phpunit --testdox <chemin_vers_ce_fichier_php>
+ * dependances :
+ * - 
+ * utilise avec :
+ * - PHP 8.2 et PHPUnit 9.5 sur macOS 13.6
+ * ----------------------------------------------------------------------------
+ * creation : 06-fev-2023 pchevaillier@gmail.com
+ * revision : 10-dec-2024 pchevaillier@gmail.com + testDateMicrotime
+ * ----------------------------------------------------------------------------
+ * commentaires :
+ * - en evolution
+ * attention :
+ * -
+ * a faire :
+ * - a completer
+ * ============================================================================
+ */
 declare(strict_types=1);
+
 use PHPUnit\Framework\TestCase;
 
 set_include_path('./../../..');
@@ -102,6 +115,23 @@ final class InstantTest extends TestCase {
   public function testDateEnTexteForamtCourtFrancais(): void {
     $str = $this->instant->date_texte_court();
     $this->assertEquals($str, "Sam 25 nov", "mauvais format date texte court : " . $str);
+  }
+
+  /**
+   * Affichage
+   */
+  public function testDateMicrotime(): void {
+    $t1 = Instant::micro();
+    usleep(100);
+    $t2 = Instant::micro();
+    $diff = $t2 - $t1;
+    
+    print(PHP_EOL . "t1: " . number_format($t1, 6));
+    print(PHP_EOL . "t2: " . number_format($t2, 6));
+    print(PHP_EOL . "t2: " . number_format($diff, 6));
+    
+    $i1 = new Instant();
+    print(PHP_EOL . "micro sql:" . $i1->micro_sql() . PHP_EOL);
   }
 
   /**

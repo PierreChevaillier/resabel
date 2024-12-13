@@ -61,13 +61,20 @@ require_once 'php/bdd/enregistrement_support_activite.php';
   //$donnees = array('res' => $status);
   
   // Verification coherence des informations recues
-  /*
-  if ($erreur) {
+// TODO: en tenir compte dans la suite du programme
+$seance_existe = false;
+if ($info_participation->code_seance > 0) {
+  $seance_existe = Enregistrement_Seance_Activite::seance_existe($info_participation->code_seance);
+/*
+ if (!$seance_existe) {
+    $donnees = array('status' => 0);
     $resultat_json = json_encode($donnees);
     echo $resultat_json;
     exit();
   }
-  */
+ */
+}
+
   // --------------------------------------------------------------------------
   // realisation de l'action (selon le type d'action)
   $ok = false;

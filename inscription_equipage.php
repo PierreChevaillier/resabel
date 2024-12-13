@@ -19,6 +19,7 @@
  * creation : 09-jun-2019 pchevaillier@gmail.com maquette
  * revision : 26-jan-2024 pchevaillier@gmail.com init fonctionalites
  * revision : 15-fev-2024 pchevaillier@gmail.com + bouton abandon/retour
+ * revision : 12-dec-2024 pchevaillier@gmail.com + detection suppression concurrente
  * ----------------------------------------------------------------------------
  * commentaires :
  * -
@@ -83,6 +84,23 @@ $j = new Instant($_GET['j']);
 $debut = $j->add(new DateInterval($_GET['hd']));
 $fin = $j->add(new DateInterval($_GET['hf']));
 
+if ($code_seance > 0) {
+  $existe = Enregistrement_Seance_Activite::seance_existe($code_seance);
+  if (!$existe) {
+    // la seance a du etre supprimee entre temps.
+    $code_seance = 0;
+    /*
+    $code_param_url = "?a=ie&j=" . $_GET['j']
+      . "&sa=" . $code_site_activite
+      . "&pc=" . $_GET['pc']
+      . "&dc=" . $_GET['dc']
+      . "&ts=" . $_GET['ts']
+      . "&s=" . $_GET['s'];
+    header("location: activites.php" . $code_param_url);
+    exit();
+     */
+  }
+}
 // (1) les personnes actives (avec les details)
 $personnes_actives = array();
 $criteres = array();

@@ -63,6 +63,8 @@
       else return 'container';
     }
     
+    public ?int $refresh = NULL;
+    
     // --- Elements (code_html) dans la section <head> de la page
     private $elements_entete = array();
     public function ajoute_element_entete(string $code_html): void {
@@ -142,6 +144,8 @@
     
     echo '<meta http-equiv="X-UA-Compatible" content="IE=edge" />';
     echo '<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />'; // TODO enlever shrink... ?
+    if (!is_null($this->refresh) && $this->refresh > 0)
+      echo '<meta http-equiv="refresh" content="' . $this->refresh . '"/>';
     
     // Bootstrap CSS
     /*

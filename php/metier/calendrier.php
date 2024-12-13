@@ -42,6 +42,14 @@
   // --------------------------------------------------------------------------
   class Instant extends DateTimeImmutable {
 
+    public static function micro(): float {
+      return microtime(true);
+    }
+    
+    public function micro_sql(): string {
+      return $this->format('Y-m-d H:i:s.u');
+    }
+    
     public function valeur_cle(): string {
       return $this->format('Y-m-d H:i');
     }

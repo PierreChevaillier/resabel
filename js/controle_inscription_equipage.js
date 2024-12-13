@@ -25,6 +25,7 @@
  * creation : 31-jan-2024 pchevaillier@gmail.com
  * revision : 19-fev-2024 pchevaillier@gmail.com
  * revision : 21-oct-2024 pchevaillier@gmail.com + desact. boutons et * reinit saisie
+ * revision : 12-dec-2024 pchevaillier@gmail.com + erreur en cas de creation concurrente
  * ----------------------------------------------------------------------------
  * http://localhost/resabel-v2/resabel/activites.php?a=ii&j=2024-02-19&sa=1&pc=PT08H30M&dc=PT09H30M&ts=0&s=0
  * commentaires :
@@ -401,12 +402,16 @@ function afficher_retour_inscription(reponse) {
       case 'status':
         ok = (valeur === 1);
         if (!ok) {
-          console.log("pas bon");
+          console.log("pas bon - code erreur : " + valeur);
           titre_modal.textContent = "Echec opération";
+          // certains codes erreur sont pour debug
+          // (cf. Enregistrement_Seance_Activite::ajouter_participation)
           if (valeur === 7) {
-            // autres codes erreur sont pour debug
-            // (cf. Enregistrement_Seance_Activite::ajouter_participation)
             corps_modal.textContent = "Au moins 1 personne déjà inscrite sur le même créneau horaire";
+          } else if (valeur === 8) {
+            corps_modal.textContent = "Le support n'est plus disponible sur ce créneau";
+          } else if (valeur === 9) {
+            corps_modal.textContent = "L'équipage est complet";
           } else {
             corps_modal.textContent = ""; // efface le contenu initial
           }

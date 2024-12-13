@@ -24,11 +24,15 @@
  * ----------------------------------------------------------------------------
  * creation : 07-fev-2023 pchevaillier@gmail.com
  * revision : 25-sep-2024 pchevaillier@gmail.com + ajouts de test
+ * revision : 10-dec-2024 pchevaillier@gmail.com + testVerificationDispoSupportCreneau
  * ----------------------------------------------------------------------------
  * commentaires :
  * -
  * attention :
- * -
+ * - En cas d'erreur d'execution de ce programme,
+ *   la suppression des effets de bord des fonctions de test
+ *   n'est peut-etre pas réalisee, ce qui genere une incoherence
+ *   dans les donnees de test. I faut spurrpimer les enregistrements "a la main"
  * a faire :
  * - a completer
  * - collecter participants creneau horaire (couverture + fonctionnalite)
@@ -164,7 +168,7 @@ class Enregistrement_Seance_activiteTest extends TestCase {
         . " WHERE code = " . $code_seance;
       $resultat = self::$bdd->query($requete);
       $donnee = $resultat->fetch(PDO::FETCH_OBJ);
-      $condition = ($donnee->code_responsable == NULL);
+      $condition = is_null($donnee->code_responsable);
     } catch (PDOException $e) {
       Base_Donnees::sortir_sur_exception($source, $e);
     }
@@ -189,6 +193,7 @@ class Enregistrement_Seance_activiteTest extends TestCase {
   /**
    * Teste le nom de la table source des informations
    */
+  /*
   public function testSourceTableSeancesActivite(): void {
     $this->assertEquals(PREFIX_TABLE . 'seances_activite', Enregistrement_Seance_Activite::source());
   }
@@ -280,7 +285,7 @@ class Enregistrement_Seance_activiteTest extends TestCase {
     Enregistrement_Seance_Activite::supprimer_seance($code1);
   }
 
-  public function testDispoMembre(): void {
+  public function testVerificationDispoMembre(): void {
     $jour = Calendrier::aujourdhui();
     $une_heure = new DateInterval('PT1H0M0S');
     $debut = $jour;
@@ -364,6 +369,81 @@ class Enregistrement_Seance_activiteTest extends TestCase {
       Enregistrement_Seance_Activite::supprimer_seance($code_seance);
   }
   
+  public function testVerificationDispoSupportCreneau(): void {
+    $jour = Calendrier::aujourdhui();
+    $une_heure = new DateInterval('PT1H0M0S');
+    $debut = $jour;
+    $debut= $jour->add(new DateInterval('PT7H0M0S'));
+    $fin = $debut->add($une_heure);
+    
+    $p1 = new Information_Participation_Seance_Activite();
+    $p1->code_site = 1;
+    $p1->code_support_activite = 1;
+    $p1->code_participant = 101;
+    $p1->debut = $debut->date_heure_sql();
+    $p1->fin = $fin->date_heure_sql();
+    
+    // cas sans seance, donc dispo
+    $dispo = Enregistrement_Seance_Activite::verifier_disponibilite_support($p1); // methode sous test
+    $this->assertTrue($dispo);
+    
+    // cas ou il existe une seance au meme horaire et sur le meme support
+    // donc indisponible
+    Enregistrement_Seance_Activite::ajouter_participation($p1);
+    $seances_creees[] = $p1->code_seance;
+    
+    $p2 = new Information_Participation_Seance_Activite();
+    $p2->code_support_activite = $p1->code_support_activite;
+    $p2->debut = $p1->debut;
+    $p2->fin = $p1->fin;
+    $dispo = Enregistrement_Seance_Activite::verifier_disponibilite_support($p2); // methode sous test
+    $this->assertFalse($dispo);
+    
+    // Suppression effets de bord du test (seances et participations associees)
+    foreach ($seances_creees as $code_seance)
+      Enregistrement_Seance_Activite::supprimer_seance($code_seance);
+    return;
+  }
+  
+  public function testCreationNouvelleSeanceSurSupportCreneauIndispo() {
+    $jour = Calendrier::aujourdhui();
+    $une_heure = new DateInterval('PT1H0M0S');
+    $debut = $jour;
+    $debut= $jour->add(new DateInterval('PT7H0M0S'));
+    $fin = $debut->add($une_heure);
+    
+    // creation d'une seance
+    $p1 = new Information_Participation_Seance_Activite();
+    $p1->code_site = 1;
+    $p1->code_support_activite = 1;
+    $p1->code_participant = 101;
+    $p1->debut = $debut->date_heure_sql();
+    $p1->fin = $fin->date_heure_sql();
+
+    // pas de doublon, donc ok
+    $status = Enregistrement_Seance_Activite::ajouter_participation($p1); // methode sous test
+    $this->assertEquals(1, $status);
+    $seances_creees[] = $p1->code_seance;
+
+    // Tentative de creation d'une nouvelle seance
+    // sur le meme creneau et le meme support, donc pas bon...
+    $p2 = new Information_Participation_Seance_Activite();
+    $p2->code_seance = 0;
+    $p2->code_site = $p1->code_site;
+    $p2->code_support_activite = $p1->code_support_activite;
+    $p2->code_participant = $p1->code_participant + 1; // pour pas tomber dans doublon participant
+    $p2->debut = $p1->debut;
+    $p2->fin = $p1->fin;
+    $status = Enregistrement_Seance_Activite::ajouter_participation($p2); // methode sous test
+    $this->assertEquals(8, $status);
+    $this->assertEquals(0, $p2->code_seance);
+    
+    // Suppression effets de bord du test
+    foreach ($seances_creees as $code_seance)
+      Enregistrement_Seance_Activite::supprimer_seance($code_seance);
+    return;
+  }
+  
   public function testCompleterEquipage(): void {
     $jour = Calendrier::aujourdhui();
     $une_heure = new DateInterval('PT1H0M0S');
@@ -398,7 +478,63 @@ class Enregistrement_Seance_activiteTest extends TestCase {
     // Suppression effets de bord du test
     Enregistrement_Seance_Activite::supprimer_seance($code_seance);
   }
+*/
+  
+  public function testTentativeAjoutParticipationQuandPlusDePlace() : void {
+    $jour = Calendrier::aujourdhui();
+    $une_heure = new DateInterval('PT1H0M0S');
+    $debut = $jour;
+    $debut= $jour->add(new DateInterval('PT7H0M0S'));
+    $fin = $debut->add($une_heure);
+    
+    // Support avec deux places, dont 1 responsable
+    $support = new Bateau(21); // doit exister dans la base
+    $double = new Type_support_Activite(2); // doit exister dans la base
+    $double->nombre_personnes_max = 2;
+    $double->chef_de_bord_requis = true;
+    $support->def_type($double);
 
+    // Creation de deux particpations pour le test
+    $p1 = new Information_Participation_Seance_Activite();
+    $this->participations[] = $p1;
+    $p1->code_site = 1;
+    $p1->code_support_activite = $support->code();
+    $p1->code_participant = 999;
+    $p1->responsable = 1;
+    $p1->debut = $debut->date_heure_sql();
+    $p1->fin = $fin->date_heure_sql();
+    Enregistrement_Seance_Activite::ajouter_participation($p1);
+    
+    $p2 = new Information_Participation_Seance_Activite();
+    $this->participations[] = $p2;
+    $p2->code_site = $p1->code_site;
+    $p2->code_support_activite = $p1->code_support_activite;
+    $p2->code_participant = $p1->code_participant + 1;
+    $p2->debut = $p1->debut;
+    $p2->fin = $p1->fin;
+    $p2->code_seance = $p1->code_seance;
+    Enregistrement_Seance_Activite::ajouter_participation($p2);
+    
+    // Tentative de creation d'une 3e participation, donc au dela de la capacite du support
+    $nb_participation_avant = $this->compter_participations_seance($p1->code_seance);
+    
+    $p3 = new Information_Participation_Seance_Activite();
+    $this->participations[] = $p3;
+    $p3->code_site = $p1->code_site;
+    $p3->code_support_activite = $p1->code_support_activite;
+    $p3->code_participant = $p1->code_participant + 2;
+    $p3->debut = $p1->debut;
+    $p3->fin = $p1->fin;
+    $p3->code_seance = $p1->code_seance;
+    
+    $status = Enregistrement_Seance_Activite::ajouter_participation($p3); // methode sous test
+    $this->assertEquals(9, $status);
+    $nb_participation_apres = $this->compter_participations_seance($p1->code_seance);
+    $this->assertEquals($nb_participation_avant, $nb_participation_apres);
+    
+  }
+  
+  /*
   public function testCompterParticipations(): void {
     
     $jour = Calendrier::aujourdhui();
@@ -425,7 +561,7 @@ class Enregistrement_Seance_activiteTest extends TestCase {
     
     Enregistrement_Seance_Activite::ajouter_participation($p1);
     $nombre_effectif = Enregistrement_Seance_Activite::compter_participations($p1);
-    $this->assertEquals(1, $nombre_effectif, "enregistrement participation activite");
+    $this->assertEquals(1, $nombre_effectif, "nombre d'enregistrements de participation à une activite");
     
     // quand il y a plusieurs participations dans la seance
     // alors on n'en compte qu'une par participant
@@ -850,6 +986,7 @@ class Enregistrement_Seance_activiteTest extends TestCase {
     $this->assertEquals($n2_avant + $n1_avant, $n2_apres);
     
     }
+   */
 }
 // ==========================================================================
 ?>

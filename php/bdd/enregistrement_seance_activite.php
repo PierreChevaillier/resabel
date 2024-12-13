@@ -1,39 +1,51 @@
 <?php
-  // ==========================================================================
-  // contexte : Resabel - systeme de REServAtion de Bateau En Ligne
-  // description : classe Enregistrement_Seance_activite :
-  //               operations sur la base de donnees
-  // copyright (c) 2020-2024 AMP. Tous droits reserves.
-  // --------------------------------------------------------------------------
-  // utilisation : php - require_once <chemin_vers_ce_fichier.php>
-  // dependances : cf. require_once + classe Base_Donnees
-  //               structures des tables
-  // utilise avec : PHP 7.1 sur Mac OS 10.14 ;
-  //                PHP 7.0 sur hebergeur web
-  //  - depuis 2023 :
-  //    PHP 8.2 sur macOS 13.2 ;
-  // --------------------------------------------------------------------------
-  // creation : 18-jan-2020 pchevaillier@gmail.com
-  // revision : 08-mar-2020 pchevaillier@gmail.com suppression participation
-  // revision : 29-mar-2020 pchevaillier@gmail.com erreur code_site
-  // revision : 20-aug-2020 pchevaillier@gmail.com suppression seance
-  // revision : 20-aug-2020 pchevaillier@gmail.com rollback si capture exception
-  // revision : 08-fev-2023 pchevaillier@gmail.com + compter_participations, supprimer_seance
-  // revision : 17-feb-2023 pchevaillier@gmail.com + changer_horaire
-// revision : 25-jan-2024 pchevaillier@gmail.com + changer_support + changer_seance
-// revision : 27-jan-2024 pchevaillier@gmail.com + creer
-// revision : 19-fev-2024 modif ajouter_participation : code_seance == 0 => c'est une noubelle seance
-  // --------------------------------------------------------------------------
-  // commentaires :
-  // attention :
-  // a faire :
-  // -
-  // ==========================================================================
+
+/* ============================================================================
+ * Resabel - systeme de REServAtion de Bateau En Ligne
+ * Copyright (C) 2024 Pierre Chevaillier
+ * contact: pchevaillier@gmail.com 70 allee de Broceliande, 29200 Brest, France
+ * ----------------------------------------------------------------------------
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License,
+ * or any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ * ----------------------------------------------------------------------------
+ * description : definition de la classe Enregistrement_Seance_activite :
+ *               operations sur les tables de la base de donnees
+ * utilisation : php - require_once <chemin_vers_ce_fichier_php>
+ * dependances :
+ * - structures des tables
+ * ----------------------------------------------------------------------------
+ * creation : 18-jan-2020 pchevaillier@gmail.com
+ * revision : 08-mar-2020 pchevaillier@gmail.com suppression participation
+ * revision : 20-aug-2020 pchevaillier@gmail.com rollback si capture exception
+ * revision : 08-fev-2023 pchevaillier@gmail.com + compter_participations, supprimer_seance
+ * revision : 17-feb-2023 pchevaillier@gmail.com + changer_horaire
+ * revision : 25-jan-2024 pchevaillier@gmail.com + changer_support + changer_seance
+ * revision : 27-jan-2024 pchevaillier@gmail.com + creer
+ * revision : 19-fev-2024 modif ajouter_participation : code_seance == 0 => c'est une noubelle seance
+ * revision : 12-dec-2024 pchevaillier@gmail.com + verifier_disponibilite_support
+ * ----------------------------------------------------------------------------
+ * commentaires :
+ * -
+ * attention :
+ * -
+ * a faire :
+ * -
+ * ============================================================================
+ */
   
 require_once 'php/metier/calendrier.php';
 require_once 'php/metier/seance_activite.php';
 require_once 'php/metier/site_activite.php';
 require_once 'php/bdd/enregistrement_site_activite.php';
+require_once 'php/bdd/enregistrement_support_activite.php';
   
   // ==========================================================================
   class Information_Participation_Seance_Activite {
@@ -200,6 +212,26 @@ require_once 'php/bdd/enregistrement_site_activite.php';
       return $dispo;
       }
     
+    static function verifier_disponibilite_support(Information_Participation_Seance_Activite $infos): bool {
+      $dispo = false;
+      try {
+        $bdd = Base_Donnees::acces();
+        $source = self::source() . " AS seance";
+        $selection = "seance.code_support = " . $infos->code_support_activite
+          . " AND  seance.date_debut < '" . $infos->fin
+          . "' AND seance.date_fin > '"  . $infos->debut . "'";
+        $code_sql = "SELECT COUNT(*) as n FROM " . $source . " WHERE " . $selection;
+        //echo $code_sql . PHP_EOL;
+        $resultat = $bdd->query($code_sql);
+        $donnee = $resultat->fetch(PDO::FETCH_OBJ);
+        $dispo = ($donnee->n == 0);
+      } catch (PDOexception $e) {
+        echo $e->getMessage();
+        Base_Donnees::sortir_sur_exception(self::source(), $e);
+      }
+      return $dispo;
+    }
+
     // ------------------------------------------------------------------------
     static public function ajouter_participation(Information_Participation_Seance_Activite $infos): int {
       $status = 1;
@@ -243,7 +275,14 @@ require_once 'php/bdd/enregistrement_site_activite.php';
       // si nouvelle seance = creation seance
       $code_seance = $infos->code_seance;
       if ($nouvelle_seance) {
-        // creation de l'enregistrement de la seance
+        // Creation de l'enregistrement de la seance
+        // avant cela, il faut verifier qu'elle n'a pas ete cree entre temps...
+        $dispo = Enregistrement_Seance_Activite::verifier_disponibilite_support($infos);
+        if (!$dispo) {
+          $bdd->rollBack();
+          return 8;
+        }
+        
         try {
           $code_sql = "INSERT INTO " . self::source()
           . " (code_site, code_support, date_debut, date_fin, code_responsable, information) VALUES"
@@ -282,7 +321,20 @@ require_once 'php/bdd/enregistrement_site_activite.php';
           return 4;
         }
       } else {
-        // la seance existe deja. Si le participant est responsable de la seance
+        // La seance existe deja, mais a peut-etre ete modifiee par ailleurs
+        // il faut donc verifier si on peut encore ajouter une participation
+        $seance = Enregistrement_Seance_Activite::creer($code_seance);
+        $enreg_support = new Enregistrement_Support_Activite();
+        $enreg_support->lire($seance->code_support());
+        $seance->def_support($enreg_support->support_activite());
+        if ($seance->nombre_places_est_limite() && $seance->nombre_places_disponibles() <= 0) {
+          $bdd->rollBack();
+          return 9;
+        }
+        
+        // So far, so good...
+        
+        // Si le participant est responsable de la seance
         // alors mise a jour de l'information.
         if ($infos->responsable == 1) {
           try {

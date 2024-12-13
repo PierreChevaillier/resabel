@@ -8,10 +8,6 @@
  * dependances :
  * - cles JSON ($_GET)
  * - input du formulaire (formulaire_saisie_equipage.php) : $_GET
- * utilise avec :
- * - depuis 2023 :
- *   PHP 8.2 sur macOS 13.x
- *   PHP 8.1 sur hebergeur web
  * ----------------------------------------------------------------------------
  * creation : 15-fev-2024 pchevaillier@gmail.com
  * revision : 19 sep-2024 pchevaillier@gmail.com + cas erreur ajouter_participation
