@@ -19,30 +19,31 @@
  * utilisation : phpunit --testdox <chemin_vers_ce_fichier_php>
  * dependances :
  * - structure table
+ * - donnees dans la table
  * utilise avec :
  * - PHP 8.2 et PHPUnit 9.5 sur macOS 13.6
  * ----------------------------------------------------------------------------
  * creation : 07-fev-2023 pchevaillier@gmail.com
  * revision : 25-sep-2024 pchevaillier@gmail.com + ajouts de test
  * revision : 10-dec-2024 pchevaillier@gmail.com + testVerificationDispoSupportCreneau
+ * revision : 18-dec-2024 pchevaillier@gmail.com * nom methodes, fix testChangerSeance
  * ----------------------------------------------------------------------------
  * commentaires :
  * -
  * attention :
- * - En cas d'erreur d'execution de ce programme,
- *   la suppression des effets de bord des fonctions de test
- *   n'est peut-etre pas réalisee, ce qui genere une incoherence
- *   dans les donnees de test. I faut spurrpimer les enregistrements "a la main"
+ * -
  * a faire :
  * - a completer
  * - collecter participants creneau horaire (couverture + fonctionnalite)
- * - collecter (nombreuses options > enriente couverture du code)
+ * - collecter (nombreuses options > oriente couverture du code)
  * ============================================================================
  */
 
 declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\UsesClass;
 
 // ----------------------------------------------------------------------------
 // --- Classes de l'enviromment de test
@@ -62,6 +63,8 @@ require_once 'php/metier/seance_activite.php';
 /**
  * Test case.
  */
+
+#[CoversClass(Enregistrement_Seance_activite::class)]
 class Enregistrement_Seance_activiteTest extends TestCase {
 
   private static ?PDO $bdd = null;
@@ -193,12 +196,12 @@ class Enregistrement_Seance_activiteTest extends TestCase {
   /**
    * Teste le nom de la table source des informations
    */
-  /*
+  
   public function testSourceTableSeancesActivite(): void {
     $this->assertEquals(PREFIX_TABLE . 'seances_activite', Enregistrement_Seance_Activite::source());
   }
 
-  public function testVerificationSeanceExiste(): void {
+  public function testVerifierSeanceExiste(): void {
     $valeur_invalide = 0;
     $ok = Enregistrement_Seance_Activite::seance_existe($valeur_invalide); // methode sous test
     $this->assertFalse($ok);
@@ -285,7 +288,7 @@ class Enregistrement_Seance_activiteTest extends TestCase {
     Enregistrement_Seance_Activite::supprimer_seance($code1);
   }
 
-  public function testVerificationDispoMembre(): void {
+  public function testVerifierDispoMembre(): void {
     $jour = Calendrier::aujourdhui();
     $une_heure = new DateInterval('PT1H0M0S');
     $debut = $jour;
@@ -369,7 +372,7 @@ class Enregistrement_Seance_activiteTest extends TestCase {
       Enregistrement_Seance_Activite::supprimer_seance($code_seance);
   }
   
-  public function testVerificationDispoSupportCreneau(): void {
+  public function testVerifierDispoSupportCreneau(): void {
     $jour = Calendrier::aujourdhui();
     $une_heure = new DateInterval('PT1H0M0S');
     $debut = $jour;
@@ -405,7 +408,7 @@ class Enregistrement_Seance_activiteTest extends TestCase {
     return;
   }
   
-  public function testCreationNouvelleSeanceSurSupportCreneauIndispo() {
+  public function testCreerNouvelleSeanceSurSupportCreneauIndispo() {
     $jour = Calendrier::aujourdhui();
     $une_heure = new DateInterval('PT1H0M0S');
     $debut = $jour;
@@ -478,9 +481,8 @@ class Enregistrement_Seance_activiteTest extends TestCase {
     // Suppression effets de bord du test
     Enregistrement_Seance_Activite::supprimer_seance($code_seance);
   }
-*/
   
-  public function testTentativeAjoutParticipationQuandPlusDePlace() : void {
+  public function testTentativeAjouterParticipationQuandPlusDePlace() : void {
     $jour = Calendrier::aujourdhui();
     $une_heure = new DateInterval('PT1H0M0S');
     $debut = $jour;
@@ -534,7 +536,6 @@ class Enregistrement_Seance_activiteTest extends TestCase {
     
   }
   
-  /*
   public function testCompterParticipations(): void {
     
     $jour = Calendrier::aujourdhui();
@@ -652,14 +653,16 @@ class Enregistrement_Seance_activiteTest extends TestCase {
     $p1->fin = $fin->date_heure_sql();
     
     $p2 = new Information_Participation_Seance_Activite();
-    $p1->code_site = 1;
-    $p1->code_support_activite = 1;
-    $p1->code_participant = 888;
-    $p2->debut = $debut->date_heure_sql();
-    $p2->fin = $fin->date_heure_sql();
+    $p2->code_site = $p1->code_site;
+    $p2->code_support_activite = $p1->code_support_activite;
+    $p2->code_participant = $p1->code_participant + 1;
+    $p2->debut = $p1->debut;
+    $p2->fin = $p1->fin;
     
     Enregistrement_Seance_Activite::ajouter_participation($p1);
     //print("Code seance :" . $p1->code_seance);
+    $this->participations[] = $p1;
+    
     $p2->code_seance = $p1->code_seance;
     Enregistrement_Seance_Activite::ajouter_participation($p2);
     
@@ -808,7 +811,7 @@ class Enregistrement_Seance_activiteTest extends TestCase {
     $this->assertTrue($ok, "seance sans responsable");
   }
 
-  public function testBasculeEquipierResponsable(): void {
+  public function testChangerEquipierResponsable(): void {
     $jour = Calendrier::aujourdhui();
     $une_heure = new DateInterval('PT1H0M0S');
     $debut = $jour;
@@ -857,7 +860,7 @@ class Enregistrement_Seance_activiteTest extends TestCase {
     $this->assertTrue($ok, "seance sans responsable");
   }
   
-  public function testchangementHoraire(): void {
+  public function testChangerHoraire(): void {
     $jour = Calendrier::aujourdhui();
     $une_heure = new DateInterval('PT1H0M0S');
     $debut = $jour;
@@ -886,7 +889,7 @@ class Enregistrement_Seance_activiteTest extends TestCase {
     
     }
   
-  public function testchangementSupportActivite(): void {
+  public function testChangerSupportActivite(): void {
     $jour = Calendrier::aujourdhui();
     $une_heure = new DateInterval('PT1H0M0S');
     $debut = $jour;
@@ -903,6 +906,7 @@ class Enregistrement_Seance_activiteTest extends TestCase {
     Enregistrement_Seance_Activite::ajouter_participation($p1);
     $this->participations[] = $p1;
     
+    // Changement pour le meme support
     $code_nouveau_support = $p1->code_support_activite;
     $status= Enregistrement_Seance_Activite::changer_support($p1->code_seance,
                                                              $code_nouveau_support);
@@ -910,15 +914,17 @@ class Enregistrement_Seance_activiteTest extends TestCase {
     $ok = $this->seance_a_comme_support($p1->code_seance, $code_nouveau_support);
     $this->assertTrue($ok);
     
+    //Changement pour un autre support
     $code_nouveau_support = $p1->code_support_activite + 1;
     $status= Enregistrement_Seance_Activite::changer_support($p1->code_seance,
                                                              $code_nouveau_support);
     $this->assertTrue($status);
     $ok = $this->seance_a_comme_support($p1->code_seance, $code_nouveau_support);
+    $this->assertTrue($ok);
     
   }
   
-  public function testchangementSeance(): void {
+  public function testChangerSeance(): void {
     $jour = Calendrier::aujourdhui();
     $une_heure = new DateInterval('PT1H0M0S');
     $debut = $jour;
@@ -932,6 +938,7 @@ class Enregistrement_Seance_activiteTest extends TestCase {
     $p1->debut = $debut->date_heure_sql();
     $p1->fin = $fin->date_heure_sql();
     
+    // Seance avec 1 participation
     Enregistrement_Seance_Activite::ajouter_participation($p1);
     $this->participations[] = $p1;
     $code_p1 = $p1->code_seance;
@@ -960,22 +967,25 @@ class Enregistrement_Seance_activiteTest extends TestCase {
     $this->assertFalse($ok);
     
     // nouveau code = code_actuel // ok, pas de changement (meme nombre de participation)
-    $n1_avant = $this->compter_participations_seance($p1->code_seance);
+    $n1_avant = $this->compter_participations_seance($code_p1);
     $ok = Enregistrement_Seance_Activite::changer_seance($code_p1, $code_p1);
-    $this->assertTrue($ok);
-    $n1_apres = $this->compter_participations_seance($p1->code_seance);
+    $msg = 'changement pour meme seance ' . $code_p1;
+    $this->assertTrue($ok, $msg);
+    $n1_apres = $this->compter_participations_seance($code_p1);
     $this->assertEquals($n1_avant, $n1_apres);
     
     // nouveau_code = code existant // ok, nombre de participations = somme des 2 seances
+    
     $p2 = new Information_Participation_Seance_Activite();
-    $p2->code_site = 1;
+    $p2->code_site = $p1->code_site;
     $p2->code_support_activite = $p1->code_support_activite + 1;
     $p2->code_participant = $p1->code_participant + 1;
-    $p2->debut = $debut->date_heure_sql();
-    $p2->fin = $fin->date_heure_sql();
+    $p2->debut = $p1->debut;
+    $p2->fin = $p1->fin;
+    
     Enregistrement_Seance_Activite::ajouter_participation($p2);
     $this->participations[] = $p2;
-    
+        
     $n1_avant = $this->compter_participations_seance($p1->code_seance);
     $n2_avant = $this->compter_participations_seance($p2->code_seance);
     $ok = Enregistrement_Seance_Activite::changer_seance($p1->code_seance, $p2->code_seance);
@@ -985,8 +995,22 @@ class Enregistrement_Seance_activiteTest extends TestCase {
     $this->assertEquals(0, $n1_apres);
     $this->assertEquals($n2_avant + $n1_avant, $n2_apres);
     
+    // La seance n'est pas supprimee par le changement
+    // car on peut encore avoir besoin des informations la concernant
+    // (le responsable entre autre)
+    $n1_seance = $this->compter_seance($p1->code_seance);
+    $this->assertEquals(1, $n1_seance);
+    
+    // on la supprime maintenant car on n'en a plus besoin
+    Enregistrement_Seance_Activite::supprimer_seance($p1->code_seance);
+    //$n1_seance = $this->compter_seance($p1->code_seance);
+    //$this->assertEquals(0, $n1_seance);
+
+    // il faut aussi supprimer ici la deuxieme seance
+    // car l'information dans $p2 n'est pas suffisante
+    Enregistrement_Seance_Activite::supprimer_seance($p2->code_seance);
     }
-   */
+
 }
 // ==========================================================================
 ?>

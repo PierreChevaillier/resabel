@@ -35,9 +35,11 @@
  * commentaires :
  * -
  * attention :
- * -
+ * - Incoherence entre collecter_participants_creneau()
+ *   et verifier_disponibilite_membre
  * a faire :
- * -
+ * - corriger collecter_participants_creneau qui ne fonctionne actuellement
+ *   en ne tenant compte que de l'heure de debut du creneau horaire
  * ============================================================================
  */
   
