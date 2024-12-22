@@ -101,7 +101,7 @@
         echo '<td>' . $item->information() . '</td>';
        
         if ($this->affiche_creation) {
-          $creation = "saisie le " . $item->instant_creation()->date_texte_court();
+          $creation = "saisie le " . $item->instant_creation()->date_texte_abbr();
           echo '<td>' . $creation . '</td>';
         
           if (!is_null($item->createurice())) {
@@ -115,7 +115,8 @@
           $nom_createurice = $item->identite_createurice();
           echo '<td>par ' . $nom_createurice . '</td>';
         }
-        echo '<td>';
+        
+        echo '<td class="align-middle">';
         $this->afficher_menu_actions($item);
         echo '</td></tr>';
       }

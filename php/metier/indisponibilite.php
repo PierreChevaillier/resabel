@@ -88,8 +88,8 @@ abstract class Indisponibilite {
   }
   
   public function formatter_periode(): string {
-    $texte = "du " . $this->debut()->date_texte_court() . " à " . $this->debut()->heure_texte();
-    $texte = $texte . " au " . $this->fin()->date_texte_court() . " à " . $this->fin()->heure_texte();
+    $texte = "du " . $this->debut()->date_texte_abbr() . " à " . $this->debut()->heure_texte();
+    $texte = $texte . "<br />au " . $this->fin()->date_texte_abbr() . " à " . $this->fin()->heure_texte();
     return $texte;
   }
   

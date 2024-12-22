@@ -52,7 +52,7 @@ function activer_controle_suppression_indisponibilite(code_indispo, type_indispo
     titre_modal.innerHTML = "Suppression fermeture";
   html_corps = '<div class="alert alert-warning" role="alert">Opération irréversible !</div>';
   html_corps = html_corps + '<div class="card"><div class="card-body"><p>' + html_resume_indispo + '</p></div></div>';
-  html_corps = html_corps + '<div><button type="button" class="btn btn-primary" onclick="supprimer_indisponibilite(' + code_indispo + ', ' + type_indispo + '); return false;">Confirmer suppression</button></div>';
+  html_corps = html_corps + '<div><button type="button" class="btn w-100 mb-2 btn-primary" onclick="supprimer_indisponibilite(' + code_indispo + ', ' + type_indispo + '); return false;">Confirmer suppression</button></div>';
   corps_modal.innerHTML = "<div>" + html_corps + "</div>";
   bouton_modal.textContent = "Ne rien faire";
 

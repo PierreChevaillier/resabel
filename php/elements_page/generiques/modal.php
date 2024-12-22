@@ -36,7 +36,7 @@ require_once 'php/elements_page/generiques/element.php';
       $html_id = (strlen($this->id()) > 0) ? " id=\"" . $this->id() . "\" " : " ";
       echo '<div class="modal" tabindex="-1"' . $html_id . 'role="dialog">';
       echo '<div class="modal-dialog" role="document">';
-      echo '<div class="modal-content">';
+      echo '<div class="modal-content rounded-4 shadow">'; // https://getbootstrap.com/docs/5.3/examples/modals/
     }
 
     protected function afficher_tete_contenu(): void {
@@ -53,8 +53,8 @@ require_once 'php/elements_page/generiques/element.php';
     }
     
     protected function afficher_pied_contenu(): void {
-      echo '<div class="modal-footer">';
-      echo '<button type="button" role="button" class="btn" id="' . $this->id() . '_btn" data-bs-dismiss="modal">Fermer</button>';
+      echo '<div class="modal-footer flex-column align-items-stretch w-100 gap-2 pb-3 border-top-0">'; // https://getbootstrap.com/docs/5.3/examples/modals/
+      echo '<button type="button" role="button" class="btn btn-secondary" id="' . $this->id() . '_btn" data-bs-dismiss="modal">Fermer</button>';
       echo '</div>';
     }
     

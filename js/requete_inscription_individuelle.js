@@ -36,7 +36,7 @@ function activer_controle_annulation_participation(modal_id, code_seance, code_s
   titre_modal.innerHTML = "Annulation participation séance";
   html_corps = '<div class="alert alert-warning" role="alert">Opération irréversible !<br />Ne pas oublier de prévenir la personne concernée.</div>';
   html_corps = html_corps + '<div class="card"><div class="card-body"><p>' + html_info_seance + '</p><p>' + html_info_partipation + '</p></div></div>';
-  html_corps = html_corps + '<div><button type="button" class="btn btn-outline-primary"><a href="' + html_mailto + '">Envoyez un mail</a></button></div>';
+  html_corps = html_corps + '<div><button type="button" class="btn w-100 mb-2 rounded-3 btn-outline-primary"><a href="' + html_mailto + '">Envoyez un mail</a></button></div>';
   code_action = 'di';
   html_action  = 'requete_inscription_individuelle('
     + '\'' + modal_id
@@ -50,7 +50,7 @@ function activer_controle_annulation_participation(modal_id, code_seance, code_s
   + ', \'' +  code_action
   + '\'); return false;';
   //console.log(html_action);
-  html_corps = html_corps + '<div><button type="button" class="btn btn-danger" onclick="' + html_action + '">Confirmer annulation</button></div>';
+  html_corps = html_corps + '<div><button type="button" class="btn w-100 mb-2 rounded-3 btn-danger" onclick="' + html_action + '">Confirmer annulation</button></div>';
   corps_modal.innerHTML = "<div>" + html_corps + "</div>";
   bouton_modal.textContent = "Ne rien faire";
   bouton_modal.classList.add("btn-secondary");
