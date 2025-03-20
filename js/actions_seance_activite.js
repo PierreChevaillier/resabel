@@ -151,7 +151,7 @@ function fin_saisie_participant(code_seance, code_site, code_support, debut, fin
   champ_code = document.getElementById("code_part"); // + id_contexte_saisie);
   let nom_participant = champ_nom.value;
   let code_personne = champ_code.value;
-  console.log(code_personne, " ", nom_participant);
+  //console.log(code_personne, " ", nom_participant);
   
   // Suppression du formulaire de saisie
   while (parent.firstChild) {
@@ -170,7 +170,7 @@ function fin_saisie_participant(code_seance, code_site, code_support, debut, fin
   // Enregistrement de la nouvelle participation dans la base de donnees
   const code_action = 'ii';
   const responsable = (rang == 0) ? 1: 0;
-  console.log(code_personne, " ", nom_participant, " resp ", responsable);
+  //console.log(code_personne, " ", nom_participant, " resp ", responsable);
   envoi = {act: code_action, id: code_seance, sa: code_site, s: code_support, deb: debut, fin: fin, p: code_personne, resp: responsable};
   
   var xmlhttp = new XMLHttpRequest();

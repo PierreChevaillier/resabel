@@ -32,6 +32,7 @@
  * revision : 17-feb-2023 pchevaillier@gmail.com + changement horaire
  * revision : 04-jul-2024 pchevaillier@gmail.com + affichage photo support activite
  * revision : 13-jul-2024 pchevaillier@gmail.com + couleur / seance passee et indispo
+ * revision : 20-mar-2025 pchevaillier@gmail.com + nom personne avec apostrophe
  * ----------------------------------------------------------------------------
  * commentaires :
  * -
@@ -288,11 +289,12 @@
         $html_info_seance = $html_info_seance . ', ' . $this->activite_site->site->nom();
         $html_info_seance = htmlspecialchars($html_info_seance);
         
-        $presentation_nom = new Afficheur_Nom();
         $presentation_tel = new Afficheur_telephone();
-        $presentation_nom->def_personne($participant);
+        $nom_participant = $participant->prenom() . " " . $participant->nom();
+        $nom_participant = htmlspecialchars($nom_participant); // Il peut y avoir des apostrophes
+        
         $html_info_participation = '<div class="container"><table class="table table-sm"><tbody><tr><td>'
-          . $presentation_nom->formatter() . '</td><td>'
+          . $nom_participant . '</td><td>'
           . $presentation_tel->formatter($participant->telephone)
           . '</td></tr></tbody></table></div>';
         $html_info_participation = htmlspecialchars($html_info_participation);
@@ -306,6 +308,8 @@
           $html_info_mailto = $html_info_mailto . ' de ' . $this->seance->debut()->heure_texte();
           $html_info_mailto = $html_info_mailto . ' à ' . $this->seance->fin()->heure_texte();
         }
+        $html_info_mailto = htmlspecialchars($html_info_mailto);
+        
         $params = $params . ', \'' . $html_info_seance
           . '\', \'' . $html_info_participation
           . '\', \'' . $html_info_mailto

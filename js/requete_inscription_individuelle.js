@@ -69,7 +69,7 @@ function afficher_retour_inscription(modal_id, code_action, reponse) {
   var dict = JSON.parse(reponse);
   for (var entree in dict) {
     valeur = dict[entree];
-    console.log("JSON retour : " + entree + " =>" + valeur);
+    //console.log("JSON retour : " + entree + " =>" + valeur);
     
     switch (entree) {
       case 'status':
