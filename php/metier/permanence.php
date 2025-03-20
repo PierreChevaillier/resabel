@@ -19,14 +19,11 @@
  * utilisation : php - require_once <chemin_vers_ce_fichier_php>
  * dependances :
  * - aucune
- * utilise avec :
- * - depuis 2023 :
- *   PHP 8.2 sur macOS 13.x
- *   PHP 8.1 sur hebergeur web
  * ----------------------------------------------------------------------------
  * creation : 28-mai-2019 pchevaillier@gmail.com
  * revision : 28-dec-2019 pchevaillier@gmail.com impact refonte Calendrier
  * revision : 09-oct-2024 pchevaillier@gmail.com typage
+ * revision : 15-fev-2025 pchevaillier@gmail.com + prochaine()
  * ----------------------------------------------------------------------------
  * commentaires :
  * -
@@ -67,13 +64,21 @@ class Permanence {
     $this->annee = $annee;
   }
   /*
-   * Creation de la permanence pour le semaine en cours
+   * Creation de la permanence pour la semaine en cours
    * TODO: retourner la nouvelle permanence, ce sera plus clair
    */
   public static function cette_semaine(?Permanence & $permanence): void {
     $j = Calendrier::aujourdhui();
     $permanence = new Permanence($j->numero_semaine(), Calendrier::annee_semaine($j));
     return;
+  }
+  
+  public function prochaine(): Permanence {
+    $j = $this->jour();
+    $jour_prochaine = $j->add(new DateInterval('P7D'));
+    $prochaine = new Permanence($jour_prochaine->numero_semaine(),
+                                Calendrier::annee_semaine($jour_prochaine));
+    return $prochaine;
   }
   
   public function egale(Permanence $perm): bool {

@@ -18,11 +18,10 @@
  * description : Definition de la classe Enregistreur_Permanence
  * utilisation : php - require_once <chemin_vers_ce_fichier_php>
  * dependances :
- * - code de la composante 'Permanence' dans la base de donnees
- * - code du role 'membre' dans la base de donnees
+ * - aucune
  * ----------------------------------------------------------------------------
  * creation : 09-oct-2024 pchevaillier@gmail.com
- * revision :
+ * revision : 17-fev-2025 pchevaillier@gmail.com
  * ----------------------------------------------------------------------------
  * commentaires :
  * -
@@ -43,32 +42,37 @@ require_once 'php/bdd/enregistrement_permanence.php';
 
 class Enregistreur_Permanence {
   
+  public static function etend_calendrier(array & $codes_membres): int {
+    $code_retour = 0;
+    //$codes_membres = array();
+    //Collecteur_Permanence::collecte_codes_membres_equipe($codes_membres);
+    if (count($codes_membres) == 0) {
+      $code_retour = 1;
+    } else {
+      $fait = self::ajoute_permanences($codes_membres);
+      if (!$fait) $code_retour = 2;
+    }
+    return $code_retour;
+  }
+  
   public static function ajoute_permanences(array & $codes_membre): bool {
     $fait = false;
     $code_membre = 0;
     
     $enreg = new Enregistrement_Permanence();
-    $perm = $enreg->recherche_derniere();
-    $j = Calendrier::date_jour_semaine(6, $perm->semaine(), $perm->annee());
-    
-    //echo "derniere : " . $perm->annee() . " " . $perm->semaine() . PHP_EOL;
-    //echo "Jour de la perm :" . $j->date_texte() . PHP_EOL;
-    
+
+    $perm = Collecteur_Permanence::premiere_permanence_extension_calendrier();
     foreach ($codes_membre as $code_membre) {
       
-      $jour_perm = $j->add(new DateInterval("P7D"));
-      $j = $jour_perm;
-      
       $responsable_perm = new Personne($code_membre);
-      $num_semaine = $jour_perm->numero_semaine();
-      $annee = intval($jour_perm->format('Y'));
-      
-      $perm = new Permanence($num_semaine, $annee);
       $perm->def_responsable($responsable_perm);
-      //echo $perm->code_responsable() . ' : ' .  $jour_perm->date_texte() . ' => ' . $perm->semaine() . ' / ' . $perm->annee() . PHP_EOL;
+      echo $perm->code_responsable() . ' : ' .  $perm->jour_texte()
+        . ' => ' . $perm->semaine() . ' / ' . $perm->annee() . PHP_EOL;
       
       $enreg->def_permanence($perm);
-      $enreg->enregistre();
+      //$enreg->enregistre();
+      
+      $perm = $perm->prochaine();
       
     }
     $fait = true;
@@ -137,6 +141,7 @@ class Enregistreur_Permanence {
     return $fait;
   }
 }
+
 // ============================================================================
 ?>
 

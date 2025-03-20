@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  * ----------------------------------------------------------------------------
- * description : Test unitaire de la classe Collecteur_Permanence
+ * description : Test unitaire de la classe Collecteur_Equipe_Permanence
  * utilisation : phpunit --testdox <chemin_vers_ce_fichier_php>
  * dependances :
  * - enregistrement present dans la table de la base de donnees de test
@@ -47,13 +47,13 @@ set_include_path('./../../../');
 include_once('php/utilitaires/definir_locale.php');
 
 // --- Classe sous test
-require_once('php/collecteur/collecteur_permanence.php');
+require_once('php/collecteur/collecteur_equipe_permanence.php');
 
 // ============================================================================
 /**
  * Test case.
  */
-final class Collecteur_PermanenceTest extends TestCase {
+final class Collecteur_Equipe_PermanenceTest extends TestCase {
   
   private static ?PDO $bdd = null;
 
@@ -73,41 +73,24 @@ final class Collecteur_PermanenceTest extends TestCase {
   
   private static function generer_donnees_test(): void {}
   
-  public function testCalendrierEstVide(): void {
-    $vide = Collecteur_Permanence::calendrier_est_vide();
-    $this->assertFalse($vide);
+  public function testCollecteCodesMembresEquipePermanence(): void {
+    $codes_membre = array();
+    $fait = Collecteur_Equipe_Permanence::collecte_codes_membres_equipe($codes_membre);
+    $this->assertTrue($fait);
+    print_r($codes_membre);
   }
   
-  public function testDernierePermanenceAvantCetteSemaine(): void {
-    $avant = Collecteur_Permanence::derniere_permanence_est_avant_cette_semaine();
-    $this->assertTrue($avant);
+  public function testCodeResponsable(): void {
+    $resultat = Collecteur_Equipe_Permanence::code_responsable();
+    $this->assertEquals(6, $resultat);
   }
   
-  public function testPremierePermanenceExtensionCalendrier(): void {
-    $perm = Collecteur_Permanence::premiere_permanence_extension_calendrier();
-    $cette_semaine = null;
-    Permanence::cette_semaine($cette_semaine);
-    $this->assertTrue($perm->egale($cette_semaine));
+  public function testEffectifEquipePermanence(): void {
+    $resultat = Collecteur_Equipe_Permanence::effectif_equipe_permanence();
+    print("Effectif : " . $resultat . PHP_EOL);
+    $this->assertFalse($resultat === 0);
   }
   
-  public function testDernierePermanenceExtensionCalendrier(): void {
-    $premiere = Collecteur_Permanence::premiere_permanence_extension_calendrier();
-    $nb_semaines = 0;
-    $derniere = Collecteur_Permanence::derniere_permanence_extension_calendrier($premiere, $nb_semaines);
-    print("Extension du " . $premiere->jour_texte() . " au " . $derniere->jour_texte() . PHP_EOL);
-    
-    $nb_semaines = 3;
-    $derniere = Collecteur_Permanence::derniere_permanence_extension_calendrier($premiere, $nb_semaines);
-    print("Extension du " . $premiere->jour_texte() . " au " . $derniere->jour_texte() . PHP_EOL);
-  }
-  
-  public function testDatesExtensionCalendrier(): void {
-    $debut = "";
-    $fin = "";
-    $nb_semaines = 3;
-    Collecteur_Permanence::dates_extension_calendrier($nb_semaines, $debut, $fin);
-    print("Extension du " . $debut . " au " . $fin . PHP_EOL);
-  }
 }
 // ============================================================================
 ?>

@@ -26,6 +26,7 @@
  * revision : 25-dec-2019 pchevaillier@gmail.com date_sun_info a la place date_sunrise
  * revision : 13-oct-2024 pchevaillier@gmail.com regime diurne pas de jour uniquement (en attendant mieux)
  * revision : 17-oct-2024 pchevaillier@gmail.com tolerance lever / coucher du soleil
+ * revision : 19-mar-2025 pchevaillier@gmail.com cas du jour de passage a l'heure d'ete
  * ----------------------------------------------------------------------------
  * commentaires :
  * -
@@ -95,29 +96,33 @@ abstract class Regime_Ouverture {
                                    $longitude);
       
       $t_lever = $info_soleil['sunrise'];
-      //echo 'latitude ', $latitude, ' long. ', $longitude;
+      //echo 'latitude ', $latitude, ' long. ', $longitude  . PHP_EOL;
       $lever = Calendrier::creer_Instant($t_lever);
       $lever = $lever->sub($tolerance_lever_soleil);
       
       $t_coucher = $info_soleil['sunset'];
-      //echo ' Lever ', $lever->format('d-m-Y H:i:s');
+      //echo ' Lever ', $lever->format('d-m-Y H:i:s')  . PHP_EOL;
       $coucher = Calendrier::creer_Instant($t_coucher);
       $coucher = $coucher->add($tolerance_coucher_soleil);
-      //echo 'Coucher ', $coucher->format('d-m-Y H:i:s');
+      //echo 'Coucher ', $coucher->format('d-m-Y H:i:s') . PHP_EOL;
       
       // Initialisation des dates de debut et fin (ouverture, fermeture)
       
       $debut = $date_jour->add($this->heure_ouverture);
-      //echo 'Debut ', $debut->format('d-m-Y H:i:s');
+      //echo 'Debut (ouverture) ', $debut->format('d-m-Y H:i:s') . PHP_EOL;
       $fin = $date_jour->add($this->heure_fermeture);
-      //echo 'Fin ', $fin->format('d-m-Y H:i:s');
+      //echo 'Fin (fermeture)', $fin->format('d-m-Y H:i:s') . PHP_EOL;
       
       //$heure_hiver = (1 - date('I', $jour));
+      if ($date_jour->heure_hiver() && !$debut->heure_hiver()) {
+        $debut = $debut->sub(new DateInterval('PT1H0M0S'));
+        //echo "passage heure hiver" . PHP_EOL;
+      }
       if ($date_jour->heure_hiver() && isset($this->decalage_heure_hiver)) {
         $debut = $debut->add($this->decalage_heure_hiver);
         $fin = $fin->add($this->decalage_heure_hiver);
       }
-      
+      //echo 'Debut (modif hre hiver) ', $debut->format('d-m-Y H:i:s') . PHP_EOL;
       $debut_creneau = $debut;
       $fin_creneau = $debut->add($this->duree_seance);
       $creneaux = array();

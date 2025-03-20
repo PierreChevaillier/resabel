@@ -13,6 +13,7 @@
   // revision : 08-jan-2020 pchevaillier@gmail.com affichage fermeture site (debut)
 // revision : 22-may-2024 pchevaillier@gmail.com  utilisation Afficheur_Fermetures_Site
 // revision: 05-jul-2024 pchevaillier@gmail.com * affichage marees
+// revision : 19-mar-2025 pchevaillier@gmail.com cas du jour de passage a l'heure d'ete
   // --------------------------------------------------------------------------
   // commentaires :
   // - operationnel
@@ -75,6 +76,9 @@ require_once 'php/elements_page/specifiques/vue_indisponibilite.php';
       
       $premier_creneau = (isset($_GET['pc'])) ? new DateInterval($_GET['pc']) : new DateInterval('PT0H');
       $debut_plage_horaire = $jour->add($premier_creneau);
+      if ($jour->heure_hiver() && !$debut_plage_horaire->heure_hiver()) {
+        $debut_plage_horaire = $debut_plage_horaire->sub(new DateInterval('PT1H0M0S'));
+      }
       $this->activite_journaliere->debut_plage_horaire = $debut_plage_horaire;
       
       $dernier_creneau = (isset($_GET['dc'])) ? new DateInterval($_GET['dc']) : new DateInterval('PT23H');

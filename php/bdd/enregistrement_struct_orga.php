@@ -22,6 +22,7 @@
  * ----------------------------------------------------------------------------
  * creation : 25-mai-2019 pchevaillier@gmail.com
  * revision : 09-oct-2024 pchevaillier@gmail.com + collecter_codes_membre
+ * revision : 19-feb-2025 pchevaillier@gmail.com + ajouter, supprimer, decaler_rang
  * ----------------------------------------------------------------------------
  * commentaires :
  * -
@@ -119,18 +120,141 @@ class Enregistrement_Entite_Organisationnelle {
     $fait = false;
     try {
       $bdd = Base_Donnees::acces();
-      $requete = "SELECT code_membre FROM `rsbl_roles_membres` WHERE code_composante = "
-      . $code_composante . " ORDER BY rang";
+      $source = Base_Donnees::$prefix_table . "roles_membres";
+      $requete = "SELECT code_membre FROM " . $source
+        . " WHERE code_composante = " . $code_composante
+        . " ORDER BY rang";
       $resultat = $bdd->query($requete);
       while ($donnee = $resultat->fetch(PDO::FETCH_OBJ)) {
         $codes_membre[] = $donnee->code_membre;
       }
       $fait = true;
     } catch (PDOException $e) {
-      Base_Donnees::sortir_sur_exception('rsbl_roles_membres', $e);
+      Base_Donnees::sortir_sur_exception($source, $e);
     }
     return $fait;
   }
+  
+  static function nombre_membres(int $code_composante): int {
+    $nombre = 0;
+    try {
+      $bdd = Base_Donnees::acces();
+      $source = Base_Donnees::$prefix_table . "roles_membres";
+      $code_sql = "SELECT COUNT(*) as n FROM " . $source
+        . " WHERE code_composante = " . $code_composante;
+      echo $code_sql . PHP_EOL;
+      $resultat = $bdd->query($code_sql);
+      $donnee = $resultat->fetch(PDO::FETCH_OBJ);
+      $nombre = $donnee->n;
+    } catch (PDOException $e) {
+      Base_Donnees::sortir_sur_exception($source, $e);
+    }
+    return $nombre;
+  }
+  
+  static function collecter_codes_membres_role(int $code_composante,
+                                              int $code_role,
+                                              array & $codes_membre): bool {
+    $fait = false;
+    try {
+      $bdd = Base_Donnees::acces();
+      $source = Base_Donnees::$prefix_table . "roles_membres";
+      $requete = "SELECT code_membre FROM " . $source
+        . " WHERE code_composante = " . $code_composante
+        . " AND code_role = " . $code_role
+        . " ORDER BY rang";
+      $resultat = $bdd->query($requete);
+      while ($donnee = $resultat->fetch(PDO::FETCH_OBJ)) {
+        $codes_membre[] = $donnee->code_membre;
+      }
+      $fait = true;
+    } catch (PDOException $e) {
+      Base_Donnees::sortir_sur_exception($source, $e);
+    }
+    return $fait;
+  }
+  
+  static function rang_personne(int $code_composante,
+                                int $code_role,
+                                int $code_membre): ?int {
+    $rang = null;
+    try {
+      $bdd = Base_Donnees::acces();
+      $source = Base_Donnees::$prefix_table . "roles_membres";
+      $code_sql = 'SELECT rang FROM ' . $source
+        . ' WHERE code_composante = ' . $code_composante
+        . ' AND code_role = ' . $code_role
+        . ' AND code_membre = ' . $code_membre . ' LIMIT 1';
+      $requete = $bdd->prepare($code_sql);
+      $requete->execute();
+      if ($resultat = $requete->fetch(PDO::FETCH_OBJ))
+        $rang = $resultat->rang;
+    } catch (PDOException $e) {
+      Base_Donnees::sortir_sur_exception($source, $e);
+    }
+    return $rang;
+  }
+  
+  static function ajouter_personne(int $code_composante,
+                                   int $code_role,
+                                   int $code_membre,
+                                   int $rang): bool {
+    $fait = false;
+    try {
+      $bdd = Base_Donnees::acces();
+      $source = Base_Donnees::$prefix_table . "roles_membres";
+      $code_sql = "INSERT INTO " . $source
+        . " VALUES ("
+        . $code_membre . ", "
+        . $code_role . ", "
+        . $code_composante . ", "
+        . $rang . ")"
+      ;
+      $n = $bdd->exec($code_sql);
+      $fait = ($n === 1);
+    } catch (PDOException $e) {
+      Base_Donnees::sortir_sur_exception($source, $e);
+    }
+    return $fait;
+  }
+  
+  static function supprimer_personne(int $code_composante,
+                                     int $code_membre): bool {
+    $fait = false;
+    try {
+      $bdd = Base_Donnees::acces();
+      $source = Base_Donnees::$prefix_table . "roles_membres";
+      $code_sql = "DELETE fROM " . $source
+        . " WHERE code_composante = " . $code_composante
+        . " AND code_membre = " . $code_membre;
+      $n = $bdd->exec($code_sql);
+      $fait = ($n === 1);
+    } catch (PDOException $e) {
+      Base_Donnees::sortir_sur_exception($source, $e);
+    }
+    return $fait;
+  }
+  
+  static function decaler_rang(int $code_composante,
+                               int $rang,
+                               string $operation): bool {
+    $fait = false;
+    try {
+      $bdd = Base_Donnees::acces();
+      $source = Base_Donnees::$prefix_table . "roles_membres";
+      $code_sql = "UPDATE " . $source
+        . " SET rang = rang " . $operation
+        . " WHERE code_composante = " . $code_composante
+        . " AND rang > " . $rang;
+      $n = $bdd->exec($code_sql);
+      //print("decaler : n = " . $n . PHP_EOL);
+      $fait = true;
+    } catch (PDOException $e) {
+      Base_Donnees::sortir_sur_exception($source, $e);
+    }
+    return $fait;
+  }
+  
 }
 // ============================================================================
 ?>

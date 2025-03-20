@@ -76,15 +76,11 @@ final class Enregistreur_PermanenceTest extends TestCase {
   
   private static function generer_donnees_test(): void {}
   
-/*
   public function testExtensionCalendrierPermanencesPourEquipe(): void {
-    $codes_membre = array();
-    $codes_ok = Collecteur_Permanence::collecte_codes_membres_equipe($codes_membre);
-    
-    $fait = Enregistreur_Permanence::ajoute_permanences($codes_membre); // methode sous test
-    $this->assertTrue($fait);
+    $codes_membres = [101,102, 103];
+    $erreur = Enregistreur_Permanence::etend_calendrier($codes_membres); // methode sous test
+    $this->assertEquals(0, $erreur);
   }
-*/
   
   public function testModificationResponsablePermanence(): void {
     
