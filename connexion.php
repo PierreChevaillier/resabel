@@ -1,29 +1,71 @@
 <?php
-  include('php/utilitaires/definir_locale.php');
+/* ============================================================================
+ * Resabel - systeme de REServAtion de Bateau En Ligne
+ * Copyright (C) 2024 Pierre Chevaillier
+ * contact: pchevaillier@gmail.com 70 allee de Broceliande, 29200 Brest, France
+ * ----------------------------------------------------------------------------
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License,
+ * or any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ * ----------------------------------------------------------------------------
+ * description : page de connexion
+ * utilisation : php include <chemin_vers_ce_fichier.php>
+ *               premiere instruction sur toutes les pages (ou scripts)
+ *               sauf celle de connexion
+ *               ainsi que le script de verification de l'identite
+ * dependances :
+ * - $_GET['s']
+ * ----------------------------------------------------------------------------
+ * creation : 17-jan-2018 pchevaillier@gmail.com resabel V2
+ * revision : 06-oct-2018 pchevaillier@gmail.com formulaire
+ * revision : 18-apr-2025 pchevaillier@gmail.com parametrage cookie et id session
+ * ----------------------------------------------------------------------------
+ * commentaires :
+ * - partiellement inspire par une solution trouvee sur
+ * https://blog.crea-troyes.fr/1542/comment-securiser-une-session-php-efficacement/
+ * attention :
+ * -
+ * a faire :
+ * -
+ * ============================================================================
+ */
+set_include_path('./');
+include('php/utilitaires/definir_locale.php');
+
+session_start();
+if (!isset($_SESSION)) {
+  session_set_cookie_params([
+      'httponly' => true,
+      'secure' => true,
+  ]);
+  /*
+   d'apres : https://blog.crea-troyes.fr/1542/comment-securiser-une-session-php-efficacement/
+  ‘httponly’ => true :
+   Ce paramètre indique que le cookie de session ne peut être accédé que par le protocole HTTP,
+   et donc pas par JavaScript.
+   Cela renforce la sécurité en empêchant les attaques telles que le vol de session via des scripts côté client.
+  ‘secure’ => true : Ce paramètre indique que le cookie de session ne sera envoyé
+   que sur une connexion sécurisée HTTPS.
+   Cela signifie que le cookie ne sera pas envoyé sur des connexions non sécurisées HTTP,
+   ce qui protège les données de session contre l’interception lors de la transmission sur le réseau.
+  */
+  /*
+   d'apres : https://blog.crea-troyes.fr/1542/comment-securiser-une-session-php-efficacement/
+   */
+  $sessionId = bin2hex(random_bytes(32));
+  session_id($sessionId);
+}
  ?>
 <!DOCTYPE html>
   <html lang="fr">
     <?php
-      // ======================================================================
-      // contexte : Resabel - systeme de REServation de Bateaux En Ligne
-      // description : page pour la connexion au systeme : identification
-      // ----------------------------------------------------------------------
-      // utilisation : navigateur web
-      // dependances :
-      // teste avec : PHP 7.1 sur Mac OS 10.14 ; PHP 7.0 sur hebergeur web
-      // copyright (c) 2018 AMP. Tous droits réserves.
-      // ----------------------------------------------------------------------
-      // creation : 17-jan-2018 pchevaillier@gmail.com resabel V2
-      // revision : 19-jan-2018 pchevaillier@gmail.com mise en forme
-      // revision : 06-oct-2018 pchevaillier@gmail.com formulaire
-      // ----------------------------------------------------------------------
-      // commentaires :
-      //  -
-      // attention :
-      // a faire :
-      // ======================================================================
-      
-      set_include_path('./');
       
       // --- connection a la base de donnees
       include 'php/bdd/base_donnees.php';

@@ -29,6 +29,7 @@
  * revision : 22-may-2024 pchevaillier@gmail.com * afficher_menu_competition
  * revision : 28-aug-2024 pchevaillier@gmail.com + reactivation compte
  * revision : 16-sep-2024 pchevaillier@gmail.com * menu competition AMP
+ * revision : 15-jun-2025 pchevaillier@gmail.com + inscription stages ete AMP
  * ----------------------------------------------------------------------------
  * commentaires :
  * -
@@ -89,6 +90,9 @@ require_once 'php/metier/profil_session.php';
         echo '<li><a class="dropdown-item" href="inscription_individuelle.php?a=ii">Inscription individuelle</a>';
       echo '<li><a class="dropdown-item" href="inscription_individuelle.php?a=ie">Inscription équipage</a></li>'; // Meme page que inscription individuelle avec option 'ie'
       echo '<li><a class="dropdown-item" href="agendas.php">Agendas</a></li>';
+      /* Specifique AMP -- ajout du 15 juin 2025 */
+      echo '<li><a class="dropdown-item" href="https://framadate.org/94Pd4a7yFsctRtoW">Stages été</a></li>';
+      
       echo '</ul></li>';
     }
     
