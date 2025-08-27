@@ -30,6 +30,7 @@
  * revision : 28-aug-2024 pchevaillier@gmail.com + reactivation compte
  * revision : 16-sep-2024 pchevaillier@gmail.com * menu competition AMP
  * revision : 15-jun-2025 pchevaillier@gmail.com + inscription stages ete AMP
+ * revision : 27-aug-2025 pchevaillier@gmail.com * lien avant-programme
  * ----------------------------------------------------------------------------
  * commentaires :
  * -
@@ -162,7 +163,8 @@ require_once 'php/metier/profil_session.php';
     echo '<ul class="dropdown-menu" aria-labelledby="mnu-compet">';
     //echo '<li><a class="dropdown-item" href="https://docs.google.com/spreadsheets/d/1NCVO0pP9FDNUNUXjOcKnhu9LAIUaQbqF7Dq4IN8_NV8/edit?usp=sharing" target ="_blank">Inscription régates</a></li>';
     echo '<li><a class="dropdown-item" href=" https://drive.google.com/drive/folders/1dDQ2Z4eiyixPAOn7J2KdYpwAzAwBQOsc?usp=sharing" target ="_blank">Inscriptions</a></li>';
-    echo '<li><a class="dropdown-item" href=" https://drive.google.com/drive/folders/1XD37ip3r_62DF6ZMz5LS98kzZaDftBUE?usp=sharing" target ="_blank">Avant-programmes</a></li>';
+    //echo '<li><a class="dropdown-item" href=" https://drive.google.com/drive/folders/1XD37ip3r_62DF6ZMz5LS98kzZaDftBUE?usp=sharing" target ="_blank">Avant-programmes</a></li>';
+    echo '<li><a class="dropdown-item" href="https://drive.google.com/drive/folders/1XvIud3jwBDSQGZm3dFUmsHXJeuzd8Xfb?usp=sharing" target ="_blank">Avant-programmes</a></li>';
     echo '<li><a  class="dropdown-item" href="https://drive.google.com/drive/folders/1s0s_qEy7ge7se3OLEDvR5tCWlQkLVR1f?usp=sharing" target="_blank">Entrainements</a></li>';
     echo '</ul></li>';
   }
