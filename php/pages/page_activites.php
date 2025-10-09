@@ -1,28 +1,42 @@
 <?php
-  // ==========================================================================
-  // contexte : Resabel - systeme de REServAtion de Bateaux En Ligne
-  // description : Definition de la classe Page_Activites
-  //               Gestion des informations sur les seances de la journee
-  // copyright (c) 2018-2024 AMP. Tous droits reserves.
-  // --------------------------------------------------------------------------
-  // utilisation : php - require_once <chemin-fichier.php'
-  // dependances : $_GET[]
-  // teste avec : PHP 7.1 sur Mac OS 10.14 ; PHP 7.0 sur hebergeur web
-  // --------------------------------------------------------------------------
-  // creation : 10-jun-2019 pchevaillier@gmail.com
-  // revision : 08-jan-2020 pchevaillier@gmail.com affichage fermeture site (debut)
-// revision : 22-may-2024 pchevaillier@gmail.com  utilisation Afficheur_Fermetures_Site
-// revision: 05-jul-2024 pchevaillier@gmail.com * affichage marees
-// revision : 19-mar-2025 pchevaillier@gmail.com cas du jour de passage a l'heure d'ete
-  // --------------------------------------------------------------------------
-  // commentaires :
-  // - operationnel
-  // attention :
-  // - pas complet
-  // a faire :
-  // - 
-  // ==========================================================================
-
+/* ============================================================================
+ * Resabel - systeme de REServAtion de Bateau En Ligne
+ * Copyright (C) 2024 Pierre Chevaillier
+ * contact: pchevaillier@gmail.com 70 allee de Broceliande, 29200 Brest, France
+ * ----------------------------------------------------------------------------
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License,
+ * or any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ * ----------------------------------------------------------------------------
+ * description : Definition de la classe Page_Activites
+ *              Gestion des informations sur les seances de la journee
+ * utilisation : php - require_once <chemin_vers_ce_fichier_php>
+ * dependances :
+ * - $_GET[]
+ * ----------------------------------------------------------------------------
+ * creation : 0-jun-2019 pchevaillier@gmail.com
+ * revision : 08-jan-2020 pchevaillier@gmail.com affichage fermeture site (debut)
+ * revision : 22-may-2024 pchevaillier@gmail.com  utilisation Afficheur_Fermetures_Site
+ * revision: 05-jul-2024 pchevaillier@gmail.com * affichage marees
+ * revision : 19-mar-2025 pchevaillier@gmail.com cas du jour de passage a l'heure d'ete
+ * revision : 13-sep-2025 pchevaillier@gmail.com + affichage nom resp. permanence
+ * ----------------------------------------------------------------------------
+ * commentaires :
+ * -
+ * attention :
+ * -
+ * a faire :
+ * -
+ * ============================================================================
+ */
+ 
   // --- Classes utilisees
   require_once 'php/elements_page/specifiques/page_menu.php';
   require_once 'php/elements_page/generiques/entete_contenu_page.php';
@@ -133,7 +147,13 @@ require_once 'php/elements_page/specifiques/vue_indisponibilite.php';
       if (isset($this->activite_journaliere->permanence)) {
         $cadre = new Conteneur_Repliable();
         $cadre->def_id('cadre_perm');
-        $cadre->def_titre("Permanence semaine");
+        
+        $personne =  $this->activite_journaliere->permanence->responsable();
+        $prenom_nom = "";
+        if (isset($personne)) {
+          $prenom_nom = $personne->prenom() . " " . $personne->nom();
+        }
+        $cadre->def_titre("Permanence semaine : " . $prenom_nom);
         $this->ajoute_contenu($cadre);
         $afficheur_permanence = new Afficheur_Responsable_Permanence($this);
         $afficheur_permanence->permanence = $this->activite_journaliere->permanence;
@@ -236,5 +256,5 @@ require_once 'php/elements_page/specifiques/vue_indisponibilite.php';
     }
     
    }
-  // ==========================================================================
+// ============================================================================
 ?>
