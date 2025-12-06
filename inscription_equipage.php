@@ -20,6 +20,7 @@
  * revision : 26-jan-2024 pchevaillier@gmail.com init fonctionalites
  * revision : 15-fev-2024 pchevaillier@gmail.com + bouton abandon/retour
  * revision : 12-dec-2024 pchevaillier@gmail.com + detection suppression concurrente
+ * revision : 24-oct-2025 pchevaillier@gmail.com + passages heure ete <-> heure hiver
  * ----------------------------------------------------------------------------
  * commentaires :
  * -
@@ -81,8 +82,8 @@ $code_site_activite = $_GET['sa'];
 $code_seance = $_GET['seance'];
 $code_support = $_GET['support'];
 $j = new Instant($_GET['j']);
-$debut = $j->add(new DateInterval($_GET['hd']));
-$fin = $j->add(new DateInterval($_GET['hf']));
+$debut = Instant::creer($j, new DateInterval($_GET['hd']));
+$fin = Instant::creer($j, new DateInterval($_GET['hf']));
 
 if ($code_seance > 0) {
   $existe = Enregistrement_Seance_Activite::seance_existe($code_seance);
@@ -140,9 +141,6 @@ if ($code_seance > 0) {
     $seance->responsable = $personnes_actives[$seance->responsable->code()];
 } else {
   $seance = new Seance_Activite();
-  $j = new Instant($_GET['j']);
-  $debut = $j->add(new DateInterval($_GET['hd']));
-  $fin = $j->add(new DateInterval($_GET['hf']));
   $seance->plage_horaire = new Intervalle_temporel($debut, $fin);
 }
 $site_activite = Enregistrement_Site_Activite::creer($code_site_activite);

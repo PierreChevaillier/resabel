@@ -42,14 +42,14 @@ include_once('php/utilitaires/definir_locale.php');
 include_once 'php/bdd/base_donnees.php';
 
 // --- classes utilisees
-require_once('php/collecteur/collecteur_permanence.php');
+require_once('php/collecteur/collecteur_equipe_permanence.php');
 require_once('php/enregistreur/enregistreur_permanence.php');
 
 // ----------------------------------------------------------------------------
 
 $codes_membre = array();
 
-Collecteur_Permanence::collecte_codes_membres_equipe($codes_membre);
+Collecteur_Equipe_Permanence::collecte_codes_membres_equipe($codes_membre);
 
 Enregistreur_Permanence::ajoute_permanences($codes_membre);
 

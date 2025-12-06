@@ -1,45 +1,56 @@
 <?php
-  // ==========================================================================
-  // description : definition des classes relatives a la representation du temps
-  // utilisation : require_once <chemin_vers_ce_fichierr_php>
-  // dependances : definition de locale - impact sur encodage des string retournees
-  //               voir resabel/php/utilitaires/definir_locale.php
-  // teste avec  : PHP 7.1 sur MacOS 10.14
-  // contexte    : Applications WEB
-  // Copyright (c) 2017-2020 AMP
-  // --------------------------------------------------------------------------
-  // creation : 11-nov-2017 pchevaillier@gmail.com
-  // revision : 08-jan-2018 pchevaillier@gmail.com Intervalle temporel (debut)
-  // revision : 18-fev-2018 pchevaillier@gmail.com Calendrier::date_html
-  // revision : 10-jun-2019 pchevaillier@gmail.com
-  // revision : 26-dec-2019 pchevaillier@gmail.com refonte, gros impact / utilisation
-  // revision : 30-dec-2019 pchevaillier@gmail.com Calendrier::annee_semaine
-  // revision : 05-jan-2020 pchevaillier@gmail.com Instant::valeur_cle_horaire
-  // revision : 11-jan-2020 pchevaillier@gmail.com Interval_Temporel
-  // revision : 26-dec-2022 pchevaillier@gmail.com compatibilite php 7.x et 8.x
-// revision : 09-oct-2024 pchevaillier@gmail.com typage classe Instant
-  // --------------------------------------------------------------------------
-  // commentaires :
-  // - utilisation des classes DateTime et associees
-  // - pas d'utilisation de timestamp (sauf usage tres specifique : format)
-  // - en evolution
-  // - hebergement AMP / OVH : que php 'de base', donc pas le module
-  //     'internationalisation'
-  //   consequence : gestion a la main des nom de jours et de mois (cf Calendrier)
-  // considere : utilisation de gettext (https://www.php.net/manual/en/book.gettext.php)
-  // attention :
-  // - calcul duree approximatif (pb : annees inhabituelles, heure d'ete ...
-  // a faire :
-  // - finir intervalle temporel. Utiliser les fonctions php / timeDiff
-  //   ou supprimer la classe...
-// Typage complet et plus 'generique' (p. ex DateTimeInterface)
-  // ==========================================================================
-  
-  // --- Classes utilisees
-  
-  // --- variables statiques
-  
-  // --------------------------------------------------------------------------
+/* ============================================================================
+ * Resabel - systeme de REServAtion de Bateau En Ligne
+ * Copyright (C) 2024 Pierre Chevaillier
+ * contact: pchevaillier@gmail.com 70 allee de Broceliande, 29200 Brest, France
+ * ----------------------------------------------------------------------------
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License,
+ * or any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ * ----------------------------------------------------------------------------
+ * description : Definition de la classe Page_Activites
+ *               definition des classes relatives a la representation du temps
+ * utilisation : php - require_once <chemin_vers_ce_fichier_php>
+ * dependances implicites :
+ * ----------------------------------------------------------------------------
+ * creation : 11-nov-2017 pchevaillier@gmail.com
+ * revision : 08-jan-2018 pchevaillier@gmail.com Intervalle temporel (debut)
+ * revision : 18-fev-2018 pchevaillier@gmail.com Calendrier::date_html
+ * revision : 26-dec-2019 pchevaillier@gmail.com refonte, gros impact / utilisation
+ * revision : 30-dec-2019 pchevaillier@gmail.com Calendrier::annee_semaine
+ * revision : 05-jan-2020 pchevaillier@gmail.com Instant::valeur_cle_horaire
+ * revision : 11-jan-2020 pchevaillier@gmail.com Interval_Temporel
+ * revision : 26-dec-2022 pchevaillier@gmail.com compatibilite php 7.x et 8.x
+ * revision : 09-oct-2024 pchevaillier@gmail.com typage classe Instant
+ * revision : 24-oct-2025 pchevaillier@gmail.com + creer, creer_texte
+ * ----------------------------------------------------------------------------
+ * commentaires :
+ * - utilisation des classes DateTime et associees
+ * - pas d'utilisation de timestamp (sauf usage tres specifique : format)
+ * - hebergement AMP / OVH : que php 'de base', donc pas le module 'internationalisation'
+ *   consequence : gestion a la main des nom de jours et de mois (cf Calendrier)
+ * considere :
+ * - utilisation de gettext (https://www.php.net/manual/en/book.gettext.php)
+ * attention :
+ * - calcul duree approximatif (pb : annees inhabituelles, heure d'ete ...
+ * a faire :
+ * - finir intervalle temporel. Utiliser les fonctions php / timeDiff ou supprimer la classe...
+ * - typage complet et plus 'generique' (p. ex DateTimeInterface)
+ * ============================================================================
+ */
+
+// --- Classes utilisees
+
+// --- variables statiques
+
+// ----------------------------------------------------------------------------
   class Instant extends DateTimeImmutable {
 
     public static function micro(): float {
@@ -61,6 +72,30 @@
     public function valeur_cle_horaire(): string {
       $cle = 'PT' . $this->format('H') . 'H' . $this->format('i') . 'M';
       return $cle;
+    }
+    
+    public static function creer_texte(string $date_jour_texte,
+                           string $time_interval_str): Instant {
+      $jour = new Instant($date_jour_texte);
+      $heure = new DateInterval($time_interval_str);
+
+      $instant = self::creer($jour, $heure);
+      return $instant;
+    }
+    
+    public static function creer(DateTimeInterface $jour,
+                                 DateInterval $heure): Instant {
+      $instant = $jour->add($heure);
+
+      // cas particulier : jours du changement d'heure
+       if ($jour->heure_hiver() && !$instant->heure_hiver()) {
+         $instant = $instant->sub(new DateInterval('PT1H0M0S'));
+         //echo "passage heure ete" . PHP_EOL;
+       } else if (!$jour->heure_hiver() && $instant->heure_hiver()) {
+         $instant = $instant->add(new DateInterval('PT1H0M0S'));
+         //echo "passage heure hiver" . PHP_EOL;
+       }
+      return $instant;
     }
     
     public function lendemain(): Instant {
@@ -91,6 +126,7 @@
     public function est_egal(DateTimeInterface $autre_instant): bool {
       return $this->getTimestamp() == $autre_instant->getTimestamp();
     }
+    
     public function est_avant(DateTimeInterface $autre_instant): bool {
       return $this->diff($autre_instant)->invert == 0;
     }
@@ -157,7 +193,7 @@
     }
   }
   
-  // --------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
   class Intervalle_Temporel {
      public static function origine() {
        return Calendrier::creer_instant(0);
@@ -259,7 +295,7 @@
     
   }
    */
-  // --------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
   // Fabrique d'instants et autres fonctions sur les dates
   // + "localisation" des formats texte (jour et mois)
   // car strftime est deprecated en version 8.1
@@ -515,5 +551,5 @@
     }
   }
     */
-  // ===========================================================================
+// =============================================================================
 ?>

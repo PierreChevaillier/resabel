@@ -24,6 +24,7 @@
  * ----------------------------------------------------------------------------
  * creation : 06-fev-2023 pchevaillier@gmail.com
  * revision : 10-dec-2024 pchevaillier@gmail.com + testDateMicrotime
+ * revision : 24-oct-2025 pchevaillier@gmail.com + testCreation
  * ----------------------------------------------------------------------------
  * commentaires :
  * - en evolution
@@ -91,6 +92,52 @@ final class InstantTest extends TestCase {
     $cle = $instant2->valeur_cle();
     $this->assertEquals($cle, "2023-02-01 03:04");
 
+  }
+  
+  public function testCreation(): void {
+    $heure_date_interval = 'PT8H0M0S';
+    $heure_sql = '08:00:00';
+    
+    $date_jour = '2025-10-25'; // heure ete
+    $instant = Instant::creer_texte($date_jour, $heure_date_interval);
+    $attendu = $date_jour . ' ' . $heure_sql;
+    $this->assertEquals($attendu, $instant->date_heure_sql());
+    
+    $date_jour = '2025-10-26'; // jour passage heure hiver
+    $instant = Instant::creer_texte($date_jour, $heure_date_interval);
+    $attendu = $date_jour . ' ' . $heure_sql;
+    $this->assertEquals($attendu, $instant->date_heure_sql());
+    
+    $date_jour = '2025-10-27'; // heure hiver
+    $instant = Instant::creer_texte($date_jour, $heure_date_interval);
+    $attendu = $date_jour . ' ' . $heure_sql;;
+    $this->assertEquals($attendu, $instant->date_heure_sql());
+    
+    $date_jour = '2026-03-29'; // jour passage heure ete
+    $instant = Instant::creer_texte($date_jour, $heure_date_interval);
+    $attendu = $date_jour . ' ' . $heure_sql;;
+    $this->assertEquals($attendu, $instant->date_heure_sql());
+    
+    $heure_date_interval = 'PT1H30M0S';
+    $heure_sql = '01:30:00';
+    $date_jour = '2025-10-26'; // jour passage heure hiver (avant heure changement)
+    $instant = Instant::creer_texte($date_jour, $heure_date_interval);
+    $attendu = $date_jour . ' ' . $heure_sql;
+    $this->assertEquals($attendu, $instant->date_heure_sql());
+    
+    $heure_date_interval = 'PT2H0M0S';
+    $heure_sql = '02:00:00';
+    $date_jour = '2025-10-26'; // jour passage heure hiver (avant heure changement)
+    $instant = Instant::creer_texte($date_jour, $heure_date_interval);
+    $attendu = $date_jour . ' ' . $heure_sql;
+    $this->assertEquals($attendu, $instant->date_heure_sql());
+    
+    $heure_date_interval = 'PT3H0M0S';
+    $heure_sql = '03:00:00';
+    $date_jour = '2025-10-26'; // jour passage heure hiver (heure changement)
+    $instant = Instant::creer_texte($date_jour, $heure_date_interval);
+    $attendu = $date_jour . ' ' . $heure_sql;
+    $this->assertEquals($attendu, $instant->date_heure_sql());
   }
   
   /**

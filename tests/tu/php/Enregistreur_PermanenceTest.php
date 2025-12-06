@@ -122,7 +122,6 @@ final class Enregistreur_PermanenceTest extends TestCase {
                                                        $code_ancien_responsable);
   }
   
-  
   public function testPermutationResponsablesEntreDeuxPermanences(): void {
     
     // arguments avec valeurs valides

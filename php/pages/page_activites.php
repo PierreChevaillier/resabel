@@ -27,6 +27,7 @@
  * revision: 05-jul-2024 pchevaillier@gmail.com * affichage marees
  * revision : 19-mar-2025 pchevaillier@gmail.com cas du jour de passage a l'heure d'ete
  * revision : 13-sep-2025 pchevaillier@gmail.com + affichage nom resp. permanence
+ * revision : 24-oct-2025 pchevaillier@gmail.com cas du jour de passage a l'heure d'hiver
  * ----------------------------------------------------------------------------
  * commentaires :
  * -
@@ -89,17 +90,9 @@ require_once 'php/elements_page/specifiques/vue_indisponibilite.php';
       $this->activite_journaliere->filtre_support = (isset($_GET['s'])) ? $_GET['s'] : 0;
       
       $premier_creneau = (isset($_GET['pc'])) ? new DateInterval($_GET['pc']) : new DateInterval('PT0H');
-      $debut_plage_horaire = $jour->add($premier_creneau);
-      if ($jour->heure_hiver() && !$debut_plage_horaire->heure_hiver()) {
-        $debut_plage_horaire = $debut_plage_horaire->sub(new DateInterval('PT1H0M0S'));
-      }
-      $this->activite_journaliere->debut_plage_horaire = $debut_plage_horaire;
-      
+      $this->activite_journaliere->debut_plage_horaire = Instant::creer($jour, $premier_creneau);
       $dernier_creneau = (isset($_GET['dc'])) ? new DateInterval($_GET['dc']) : new DateInterval('PT23H');
-      $fin_plage_horaire = $jour->add($dernier_creneau);
-      if ($fin_plage_horaire < $debut_plage_horaire)
-        $fin_plage_horaire = $debut_plage_horaire;
-      $this->activite_journaliere->fin_plage_horaire = $fin_plage_horaire;
+      $this->activite_journaliere->fin_plage_horaire = Instant::creer($jour, $dernier_creneau);
       
       $this->activite_journaliere->collecter_informations();
       parent::__construct($nom_site_web, $nom_page, $liste_feuilles_style);

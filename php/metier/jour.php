@@ -18,7 +18,7 @@
   // - Deprecated
   // a faire :
   // -
-  // - finir intervalle temporel. Utiliser les fonctions php / timeDiff
+  // - a supprimer du depot
   // ===========================================================================
   
   // --- Classes utilisees

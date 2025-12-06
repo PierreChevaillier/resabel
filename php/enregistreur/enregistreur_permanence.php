@@ -36,6 +36,7 @@ declare(strict_types=1);
 require_once 'php/metier/permanence.php';
 require_once 'php/metier/calendrier.php';
 require_once 'php/metier/personne.php';
+require_once 'php/collecteur/collecteur_permanence.php';
 require_once 'php/bdd/enregistrement_permanence.php';
 
 // ============================================================================

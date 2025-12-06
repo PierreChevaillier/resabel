@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  * ----------------------------------------------------------------------------
- * description : classe Enregistrement_Regime_Ouverture (d'un site d'activite)
+ * description : classe Enregistrement_Regime_Ouverture
  * utilisation : php - require_once <chemin_vers_ce_fichier_php>
  * dependances :
  * - aucune
@@ -23,13 +23,14 @@
  * creation : 01-jul-2019 pchevaillier@gmail.com
  * revision : 27-dec-2019 pchevaillier@gmail.com impact refonte Calendrier
  * revision : 13-oct-2024 pchevaillier@gmail.com jour_uniquement
+ * revision : 29-oct-2025 pchevaillier@gmail.com + cas Regime_Journalier
  * ----------------------------------------------------------------------------
  * commentaires :
- * -
+ * - juste la lecture, pas les autres fonctions classiques
  * attention :
  * -
  * a faire :
- * -
+ * - quand IHM disponible, autres fonctions classiques
  * ============================================================================
  */
 
@@ -41,6 +42,11 @@ class Erreur_Type_Regime_Ouverture extends Exception { }
 
 // ----------------------------------------------------------------------------
 class Enregistrement_Regime_Ouverture {
+  
+  const CODE_TYPE_REGIME_DIURNE = 1;
+  const CODE_TYPE_REGIME_JOURNALIER = 2;
+  const CODE_TYPE_REGIME_HEBDOMADAIRE = 3; // pas encore implemente
+  
   static function source(): string {
     return Base_Donnees::$prefix_table . 'regimes_ouverture';
   }
@@ -54,7 +60,7 @@ class Enregistrement_Regime_Ouverture {
       $requete = $bdd->query($code_sql);
       while ($donnee = $requete->fetch(PDO::FETCH_OBJ)) {
         // Il faut trouver le type de l'objet a instancier (pas terrible...)
-        if ($donnee->code_type == 1) {
+        if ($donnee->code_type == self::CODE_TYPE_REGIME_DIURNE) {
           if (!isset($regime)) {
             $regime = new Regime_Diurne($code);
           }
@@ -63,9 +69,9 @@ class Enregistrement_Regime_Ouverture {
           $regime->heure_fermeture = Calendrier::creer_DateInterval_depuis_time_sql($donnee->heure_fermeture);
           $regime->decalage_heure_hiver = Calendrier::creer_DateInterval_depuis_time_sql($donnee->decalage_heure_hiver);
           
-        } elseif ($donnee->code_type == 2) {
-          if (!isset($this->regime)) {
-            $regime = new Regime_Hebdomadaire($code);
+        } elseif ($donnee->code_type == self::CODE_TYPE_REGIME_JOURNALIER) {
+          if (!isset($regime)) {
+            $regime = new Regime_Journalier($code);
           }
           // si pas encore d'entree pour ce jour : creer l'entree avec liste de plages horaires vides
           // pour l'entree du jour, creer une plage horaire et l'ajouter a la liste pour le sour de la semaine
@@ -73,10 +79,12 @@ class Enregistrement_Regime_Ouverture {
           $requete->closeCursor();
           throw new Erreur_Type_Regime_Ouverture();
         }
-        
-        $regime->jour_uniquement = ($donnee->de_jour_uniquement == 1);
         $regime->def_nom($donnee->nom);
+        $regime->heure_ouverture = Calendrier::creer_DateInterval_depuis_time_sql($donnee->heure_ouverture);
+        $regime->heure_fermeture = Calendrier::creer_DateInterval_depuis_time_sql($donnee->heure_fermeture);
         $regime->duree_seance = Calendrier::creer_DateInterval_depuis_time_sql($donnee->duree_seance);
+        $regime->decalage_heure_hiver = Calendrier::creer_DateInterval_depuis_time_sql($donnee->decalage_heure_hiver);
+        $regime->jour_uniquement = ($donnee->de_jour_uniquement == 1);
       }
     } catch (PDOexception $e) {
       Base_Donnees::sortir_sur_exception(self::source(), $e);
