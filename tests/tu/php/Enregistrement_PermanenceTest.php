@@ -78,7 +78,7 @@ class Enregistrement_PermanenceTest extends TestCase {
    */
   protected function setUp(): void {
     parent::setUp();
-    $this->supprimer_permanences();
+    // rien a faire $this->supprimer_permanence();
   }
 
   /**
@@ -86,12 +86,34 @@ class Enregistrement_PermanenceTest extends TestCase {
    */
   protected function tearDown(): void {
     foreach ($this->permanences as $perm) {
-      $this->supprimer_permanences($perm);
+      $this->supprimer_permanence($perm);
     }
     parent::tearDown();
   }
 
-  private function supprimer_permanences(): void {
+  private function lire_code_responsable(Permanence $perm) : int {
+    try {
+      $code_resp = 0;
+      $annee = $perm->annee();
+      $semaine = $perm->semaine();
+      $source = PREFIX_TABLE . self::$nom_table;
+      
+      $code_sql = "SELECT code_membre FROM " .  $source . " WHERE annee = :annee AND semaine = :semaine LIMIT 1";
+      echo $code_sql . PHP_EOL;
+      $requete= self::$bdd->prepare($code_sql);
+      $requete->bindParam(':annee', $annee, PDO::PARAM_INT);
+      $requete->bindParam(':semaine', $semaine, PDO::PARAM_INT);
+      $requete->execute();
+      $requete->execute();
+      if ($donnee = $requete->fetch(PDO::FETCH_OBJ))
+         $code_resp = $donnee->code_membre;
+      return $code_resp;
+    } catch (PDOException $e) {
+      Base_Donnees::sortir_sur_exception(self::source(), $e);
+    }
+  }
+  
+  private function supprimer_permanence(): void {
     $source = PREFIX_TABLE . self::$nom_table;
     $requete = self::$bdd->prepare("DELETE FROM " . $source . " WHERE annee = :annee AND semaine = :semaine");
     
@@ -112,7 +134,7 @@ class Enregistrement_PermanenceTest extends TestCase {
   /**
    * Teste le nom de la table source des informations
    */
-  public function testSourceTablePermanance(): void {
+  public function testSourceTablePermanence(): void {
     $this->assertEquals(PREFIX_TABLE . self::$nom_table, Enregistrement_Permanence::source());
   }
 
@@ -131,6 +153,7 @@ class Enregistrement_PermanenceTest extends TestCase {
   /**
    * Recherche des eventuelles parmanences posterieures a une permanence donnee
    */
+
   public function testCollectePermanencesFutures(): void {
  
     $derniere = Enregistrement_Permanence::recherche_derniere();
@@ -183,12 +206,7 @@ class Enregistrement_PermanenceTest extends TestCase {
       $semaine = max(1, $derniere->semaine() - 1);
       $perm = new Permanence($semaine, $annee);
     
-      /*
-      echo PHP_EOL, "permanence reference :",
-        " annee = " , $perm->annee(),
-        " semaine = " , $perm->semaine(),
-      PHP_EOL;
-      */
+      echo PHP_EOL, "permanence reference (dans annee avant la derniere) :", " annee = " , $perm->annee(), " semaine = " , $perm->semaine(), PHP_EOL;
       
       $this->enregistrement = new Enregistrement_Permanence();
       $this->enregistrement->def_permanence($perm);
@@ -199,12 +217,16 @@ class Enregistrement_PermanenceTest extends TestCase {
       
       $dernier_jour = new Instant($annee . '-12-31 23:59:00');
       $num_semaine_dernier_jour = $dernier_jour->numero_semaine();
+      if ($num_semaine_dernier_jour == 1) {
+        $dernier_jour = new Instant($annee . '-12-24 23:59:00');
+        $num_semaine_dernier_jour = $dernier_jour->numero_semaine();
+      }
       
-      //echo PHP_EOL, "derniere semaine de l'annee precedente :", $num_semaine_dernier_jour, PHP_EOL;
+      echo PHP_EOL, "derniere semaine de l'annee precedente :", $num_semaine_dernier_jour, PHP_EOL;
       $n = $num_semaine_dernier_jour - $semaine + $derniere->semaine() + 1;
-      $this->assertEquals($n, $nb_futures); // premiere verification a faire
-      $this->assertEquals($annee, $futures[0]->annee());
-      $this->assertEquals($semaine, $futures[0]->semaine());
+      $this->assertEquals($n, $nb_futures, "nombre de permanence(s)"); // premiere verification a faire
+      $this->assertEquals($annee, $futures[0]->annee(), "annee de la premiere future perm");
+      $this->assertEquals($semaine, $futures[0]->semaine(), "semaine de la premiere future perm");
       $this->assertEquals($derniere->annee(), $futures[$nb_futures - 1]->annee());
       $this->assertEquals($derniere->semaine(), $futures[$nb_futures - 1]->semaine());
       $n1 = $semaine - 1;
@@ -220,7 +242,7 @@ class Enregistrement_PermanenceTest extends TestCase {
       }
     }
   }
-  
+
   /**
    * Evaluation de l'identite du responsable d'une permanence
    */
@@ -247,16 +269,20 @@ class Enregistrement_PermanenceTest extends TestCase {
   public function testChangementResponsable(): void {
     $perm = Enregistrement_Permanence::recherche_derniere();
     if (! is_null($perm)) {
-      $code_membre_avant = $perm->code_responsable();
+      $code_resp_avant = $perm->code_responsable();
       
       $this->enregistrement = new Enregistrement_Permanence();
       $this->enregistrement->def_permanence($perm);
       
-      $fait = $this->enregistrement->change_responsable($code_membre);
+      $code_nouveau_resp = $code_resp_avant + 1;
+      $fait = $this->enregistrement->change_responsable($code_nouveau_resp);
       $this->assertTrue($fait);
-      $this->assertEquals($code_membre,  $this->enregistrement->permanence()->code_responsable());
       
+      $code_membre_apres = $this->lire_code_responsable($perm);
+      $this->assertEquals($code_nouveau_resp , $code_membre_apres);
       
+      // effacement effet de bord du test
+      $this->enregistrement->change_responsable($code_resp_avant);
     }
   }
 }

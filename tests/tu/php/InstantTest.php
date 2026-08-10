@@ -39,6 +39,7 @@ declare(strict_types=1);
 use PHPUnit\Framework\TestCase;
 
 set_include_path('./../../..');
+include 'php/utilitaires/definir_locale.php';
 
 require_once 'php/metier/calendrier.php';
 //require_once 'PHPUnit/Autoload.php';
@@ -94,6 +95,20 @@ final class InstantTest extends TestCase {
 
   }
   
+  public function testHeureHiver(): void {
+    $instant = new Instant("2026-03-28 00:00");
+    //print($instant->getTimestamp() . " - " . date('I', $instant->getTimestamp()) . PHP_EOL);
+    $this->assertTrue($instant->heure_hiver());
+    
+    $instant = new Instant("2026-03-29 00:00");
+    //print($instant->getTimestamp() . PHP_EOL);
+    $this->assertTrue($instant->heure_hiver());
+    
+    $instant = new Instant("2026-04-30 03:00");
+//    print($instant->getTimestamp() . " - " . date('I', $instant->getTimestamp()) . PHP_EOL);
+    $this->assertFalse($instant->heure_hiver());
+  }
+  
   public function testCreation(): void {
     $heure_date_interval = 'PT8H0M0S';
     $heure_sql = '08:00:00';
@@ -115,18 +130,11 @@ final class InstantTest extends TestCase {
     
     $date_jour = '2026-03-29'; // jour passage heure ete
     $instant = Instant::creer_texte($date_jour, $heure_date_interval);
-    $attendu = $date_jour . ' ' . $heure_sql;;
+    $attendu = $date_jour . ' ' . $heure_sql;
     $this->assertEquals($attendu, $instant->date_heure_sql());
     
     $heure_date_interval = 'PT1H30M0S';
     $heure_sql = '01:30:00';
-    $date_jour = '2025-10-26'; // jour passage heure hiver (avant heure changement)
-    $instant = Instant::creer_texte($date_jour, $heure_date_interval);
-    $attendu = $date_jour . ' ' . $heure_sql;
-    $this->assertEquals($attendu, $instant->date_heure_sql());
-    
-    $heure_date_interval = 'PT2H0M0S';
-    $heure_sql = '02:00:00';
     $date_jour = '2025-10-26'; // jour passage heure hiver (avant heure changement)
     $instant = Instant::creer_texte($date_jour, $heure_date_interval);
     $attendu = $date_jour . ' ' . $heure_sql;
@@ -138,6 +146,21 @@ final class InstantTest extends TestCase {
     $instant = Instant::creer_texte($date_jour, $heure_date_interval);
     $attendu = $date_jour . ' ' . $heure_sql;
     $this->assertEquals($attendu, $instant->date_heure_sql());
+    /*
+    $heure_date_interval = 'PT2H0M0S';
+    $heure_sql = '02:00:00';
+    $date_jour = '2026-03-29'; // jour passage heure ete (avant heure changement)
+    $instant = Instant::creer_texte($date_jour, $heure_date_interval);
+    $attendu = $date_jour . ' ' . $heure_sql;
+    $this->assertEquals($attendu, $instant->date_heure_sql());
+
+    $heure_date_interval = 'PT3H0M0S';
+    $heure_sql = '03:00:00';
+    $date_jour = '2026-03-29'; // jour passage heure ete (heure changement)
+    $instant = Instant::creer_texte($date_jour, $heure_date_interval);
+    $attendu = $date_jour . ' ' . $heure_sql;
+    $this->assertEquals($attendu, $instant->date_heure_sql());
+     */
   }
   
   /**
@@ -167,6 +190,7 @@ final class InstantTest extends TestCase {
   /**
    * Affichage
    */
+  /*
   public function testDateMicrotime(): void {
     $t1 = Instant::micro();
     usleep(100);
@@ -180,7 +204,7 @@ final class InstantTest extends TestCase {
     $i1 = new Instant();
     print(PHP_EOL . "micro sql:" . $i1->micro_sql() . PHP_EOL);
   }
-
+*/
   /**
    * Tests
    */

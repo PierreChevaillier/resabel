@@ -16,12 +16,12 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  * ----------------------------------------------------------------------------
  * description : Test unitaire de la classe Enregistreur_Permanence
- * utilisation : pphpunit --testdox <chemin_vers_ce_fichier_php>
+ * utilisation : phpunit --testdox <chemin_vers_ce_fichier_php>
  * dependances :
  * - enregistrement present dans la table de la base de donnees de test
  * ----------------------------------------------------------------------------
  * creation : 09-oct-2024 pchevaillier@gmail.com
- * revision :
+ * revision : 15-feb-2026 pchevaillier@gmail.com + testTroncatureCalendrierPermanencesPourEquipe
  * ----------------------------------------------------------------------------
  * commentaires :
  * -
@@ -50,7 +50,7 @@ include_once('php/utilitaires/definir_locale.php');
 require_once('php/enregistreur/enregistreur_permanence.php');
 
 // --- autres classes
-require_once('php/collecteur/collecteur_permanence.php');
+require_once('php/bdd/enregistrement_permanence.php');
 
 // ============================================================================
 /**
@@ -82,9 +82,26 @@ final class Enregistreur_PermanenceTest extends TestCase {
     $this->assertEquals(0, $erreur);
   }
   
+  public function testTroncatureCalendrierPermanencesPourEquipe(): void {
+    
+    // a partir d'une annee dans le futur, donc rien a tronquer
+    $annee = 2099;
+    $semaine = 1;
+    $n = Enregistreur_Permanence::tronque_calendrier($semaine, $annee); // methode sous test
+    $ok = ($n == 0);
+    $this->assertFalse($ok);
+    
+    // a partir d'une permanence dans le passe
+    $annee = 2026;
+    $semaine = 3;
+    $n = Enregistreur_Permanence::tronque_calendrier($semaine, $annee); // methode sous test
+    $ok = ($n > 0);
+    $this->assertTrue($ok);
+  }
+  
   public function testModificationResponsablePermanence(): void {
     
-    // arguments avec valeurs valides
+    // arguments avec valeur non valide
     $annee = 0;
     $semaine = 0;
     $code_nouveau_responsable = 0;
@@ -102,7 +119,7 @@ final class Enregistreur_PermanenceTest extends TestCase {
                                                        $code_nouveau_responsable);
     $this->assertFalse($fait);
 
-    // Enregistrement existant et arguments acec valeurs correctes
+    // Enregistrement existant et arguments avec valeur correcte
     $perm = Enregistrement_Permanence::recherche_derniere();
     $annee = $perm->annee();
     $semaine = $perm->semaine();
@@ -121,7 +138,7 @@ final class Enregistreur_PermanenceTest extends TestCase {
                                                        $perm->annee(),
                                                        $code_ancien_responsable);
   }
-  
+
   public function testPermutationResponsablesEntreDeuxPermanences(): void {
     
     // arguments avec valeurs valides

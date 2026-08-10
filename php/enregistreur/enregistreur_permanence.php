@@ -28,7 +28,8 @@
  * attention :
  * -
  * a faire :
- * -
+ * - avancer / reculer = permuter avec suivant / precedent
+ * - ? inserer / enlever (et donc decaler) 
  * ============================================================================
  */
 declare(strict_types=1);
@@ -56,6 +57,14 @@ class Enregistreur_Permanence {
     return $code_retour;
   }
   
+  public static function tronque_calendrier(int $semaine, int $annee): int {
+    $perm = new Permanence($semaine, $annee);
+    $enregistrement = new Enregistrement_Permanence();
+    $enregistrement->def_permanence($perm);
+    $n = $enregistrement->supprime_permanence_et_suivantes();
+    return $n;
+  }
+  
   public static function ajoute_permanences(array & $codes_membre): bool {
     $fait = false;
     $code_membre = 0;
@@ -71,11 +80,11 @@ class Enregistreur_Permanence {
         . ' => ' . $perm->semaine() . ' / ' . $perm->annee() . PHP_EOL;
       
       $enreg->def_permanence($perm);
-      //$enreg->enregistre();
+      $enreg->enregistre();
       
       $perm = $perm->prochaine();
-      
     }
+    
     $fait = true;
     return $fait;
   }

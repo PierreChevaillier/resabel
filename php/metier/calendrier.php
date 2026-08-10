@@ -90,10 +90,14 @@
       // cas particulier : jours du changement d'heure
        if ($jour->heure_hiver() && !$instant->heure_hiver()) {
          $instant = $instant->sub(new DateInterval('PT1H0M0S'));
-         //echo "passage heure ete" . PHP_EOL;
+         //echo "passage heure ete" . $jour->date_heure_sql() . ' - ' . $instant->date_heure_sql() . PHP_EOL;
        } else if (!$jour->heure_hiver() && $instant->heure_hiver()) {
          $instant = $instant->add(new DateInterval('PT1H0M0S'));
-         //echo "passage heure hiver" . PHP_EOL;
+         //echo "passage heure hiver" . $jour->date_heure_sql() . ' - ' . $instant->date_heure_sql() . PHP_EOL;
+         /*
+       } else {
+         echo 'autre cas ' . $jour->date_heure_sql() . ' - ' . $instant->date_heure_sql() . PHP_EOL;
+          */
        }
       return $instant;
     }
@@ -120,7 +124,7 @@
     }
     
     public function heure_hiver(): bool {
-      return (1 - date('I', $this->getTimestamp()));
+      return (date('I', $this->getTimestamp()) === '0');
     }
     
     public function est_egal(DateTimeInterface $autre_instant): bool {

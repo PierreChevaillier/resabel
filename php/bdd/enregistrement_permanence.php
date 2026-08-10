@@ -1,29 +1,43 @@
 <?php
-  // ==========================================================================
-  // contexte : Resabel - systeme de REServAtion de Bateau En Ligne
-  // description : classe Enregistrement_Permanence: acces a la base de donnees
-  // copyright (c) 2018-2019 AMP. Tous droits reserves.
-  // --------------------------------------------------------------------------
-  // utilisation : php - require_once <chemin_vers_ce_fichier.php>
-  // dependances : 
-  // teste avec : PHP 7.1 sur Mac OS 10.14 ;
-  //              PHP 7.0 sur hebergeur web
-  // --------------------------------------------------------------------------
-  // creation : 28-mai-2019 pchevaillier@gmail.com (a partir de resabel V1)
-  // revision : 12-oct-2024 pchevaillier@gmail.com + lire_code_responsable
-  // --------------------------------------------------------------------------
-  // commentaires :
-  // -
-  // attention :
-  // - non teste
-  // a faire :
-  // -
-  // ==========================================================================
-  
+/* ============================================================================
+ * Resabel - systeme de REServAtion de Bateau En Ligne
+ * Copyright (C) 2024 Pierre Chevaillier
+ * contact: pchevaillier@gmail.com 70 allee de Broceliande, 29200 Brest, France
+ * ----------------------------------------------------------------------------
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License,
+ * or any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ * ----------------------------------------------------------------------------
+ * description : Definition de la classe Enregistrement_Permanence
+ *               responsable des acces a la base de donnees
+ * utilisation : php - require_once <chemin_vers_ce_fichier_php>
+ * dependances :
+ * - code de la composante 'Permanence' dans la base de donnees
+ * - code du role 'responsable' dans la base de donnees
+ * ----------------------------------------------------------------------------
+ * creation : 28-mai-2019 pchevaillier@gmail.com (a partir de resabel V1)
+ * revision : 12-oct-2024 pchevaillier@gmail.com + lire_code_responsable
+ * revision : 15-feb-2026 pchevaillier@gmail.com + supprime_permanence_et_suivantes
+ * ----------------------------------------------------------------------------
+ * commentaires :
+ * -
+ * attention :
+ * -
+ * a faire :
+ * -
+ * ============================================================================
+ */
 require_once 'php/metier/permanence.php';
 
 require_once 'php/metier/personne.php';
-  // ==========================================================================
+// ============================================================================
   class Enregistrement_Permanence {
     public $permanence = null;
     public function permanence(): ?Permanence { return $this->permanence; }
@@ -66,7 +80,7 @@ require_once 'php/metier/personne.php';
     }
     
     /*
-     * Test si la personne passee en argument est celle de permanence
+     * Evalue si la personne passee en argument est celle de permanence
      * recherche de l'information dans la base de donnees
      */
     public function a_comme_responsable(Personne $personne): bool {
@@ -90,7 +104,6 @@ require_once 'php/metier/personne.php';
       }
       return $reponse;
     }
-    
     
     function collecter_futures(& $futures) {
       $status = false;
@@ -192,6 +205,25 @@ require_once 'php/metier/personne.php';
       return $fait;
     }
     
+  public function supprime_permanence_et_suivantes(): int {
+    if (is_null($this->permanence)) return -1;
+    $nb = 0;
+    try {
+      $bdd = Base_Donnees::acces();
+      $annee = $this->permanence->annee();
+      $semaine = $this->permanence->semaine();
+    
+      $code_sql = "DELETE FROM " .  self::source() . " WHERE ((annee = :annee1 AND semaine >= :semaine) OR annee > :annee2)";
+      $requete= $bdd->prepare($code_sql);
+      $requete->bindParam(':annee1', $annee, PDO::PARAM_INT);
+      $requete->bindParam(':annee2', $annee, PDO::PARAM_INT);
+      $requete->bindParam(':semaine', $semaine, PDO::PARAM_INT);
+      $nb = $requete->execute();
+      return $nb;
+    } catch (PDOException $e) {
+      Base_Donnees::sortir_sur_exception(self::source(), $e);
+    }
   }
-  // ==========================================================================
+}
+// ============================================================================
 ?>
