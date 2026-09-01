@@ -26,20 +26,20 @@ function requete_maj_niveau_debutants(modal_id) {
   var url = "php/scripts/debutants_niveau_maj.php?";
   const params = new URLSearchParams(envoi).toString();
   url += params;
-  
+
   var ok = false;
   xmlhttp.onreadystatechange = function() {
       if (this.readyState == 4 && this.status == 200) {
         const titre_modal = document.getElementById(modal_id + "_titre");
         const corps_modal = document.getElementById(modal_id + "_corps");
         const bouton_modal = document.getElementById(modal_id + "_btn");
-        titre_modal.textContent = "Modification du statut des débutants");
+        titre_modal.textContent = "Modification du statut des débutants";
         corps_modal.innerHTML = "<div><p>Opération réalisée avec succès</p></div>";
         bouton_modal.textContent = "Fermer";
         bouton_modal.classList.add("btn-success");
       }
     };
-  
+
   xmlhttp.open('GET', url, true);
   xmlhttp.send();
   return ok;
