@@ -32,6 +32,7 @@
  * revision : 15-jun-2025 pchevaillier@gmail.com + inscription stages ete AMP
  * revision : 27-aug-2025 pchevaillier@gmail.com * lien avant-programme
  * revision : 13-sep-2025 pchevaillier@gmail.com * afficher_menu_competition (AMP)
+ * revision : 28-sep-2026 pchevaillier@gmail.com * lien dossier inscriptions AMP
  * ----------------------------------------------------------------------------
  * commentaires :
  * -
@@ -49,7 +50,7 @@ require_once 'php/metier/profil_session.php';
 
 // ============================================================================
   class Menu_Application extends Menu_Navigation {
-    
+
     // regles 'metier' pour le controle de ce qu'il est permis de faire
     // en fonction du profil de connexion (informations sur la session active)
     private $session_admin = false;
@@ -57,17 +58,17 @@ require_once 'php/metier/profil_session.php';
     private $session_club = false;
     private $membre_actif = false;
     private ?Instant $jour;
-    
+
     public function initialiser() {
       $profil = new Profil_Session();
       $this->session_admin = $profil->est_admin();
       $this->session_pers = $profil->est_personne();
       $this->session_club = $profil->est_club();
       $this->membre_actif = $profil->est_membre_actif();
-      
+
       $this->jour = isset($GET['j']) ? new Instant($GET['j']): Calendrier::aujourdhui();
     }
-    
+
     private function afficher_menu_club() {
       echo '<li class="nav-item dropdown">';
       echo '<a class="nav-link dropdown-toggle" href="#" id="mnu_club" role="button" data-bs-toggle="dropdown" aria-expanded="false">Club</a>';
@@ -83,7 +84,7 @@ require_once 'php/metier/profil_session.php';
       echo '<li><a class="dropdown-item" href="composantes.php">Composantes club</a></li>';
       echo '</ul></li>';
     }
-    
+
     private function afficher_menu_inscription() {
       echo ' <li class="nav-item dropdown">';
       echo '<a class="nav-link dropdown-toggle" href="#" id="mnu_inscr" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Inscriptions</a>';
@@ -94,10 +95,10 @@ require_once 'php/metier/profil_session.php';
       echo '<li><a class="dropdown-item" href="agendas.php">Agendas</a></li>';
       /* Specifique AMP -- ajout du 15 juin 2025 */
       echo '<li><a class="dropdown-item" href="https://framadate.org/94Pd4a7yFsctRtoW">Stages été</a></li>';
-      
+
       echo '</ul></li>';
     }
-    
+
     private function afficher_menu_supports_activite() {
       echo '<li class="nav-item dropdown">';
       echo '<a class="nav-link dropdown-toggle" href="#" id="mnu_support" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Supports activités</a>';
@@ -116,20 +117,21 @@ require_once 'php/metier/profil_session.php';
        */
       echo '</ul></li>';
     }
-    
+
     private function afficher_menu_personnes() {
       echo '<li class="nav-item dropdown">';
       echo '<a class="nav-link dropdown-toggle" href="#" id="mnu_prs" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Membres</a>';
       echo '<ul class="dropdown-menu" aria-labelledby="mnu_prs">';
-      
+
       echo '<li><a class="dropdown-item" href="personnes.php?a=l&act=1&cnx=1">Liste membres</a></li>';
-      
+
       /*
        * Acces documents inscriptions - licence - assurance
        * ATTENTION : specifique AMP
+       * modifie le 28-sep-2026 a la demande du club
        */
-      echo '<li><a class="dropdown-item" href="https://drive.google.com/drive/folders/1_ZSrgs3q5olRmF7wrI1RhCtQTB4CwrAV" target ="_blank">Docs inscription</a></li>';
-      
+      echo '<li><a class="dropdown-item" href="https://drive.google.com/drive/folders/1SYUOfQSImKQ6OzmzEN2QMb8zFZSMWnoY?usp=sharing" target ="_blank">Docs inscription</a></li>';
+
       if ($this->session_club || $this->session_admin) {
         /*
          * Acces au formulaire pour l'enregistrement d'un nouveau membre du club
@@ -147,7 +149,7 @@ require_once 'php/metier/profil_session.php';
       }
       echo '</ul></li>';
     }
-      
+
     private function afficher_menu_administration() {
       echo '<li class="nav-item dropdown">';
       echo '<a class="nav-link dropdown-toggle" href="#" id="mnu_admin" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Administration</a>';
@@ -172,7 +174,7 @@ require_once 'php/metier/profil_session.php';
      */
     echo '</ul></li>';
   }
-      
+
     protected function afficher_corps() {
       if ($this->membre_actif)
         echo '<li class="nav-item"><a class="nav-link" href="accueil_perso.php">Accueil</a></li>';
@@ -187,7 +189,7 @@ require_once 'php/metier/profil_session.php';
        * a =l : action lecture ; pas de modfication possible
        */
       echo '<li class="nav-item"><a class="nav-link" href="activites.php?a=l&j=' . $this->jour->valeur_cle_date() . '">Sorties</a></li>';
-      
+
       $this->afficher_menu_competitions();
       $this->afficher_menu_club();
       $this->afficher_menu_personnes();
@@ -211,7 +213,7 @@ require_once 'php/metier/profil_session.php';
       }
       echo '<li class="nav-item"><a class="nav-link"  href="php/scripts/deconnexion.php">Déconnexion</a></li>';
     }
-    
+
   }
 // ============================================================================
 ?>
