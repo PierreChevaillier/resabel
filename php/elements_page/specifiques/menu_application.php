@@ -32,7 +32,7 @@
  * revision : 15-jun-2025 pchevaillier@gmail.com + inscription stages ete AMP
  * revision : 27-aug-2025 pchevaillier@gmail.com * lien avant-programme
  * revision : 13-sep-2025 pchevaillier@gmail.com * afficher_menu_competition (AMP)
- * revision : 28-sep-2026 pchevaillier@gmail.com * lien dossier inscriptions AMP
+ * revision : 29-sep-2026 pchevaillier@gmail.com * lien dossiers AMP
  * ----------------------------------------------------------------------------
  * commentaires :
  * -
@@ -164,14 +164,14 @@ require_once 'php/metier/profil_session.php';
     echo '<li class="nav-item dropdown">';
     echo '<a class="nav-link dropdown-toggle" href="#" id="mnu_compet" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Compétitions</a>';
     echo '<ul class="dropdown-menu" aria-labelledby="mnu-compet">';
-    echo '<li><a class="dropdown-item" href="https://drive.google.com/drive/folders/1CwBB68zx1P0tYaPsqnPWourlyNITcB_l?usp=sharing" target ="_blank">Informations</a></li>';
+
     /*
-    //echo '<li><a class="dropdown-item" href="https://docs.google.com/spreadsheets/d/1NCVO0pP9FDNUNUXjOcKnhu9LAIUaQbqF7Dq4IN8_NV8/edit?usp=sharing" target ="_blank">Inscription régates</a></li>';
-    echo '<li><a class="dropdown-item" href=" https://drive.google.com/drive/folders/1dDQ2Z4eiyixPAOn7J2KdYpwAzAwBQOsc?usp=sharing" target ="_blank">Inscriptions</a></li>';
-    //echo '<li><a class="dropdown-item" href=" https://drive.google.com/drive/folders/1XD37ip3r_62DF6ZMz5LS98kzZaDftBUE?usp=sharing" target ="_blank">Avant-programmes</a></li>';
-    echo '<li><a class="dropdown-item" href="https://drive.google.com/drive/folders/1XvIud3jwBDSQGZm3dFUmsHXJeuzd8Xfb?usp=sharing" target ="_blank">Avant-programmes</a></li>';
-    echo '<li><a  class="dropdown-item" href="https://drive.google.com/drive/folders/1s0s_qEy7ge7se3OLEDvR5tCWlQkLVR1f?usp=sharing" target="_blank">Entrainements</a></li>';
+     * Acces documents informations competitions
+     * ATTENTION : specifique AMP
+     * modifie le 01-oct-2026 a la demande du club
      */
+    echo '<li><a class="dropdown-item" href="https://drive.google.com/drive/folders/1RMfgK2soAmLNrdmHiB2KIwUyOLAh4QFw?usp=sharing
+" target ="_blank">Informations</a></li>';
     echo '</ul></li>';
   }
 

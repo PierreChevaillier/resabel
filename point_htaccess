@@ -1,4 +1,4 @@
-# description: redirige les requetes http:// vers https://
+ # description: redirige les requetes http:// vers https://
 #              tous les acces se font donc en mode securise
 # creation: 24-juil-2017 pchevaillier@gmail.com 
 # commentaires : 
