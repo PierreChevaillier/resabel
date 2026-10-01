@@ -170,8 +170,7 @@ require_once 'php/metier/profil_session.php';
      * ATTENTION : specifique AMP
      * modifie le 01-oct-2026 a la demande du club
      */
-    echo '<li><a class="dropdown-item" href="https://drive.google.com/drive/folders/1RMfgK2soAmLNrdmHiB2KIwUyOLAh4QFw?usp=sharing
-" target ="_blank">Informations</a></li>';
+    echo '<li><a class="dropdown-item" href="https://drive.google.com/drive/folders/1RMfgK2soAmLNrdmHiB2KIwUyOLAh4QFw?usp=sharing" target ="_blank">Informations</a></li>';
     echo '</ul></li>';
   }
 
