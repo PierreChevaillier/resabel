@@ -23,9 +23,12 @@
  * - depuis 2023 :
  *   PHP 8.2 sur macOS 13.x
  *   PHP 8.1 sur hebergeur web
+ *  - depuis oct-2026 :
+ *    PHP 8.5 sur macOS 27
  * ----------------------------------------------------------------------------
  * creation : 09-jun-2019 pchevaillier@gmail.com
  * revision : 21-aug-2024 pchevaillier@gmail.com + notice GNU GPLv3
+ * revision : 14-oct-2026 pchevaillier@gmail.com + PHP sur env. develeppement
  * ----------------------------------------------------------------------------
  * commentaires :
  * -
