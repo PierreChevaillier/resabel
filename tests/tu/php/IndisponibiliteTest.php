@@ -35,6 +35,8 @@ set_include_path('./../../../');
 
 // --- Classe sous test
 require_once('php/metier/indisponibilite.php');
+require_once('php/metier/support_activite.php');
+require_once('php/metier/site_activite.php');
 
 // ============================================================================
 /**
@@ -52,9 +54,14 @@ final class IndisponibiliteTest extends TestCase {
     $classname = 'Indisponibilite';
 
     // Get mock, without the constructor being called
-    $this->mock = $this->getMockBuilder($classname)
+    $this->mock = $this->createMock(Indisponibilite::Class); 
+    /*
+    $this->getMockBuilder($classname)
       ->disableOriginalConstructor()
       ->getMockForAbstractClass();
+*/
+    $this->mock->method('code_objet')->willReturn(1);
+    $this->mock->method('libelle_objet')->willReturn("objet indispo");
   }
 
   /**
@@ -75,13 +82,22 @@ final class IndisponibiliteTest extends TestCase {
             );
    */
     $code = 1;
-          // now call the constructor
-    /*          $reflectedClass = new ReflectionClass($classname);
-              $constructor = $reflectedClass->getConstructor();
-              $constructor->invoke($mock, $code);
-     */
     
-    $this->mock->__construct($code);
+    $classname = 'Indisponibilite';
+          // now call the constructor
+              $reflectedClass = new ReflectionClass($classname);
+              $constructor = $reflectedClass->getConstructor();
+              $constructor->invoke($this->mock, $code); 
+    
+    echo $constructor;
+    //$this->mock->__construct($code);
+    $str = is_a($this->mock, 'Indisponibilite')? 
+        "Classe Indispo ok" : "Class Indispo pas ok";
+    echo get_class($this->mock) 
+      . PHP_EOL
+      . 'Mock est une instance de '      
+      . $str
+      . PHP_EOL;
 
     $this->assertEquals($code, $this->mock->code());
     
@@ -98,7 +114,7 @@ final class IndisponibiliteTest extends TestCase {
     $valeur_fin = '2024-02-28 11:24:31';
     $debut = new Instant($valeur_debut);
     $fin = new Instant($valeur_fin);
-    
+    $this->mock->__construct(1);
     $ok = $this->mock->definir_periode($debut, $fin);
     $this->assertTrue($ok);
     $this->assertEquals($valeur_debut, $this->mock->debut()->date_heure_sql());
@@ -141,13 +157,10 @@ final class IndisponibiliteTest extends TestCase {
   }
   
   public function testDefinitionSiteFerme(): void {
-    // --- definition du site (classe abstraite)
+    // --- definition du site
     $code_site = 2;
     $nom_site = "Site activité";
-    $site = $this->getMockBuilder('Site_Activite')
-      ->disableOriginalConstructor()
-      ->getMockForAbstractClass();
-    $site->__construct($code_site);
+    $site = new Site_Activite($code_site);
     $site->def_nom($nom_site);
     
     // --- association site et Fermeture
@@ -165,13 +178,10 @@ final class IndisponibiliteTest extends TestCase {
   }
   
   public function testDefinitionSupportIndisponible(): void {
-    // --- definition du support (classe abstraite)
+    // --- definition du support
     $code_support = 33;
     $nom_support = "Nom du support";
-    $support = $this->getMockBuilder('Support_Activite')
-      ->disableOriginalConstructor()
-      ->getMockForAbstractClass();
-    $support->__construct($code_support);
+    $support = new Support_Activite($code_support);
     $support->def_nom($nom_support);
     
     // --- association support et Indisponibilite
