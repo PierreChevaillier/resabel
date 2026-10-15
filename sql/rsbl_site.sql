@@ -43,7 +43,7 @@ CREATE TABLE `rsbl_site` (
 --
 
 INSERT INTO `rsbl_site` (`code`, `code_club`, `sigle`, `adresse_racine`, `courriel_contact`, `fuseau_horaire`) VALUES
-(1, 1, 'AMP', 'https://avironplougonvelin.fr', 'contact@avironplougonvelin.fr', 'Europe/Paris');
+(1, 1, 'Resabel', 'https://github.com/PierreChevaillier/resabel', 'pchevaillier@gmail.com', 'Europe/Paris');
 
 --
 -- Index pour les tables déchargées

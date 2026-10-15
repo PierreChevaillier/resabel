@@ -351,6 +351,12 @@ class Enregistrement_MembreTest extends TestCase {
     $status = Enregistrement_Membre::collecter($criteres, "", "", $personnes);
     $this->assertTrue($status);
     $this->assertTrue(count($personnes) > 0);
+
+    $personnes = array();
+    $status = Enregistrement_Membre::collecter($criteres, "", "", $personnes);
+    $this->assertTrue($status);
+    $this->assertTrue(count($personnes) > 0);
+    
   }
   
 }

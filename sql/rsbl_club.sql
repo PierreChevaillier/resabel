@@ -45,7 +45,7 @@ CREATE TABLE `rsbl_club` (
 --
 
 INSERT INTO `rsbl_club` (`code`, `identifiant`, `mot_passe`, `nom`, `code_commune`, `telephone`, `courriel`, `fuseau_horaire`) VALUES
-(1, 'AMP', '657af3f0d2f49a560816e472c2164294', 'Aviron de Mer de Plougonvelin', 29190, '', '', 'Europe/Paris');
+(1, 'Rsbl', '657af3f0d2f49a560816e472c2164294', 'Club Nautique Resabel', 29190, '', '', 'Europe/Paris');
 
 --
 -- Index pour les tables déchargées

@@ -434,7 +434,7 @@ class Erreur_Doublon_Identifiant_Membre extends Exception { }
     static function collecter(array $criteres_selection,
                               string $composante,
                               string $role,
-                              array & $personnes = null): bool {
+                              ? array & $personnes): bool {
       $status = false;
       if (is_null($personnes)) $personnes = array();
       
