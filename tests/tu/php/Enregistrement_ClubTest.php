@@ -78,7 +78,7 @@ class Enregistrement_ClubTest extends TestCase {
   }
   
   public function testClubExiste(): void {
-    $identifiant_club = 'AMP';
+    $identifiant_club = 'RSBL';
     $this->assertTrue(Enregistrement_Club::tester_existe($identifiant_club));
     $identifiant_club = 'XXX';
     $this->assertFalse(Enregistrement_Club::tester_existe($identifiant_club));
@@ -89,7 +89,7 @@ class Enregistrement_ClubTest extends TestCase {
     $club = new Club($code_club);
     $this->enregistrement->def_club($club);
     $this->assertTrue($this->enregistrement->lire());
-    $this->assertEquals($club->identifiant(), 'AMP');
+    $this->assertEquals($club->identifiant(), 'RSBL');
     $this->assertEquals($club->fuseau_horaire()->getName(), 'Europe/Paris');
   }
   
@@ -98,8 +98,8 @@ class Enregistrement_ClubTest extends TestCase {
    */
 
   public function testVerifierIdentiteBonMotPasse(): void {
-    $mot_passe = 'motdepassebidon';
-    print(bin2hex(password_hash($mot_passe, PASSWORD_BCRYPT)) . PHP_EOL);
+    $mot_passe = 'Resabel7t0p!';
+    //print(bin2hex(password_hash($mot_passe, PASSWORD_BCRYPT)) . PHP_EOL);
     $code_club = 1;
     $club = new Club($code_club);
     $this->enregistrement->def_club($club);
