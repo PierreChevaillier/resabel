@@ -18,6 +18,7 @@
   // revision: 13-avr-2020 pchevaillier@gmail.com ajouter_script pour eviter doublons
   // revision : 17-mar-2023 pchevaillier@gmail.com passage a bootstrap V5 en local
 // revision: 06-fev-2024 pchevaillier@gmail.com + fonction_onload
+// revision : 22-oct-2026 pchevaillier@gmail.com php > 8.3 : nullable arguments 
   // --------------------------------------------------------------------------
   // commentaires :
   // - https://getbootstrap.com/docs/4.1/getting-started/introduction/
@@ -98,7 +99,9 @@
         echo '<link rel="stylesheet" href="' . get_include_path() . $f . '" media="screen" />';
     }
     
-    public function __construct($nom_site, $nom_page, $liste_feuilles_style = null) {
+    public function __construct(string $nom_site, 
+                                string $nom_page, 
+                                ?array $liste_feuilles_style = null) {
       $this->def_titre( $nom_page); //$nom_site . " - " . $nom_page);
       if ($liste_feuilles_style != null)
         $this->feuilles_style = $liste_feuilles_style;
@@ -205,7 +208,9 @@
 }
 
 class Page_Simple extends Page {
-  public function __construct($nom_site, $nom_page, $liste_feuilles_style = null) {
+  public function __construct(string $nom_site, 
+                              string $nom_page, 
+                              ?array $liste_feuilles_style = null) {
     parent::__construct($nom_site, $nom_page, $liste_feuilles_style);
     $pp = new Pied_Page();
     $pp->def_titre("Resabel");

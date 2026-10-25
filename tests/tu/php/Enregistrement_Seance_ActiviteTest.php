@@ -467,12 +467,12 @@ class Enregistrement_Seance_activiteTest extends TestCase {
     $code_seance = $this->code_derniere_seance();
     $this->assertEquals($code_seance, $p1->code_seance);
     
-    $p1->code_participant = 60;
+    $p1->code_participant = 103;
     $status = Enregistrement_Seance_Activite::ajouter_participation($p1); // methode sous test
     $this->assertEquals(1, $status);
     $this->assertEquals($code_seance, $p1->code_seance);
 
-    $p1->code_participant = 61;
+    $p1->code_participant = 26001;
     $p1->responsable = 1;
     $status = Enregistrement_Seance_Activite::ajouter_participation($p1); // methode sous test
     $this->assertEquals(1, $status);
@@ -490,7 +490,7 @@ class Enregistrement_Seance_activiteTest extends TestCase {
     $fin = $debut->add($une_heure);
     
     // Support avec deux places, dont 1 responsable
-    $support = new Bateau(21); // doit exister dans la base
+    $support = new Bateau(3); // doit exister dans la base
     $double = new Type_support_Activite(2); // doit exister dans la base
     $double->nombre_personnes_max = 2;
     $double->chef_de_bord_requis = true;

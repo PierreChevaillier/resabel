@@ -23,6 +23,7 @@
  * creation : 25-mai-2019 pchevaillier@gmail.com
  * revision : 09-oct-2024 pchevaillier@gmail.com + collecter_codes_membre
  * revision : 19-feb-2025 pchevaillier@gmail.com + ajouter, supprimer, decaler_rang
+ * revision : 24-oct-2026 pchevaillier@gmail.com - reference au club
  * ----------------------------------------------------------------------------
  * commentaires :
  * -
@@ -37,7 +38,6 @@
 
 require_once 'php/metier/struct_orga.php';
 require_once 'php/metier/membre.php';
-//require_once 'php/bdd/base_donnees.php';
 
 // ============================================================================
 class Enregistrement_Composante {
@@ -46,15 +46,11 @@ class Enregistrement_Composante {
     return Base_Donnees::$prefix_table . 'composantes';
   }
   
-  //private $composante = null;
-  //public function composante() { return $this->composante; }
-  //public function def_composante($composante) { $this->composante = $composante; }
-  
-  static function collecter(int $code_club, array & $composantes): bool {
+  static function collecter(array & $composantes): bool {
     $status = false;
     try {
       $bdd = Base_Donnees::acces();
-      $requete = "SELECT * FROM " . self::source() . " WHERE code_club = " . $code_club . " ORDER BY nom";
+      $requete = "SELECT * FROM " . self::source() . " ORDER BY nom";
       $resultat = $bdd->query($requete);
       while ($donnee = $resultat->fetch(PDO::FETCH_OBJ)) {
         $composante= new Composante($donnee->code);
@@ -66,6 +62,7 @@ class Enregistrement_Composante {
       
         $composantes[$composante->code()] = $composante;
       }
+      $status = true;
     } catch (PDOException $e) {
       Base_Donnees::sortir_sur_exception(self::source(), $e);
     }
@@ -109,6 +106,7 @@ class Enregistrement_Entite_Organisationnelle {
       
         $entite_orga[] = $role_membre;
       }
+      $status = true;
     } catch (PDOException $e) {
       Base_Donnees::sortir_sur_exception('rsbl_roles_composantes', $e);
     }

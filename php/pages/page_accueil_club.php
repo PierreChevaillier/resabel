@@ -14,7 +14,7 @@
  *   PHP 8.1 sur hebergeur web
  * ----------------------------------------------------------------------------
  * creation : 03-jun-2024 pchevaillier@gmail.com depuis page_accueil_perso.php
- * revision :
+ * revision : 22-oct-2026 pchevaillier@gmail.com php > 8.3 : nullable arguments
  * ----------------------------------------------------------------------------
  * commentaires :
  * -
@@ -62,14 +62,11 @@ class Page_Accueil_Club extends Page_Menu {
   private $sites = array();
   private ?Permanence $permanence = null;
   
-  public function __construct($nom_site_web, $nom_page, $liste_feuilles_style = null) {
+  public function __construct(string $nom_site_web, 
+                              string $nom_page, 
+                              ?array $liste_feuilles_style = null) {
   
     $this->maintenant = Calendrier::maintenant();
-    
-    //$this->contexte->initialiser();
-    
-    //$this->code_utilisateur = $_SESSION['usr'];
-    
     $this->collecter_informations();
     parent::__construct($nom_site_web, $nom_page, $liste_feuilles_style);
   }

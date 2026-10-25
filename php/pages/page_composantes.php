@@ -7,10 +7,11 @@
   // --------------------------------------------------------------------------
   // utilisation : php - require_once <chemin-fichier.php'
   // dependances :
+  //   - $_SESSION
   // teste avec : PHP 7.1 sur Mac OS 10.14 ; PHP 7.0 sur hebergeur web
   // --------------------------------------------------------------------------
   // creation : 23-mai-2019 pchevaillier@gmail.com
-  // revision :
+  // revision : 22-oct-2026 pchevaillier@gmail.com php > 8.3 : nullable arguments
   // --------------------------------------------------------------------------
   // commentaires :
   // attention :
@@ -30,15 +31,7 @@
 
   // --------------------------------------------------------------------------
   class Page_Composantes extends Page_Menu {
-    
-    public $club = null;
-    
-    public function __construct($nom_site, $nom_page, $liste_feuilles_style = null) {
-      if (isset($_SESSION['clb']))
-        $this->club = new Club($_SESSION['clb']);
-      parent::__construct($nom_site, $nom_page, $liste_feuilles_style);
-    }
-    
+        
     public function definir_elements() {
       
       parent::definir_elements();
@@ -48,7 +41,7 @@
       $this->ajoute_element_haut($element);
 
       $composantes = array();
-      Enregistrement_Composante::collecter($this->club->code(), $composantes);
+      Enregistrement_Composante::collecter($composantes);
       
       $roles_membres = array();
       Enregistrement_Entite_Organisationnelle::collecter($roles_membres);

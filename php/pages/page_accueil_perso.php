@@ -32,6 +32,7 @@
  * revision: 05-jul-2024 pchevaillier@gmail.com * affichage marees
  * revision: 20-aug-2024 pchevaillier@gmail.com * action seance (fix issue #18)
  * revision: 17-oct-2024 pchevaillier@gmail.com + action contacter equipage
+ * revision : 22-oct-2026 pchevaillier@gmail.com php > 8.3 : nullable arguments 
  * ----------------------------------------------------------------------------
  * commentaires :
  * - en cours d'evolution
@@ -78,8 +79,9 @@
   class Page_Accueil_Perso extends Page_Menu {
     
     private ?Instant $maintenant = null;
+
     private function code_utilisateur(): int { return $this->contexte->utilisateur->code(); }
-    private $contexte = null;
+    private ?Contexte_Action_Seance $contexte = null;
     
     private $sites = array();
     private ?Permanence $permanence = null;
@@ -87,19 +89,19 @@
     private $supports_activite = null;
     private $seances = array();
 
-    public function __construct($nom_site_web, $nom_page, $liste_feuilles_style = null) {
+    public function __construct(string $nom_site_web, 
+                                string $nom_page, 
+                                ?array $liste_feuilles_style = null) {
     
       $this->maintenant = Calendrier::maintenant();
-      
       $this->contexte = new Contexte_Action_Seance($this);
       $this->ajouter_script("js/afficher_infos_seance_activite.js");
       $this->ajouter_script("js/requete_inscription_individuelle.js");
       
       $this->contexte->initialiser();
       
-      //$this->code_utilisateur = $_SESSION['usr'];
-      
       $this->collecter_informations();
+      
       parent::__construct($nom_site_web, $nom_page, $liste_feuilles_style);
     }
 
@@ -139,7 +141,7 @@
       $this->supports_activite = $supports;
     }
     
-    protected function collecter_info_seances_activite() {
+    protected function collecter_info_seances_activite():void {
       $seances = array();
       $jour = $this->maintenant->jour();
       $critere_selection = "date_debut >= '" . $jour->date_sql() . "'";
@@ -176,7 +178,7 @@
       
     }
     
-    public function definir_elements() {
+    public function definir_elements(): void {
       parent::definir_elements();
       
       $element = new Entete_Contenu_Page();
@@ -198,7 +200,7 @@
       $this->definir_affichage_seances_activite();
     }
     
-    protected function definir_affichage_seances_activite() {
+    protected function definir_affichage_seances_activite(): void {
       $afficheur_action = new Element_Modal();
       $afficheur_action->def_id('aff_act');
       $afficheur_action->def_titre('Action effectuée');
@@ -300,7 +302,7 @@
       }
     }
     
-    protected function definir_affichage_permanence() {
+    protected function definir_affichage_permanence(): void {
       if (!is_null($this->permanence)) {
         $cadre = new Conteneur_Repliable();
         $this->ajoute_contenu($cadre);
@@ -312,7 +314,7 @@
       }
     }
 
-    protected function definir_affichage_marees() {
+    protected function definir_affichage_marees(): void {
       
       $code_site = 1;
       $maintenant = Calendrier::maintenant();
@@ -329,5 +331,5 @@
     }
     
    }
-  // ==========================================================================
+// ============================================================================
 ?>

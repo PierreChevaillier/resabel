@@ -71,9 +71,8 @@ final class Enregistrement_ConnexionTest extends TestCase {
   private static function creer_donnees(): void {
     // donnees supposees se trouver dans la table Connexion utilisee pour ce test
     self::$donnees = array (
-                            array (101, "pierre.chevaillier", "motdepassebidon", 0, 1),
-                            array (60, "joel.champeau", "motdepassebidon", 1, 1),
-                            array (9004, "jorge", "motdepassebidon", 0, 0)
+                            array (101, "pierre.chevaillier", "motdepassebidon", 1, 1),
+                            array (9001, "z.visiteur01", "motdepassebidon", 1, 0)
     );
   }
   
@@ -106,7 +105,7 @@ final class Enregistrement_ConnexionTest extends TestCase {
       $this->assertEquals($donnee[0][0], $cnx->code_membre());
       
       $code_actif = $donnee[0][3];
-      $est_actif = ($code_actif == 1);
+      $est_actif = ($code_actif === 1);
       $this->assertEquals($est_actif, $cnx->est_compte_actif());
       
       $code_autorise = $donnee[0][4];

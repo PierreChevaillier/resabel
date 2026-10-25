@@ -29,6 +29,7 @@
  * revision : 13-sep-2025 pchevaillier@gmail.com + affichage nom resp. permanence
  * revision : 24-oct-2025 pchevaillier@gmail.com cas du jour de passage a l'heure d'hiver
  * revision : 18-dec-2025 pchevaillier@gmail.com cas dernier creneau avant premier
+ * revision : 22-oct-2026 pchevaillier@gmail.com php > 8.3 : nullable arguments
  * ----------------------------------------------------------------------------
  * commentaires :
  * -
@@ -73,13 +74,17 @@ require_once 'php/elements_page/specifiques/vue_indisponibilite.php';
       $this->contexte_action = $contexte;
     }
     
-    protected function jour() { return $this->activite_journaliere->date_jour(); }
+    protected function jour(): ?Instant { 
+      return $this->activite_journaliere->date_jour(); 
+    }
     
     private $entete;
     
     public $afficheur_action = null; // ajout 23-fev-2020: afficheur modal / resultat actions
    
-    public function __construct($nom_site_web, $nom_page, $liste_feuilles_style = null) {
+    public function __construct(string $nom_site_web, 
+                                string $nom_page, 
+                                ?array $liste_feuilles_style = null) {
      
       $this->activite_journaliere = new Activite_Journaliere();
       
@@ -103,7 +108,7 @@ require_once 'php/elements_page/specifiques/vue_indisponibilite.php';
       parent::__construct($nom_site_web, $nom_page, $liste_feuilles_style);
     }
     
-    public function definir_elements() {
+    public function definir_elements(): void {
       parent::definir_elements();
           
       $this->entete = new Entete_Section();
@@ -116,8 +121,7 @@ require_once 'php/elements_page/specifiques/vue_indisponibilite.php';
       
     }
  
-    
-    protected function definir_affichage_navigateur_dates() {
+    protected function definir_affichage_navigateur_dates(): void {
       $url = "activites.php";
       $params = array();
       foreach ($_GET as $cle => $valeur)
@@ -141,7 +145,7 @@ require_once 'php/elements_page/specifiques/vue_indisponibilite.php';
       
     }
     
-    protected function definir_affichage_permanence() {
+    protected function definir_affichage_permanence(): void {
       if (isset($this->activite_journaliere->permanence)) {
         $cadre = new Conteneur_Repliable();
         $cadre->def_id('cadre_perm');
@@ -159,7 +163,7 @@ require_once 'php/elements_page/specifiques/vue_indisponibilite.php';
       }
     }
 
-    protected function definir_affichage_filtre() {
+    protected function definir_affichage_filtre(): void {
       // pas encore utilise
       $cadre = new Conteneur_Repliable();
       $cadre->def_id('cadre_filtre');
@@ -173,7 +177,7 @@ require_once 'php/elements_page/specifiques/vue_indisponibilite.php';
       $cadre->ajouter_element($selecteur_activites);
     }
     
-    protected function definir_affichage_activite_sites() {
+    protected function definir_affichage_activite_sites(): void {
       $onglets = new Zone_Onglets();
       $onglets->def_id('tabs_site');
       foreach ($this->activite_journaliere->activite_sites as $activite_site) {

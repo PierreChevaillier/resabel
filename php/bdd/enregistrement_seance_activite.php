@@ -174,7 +174,7 @@ require_once 'php/bdd/enregistrement_support_activite.php';
     
     // ------------------------------------------------------------------------
     static public function collecter_participants_creneau(string $date_sql_debut,
-                                                   array & $resultats = null): bool {
+                                                   ?array & $resultats = null): bool {
       $status = false;
       if (is_null($resultats)) $resultats = array();
       $source = self::source() . " AS seance INNER JOIN rsbl_participations_activite AS participation ON (participation.code_seance = seance.code) ";
@@ -212,7 +212,7 @@ require_once 'php/bdd/enregistrement_support_activite.php';
         Base_Donnees::sortir_sur_exception(self::source(), $e);
       }
       return $dispo;
-      }
+    }
     
     static function verifier_disponibilite_support(Information_Participation_Seance_Activite $infos): bool {
       $dispo = false;
@@ -589,5 +589,5 @@ require_once 'php/bdd/enregistrement_support_activite.php';
     }
 
   }
-  // ==========================================================================
+// ============================================================================
 ?>

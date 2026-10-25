@@ -18,6 +18,7 @@
   // revision : 29-dec-2019 pchevaillier@gmail.com impact refonte Calendrier
 // revision : 30-avr-2024 pchevaillier@gmail.com + Menu actions sur indispo
 // revision : 22-may-2024 pchevaillier@gmail.com + utilisation Profil_Session
+// revision : 22-oct-2026 pchevaillier@gmail.com php > 8.3 : nullable arguments 
   // --------------------------------------------------------------------------
   // commentaires :
   // attention :
@@ -42,10 +43,10 @@ require_once 'php/elements_page/specifiques/vue_indisponibilite.php';
     //private $enregistrement_indisponibilite = null;
     private $entete;
     
-    public function __construct(string $nom_site, string $nom_page,
+    public function __construct(string $nom_site, 
+                                string $nom_page,
                                 int $code_type_indispo,
-                                $liste_feuilles_style = null,
-                                ) {
+                                ?array $liste_feuilles_style = null) {
       $this->code_type_indisponibilite = $code_type_indispo;
       parent::__construct($nom_site, $nom_page, $liste_feuilles_style);
     }
